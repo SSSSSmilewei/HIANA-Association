@@ -115,16 +115,19 @@ export const MIGRATIONS: string[][] = [
   ],
 ];
 
-let ready: Promise<void> | null = null;
+// 每个数据库连接只迁移一次（Worker 里通常只有一个；测试里每个用例一个内存库）
+const ready = new WeakMap<D1Database, Promise<void>>();
 
 export function ensureSchema(db: D1Database): Promise<void> {
-  if (!ready) {
-    ready = migrate(db).catch((err) => {
-      ready = null;
+  let p = ready.get(db);
+  if (!p) {
+    p = migrate(db).catch((err) => {
+      ready.delete(db);
       throw err;
     });
+    ready.set(db, p);
   }
-  return ready;
+  return p;
 }
 
 async function migrate(db: D1Database) {

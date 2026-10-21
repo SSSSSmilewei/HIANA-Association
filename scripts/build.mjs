@@ -45,7 +45,7 @@ writeFileSync(
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex">
-<title>计数与概率</title>
+<title>智慧网络算法协会 · 学习平台</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/plex/IBMPlexSans-Regular-Latin1.woff2" as="font" type="font/woff2" crossorigin>
 ${css ? `<link rel="stylesheet" href="${rel(css)}">` : ""}

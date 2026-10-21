@@ -14,9 +14,5 @@ export interface Env {
   WAKATIME_KEY?: string;
 }
 
-export type Session = { role: "student"; sid: string; exp: number } | { role: "admin"; exp: number };
-
-export type AppEnv = {
-  Bindings: Env;
-  Variables: { session: Session | null };
-};
+/** 成员用口令登录（uid 是 users.id）；会长用后台密码登录。 */
+export type Session = { role: "member"; uid: string; exp: number } | { role: "admin"; exp: number };

@@ -12,7 +12,7 @@ export function StudentLogin({ initialCode, onLogin }: { initialCode?: string; o
     setBusy(true);
     setError(null);
     try {
-      const me = await api<Me>("/api/auth/student", { body: { code: c } });
+      const me = await api<Me>("/api/auth/member", { body: { code: c } });
       onLogin(me);
       navigate("/", { replace: true });
     } catch (e) {
@@ -28,9 +28,9 @@ export function StudentLogin({ initialCode, onLogin }: { initialCode?: string; o
 
   return (
     <main className="login">
-      <h1>计数与概率</h1>
+      <h1>智慧网络算法协会</h1>
       <p className="muted" style={{ marginTop: 8 }}>
-        输入老师给你的口令。登录一次后，这台设备会记住你。
+        输入会长发给你的口令。登录一次后，这台设备会记住你。
       </p>
       <form
         onSubmit={(e) => {
@@ -57,7 +57,7 @@ export function AdminLogin({ onLogin }: { onLogin: (me: Me) => void }) {
   const [busy, setBusy] = useState(false);
   return (
     <main className="login">
-      <h1>老师后台</h1>
+      <h1>会长后台</h1>
       <form
         onSubmit={async (e) => {
           e.preventDefault();

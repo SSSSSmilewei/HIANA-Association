@@ -1,96 +1,70 @@
-import type { FigureSpec, Problem, Review } from "./schema";
+import type { Daily, SourceSeries } from "./heatmap";
 
-/** 学生端拿到的题目：去掉了答案、解析和解析里的图。 */
-export type PublicProblem = Omit<Problem, "answer" | "accept" | "steps" | "figure" | "verified" | "bankRef">;
-
-export interface Solution {
-  steps: string[];
-  figure?: FigureSpec;
-  answer: string; // 展示用：选择题是 "(E) 18"，填空题是标准答案
-}
-
-export interface ProblemState {
-  attempts: number;
-  correct: boolean;
-  answers: string[]; // 按时间顺序
-  solution?: Solution; // 解锁后才有
-}
-
-export interface PinMessage {
-  id: number;
-  author: "student" | "teacher";
-  body: string;
-  createdAt: number;
-}
-
-export interface Pin {
-  id: string;
-  lessonId: string;
-  lessonNumber?: number;
-  anchorKey: string;
-  anchorLabel: string | null;
-  xPct: number;
-  yPct: number;
-  snippet: string | null;
-  status: "open" | "answered" | "resolved";
-  createdAt: number;
-  updatedAt: number;
-  unseenReply: boolean;
-  messages: PinMessage[];
-  studentName?: string;
-}
-
-export interface LessonSummary {
-  id: string;
-  number: number;
-  title: string;
-  titleEn: string | null;
-  classDate: string | null;
-  chapters: string | null;
-  publishedAt: number | null;
-  problemCount: number;
-  correct: number;
-  attempted: number;
-  pinCount: number;
-  unseenReplies: number;
-  openPins: number;
-  submittedAt: number | null;
-  reviewStats: { points: number; figures: number; examples: number };
-}
-
-export interface LessonPayload {
-  id: string;
-  number: number;
-  title: string;
-  titleEn: string | null;
-  classDate: string | null;
-  chapters: string | null;
-  status: "draft" | "published";
-  review: Review;
-  sections: { id: string; title: string; note?: string; problems: PublicProblem[] }[];
-  state: Record<string, ProblemState>;
-  pins: Pin[];
-  practiceStartedAt: number | null;
-  submittedAt: number | null;
-  preview?: boolean;
-}
-
-export interface AttemptResult {
-  correct: boolean;
-  state: ProblemState;
-}
-
-export interface RedoItem {
-  lessonNumber: number;
-  lessonTitle: string;
-  problemId: string;
-  index: number;
-  source: string | null;
-  statement: string;
-  wrongAttempts: number;
-}
+/** 前后端共用的接口返回类型。 */
 
 export interface Me {
-  role: "student" | "admin" | null;
-  student?: { id: string; name: string };
+  role: "member" | "admin" | null;
+  member?: { id: string; studentNo: string; name: string; className?: string | null };
 }
+
+export interface ProviderInfo {
+  id: string;
+  label: string;
+  unit: string;
+  category: "code" | "algo" | "english";
+  status: "official" | "unofficial" | "pending";
+  coverage: "history" | "snapshot";
+  handleHint: string;
+  needsUserSecret: string | null;
+}
+
+export interface BindingInfo {
+  source: string;
+  handle: string;
+  hasSecret: boolean;
+  syncedAt: number | null;
+  lastError: string | null;
+}
+
+export interface HeatmapPayload {
+  today: string;
+  series: SourceSeries[];
+  bindings: BindingInfo[];
+  providers: ProviderInfo[];
+}
+
+export interface CheckinState {
+  today: string;
+  window: string;
+  requireCode: boolean;
+  checkedAt: number | null;
+  total: number;
+}
+
+export type CheckinResponse = { ok: true; day: string; at: number } | { ok: false; reason: "already"; day: string; at: number };
+
+export interface AdminMember {
+  id: string;
+  studentNo: string;
+  name: string;
+  className: string | null;
+  status: "active" | "archived";
+  lastActiveDay: string | null;
+}
+
+export interface AdminCheckinToday {
+  today: string;
+  window: string;
+  requireCode: boolean;
+  code: string;
+  count: number;
+  total: number;
+}
+
+export interface ImportResult {
+  created: { studentNo: string; name: string; passcode: string }[];
+  updated: number;
+  errors: string[];
+}
+
+export type { Daily, SourceSeries };
