@@ -106,8 +106,8 @@ export function AdminTodayPage() {
         </div>
       )}
 
-      <div className="split">
-        <section className="split-main card card-flush" aria-labelledby="rec-h" style={{ padding: "8px 8px 4px" }}>
+      <div className="stack" style={{ gap: 20 }}>
+        <section className="card card-flush" aria-labelledby="rec-h" style={{ padding: "8px 8px 4px" }}>
           <div className="section-head" style={{ padding: "12px 12px 8px" }}>
             <h2 id="rec-h" className="h3">
               签到记录
@@ -165,7 +165,7 @@ export function AdminTodayPage() {
           )}
         </section>
 
-        <section className="split-side card stack" aria-labelledby="idle-h" style={{ gap: 6 }}>
+        <section className="card stack" aria-labelledby="idle-h" style={{ gap: 6, maxWidth: 560 }}>
           <h2 id="idle-h" className="h3">
             两周没动静
           </h2>

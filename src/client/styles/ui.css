@@ -2287,3 +2287,10 @@ a.course-title:hover {
 [data-skin="classic"] .done-badge .ring {
   border-radius: 0;
 }
+
+.night-card .switch {
+  background: rgba(255, 255, 255, 0.22);
+}
+.night-card .switch[aria-checked="true"] {
+  background: var(--accent);
+}
