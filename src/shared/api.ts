@@ -1,3 +1,4 @@
+import type { Week } from "./content";
 import type { Daily, SourceSeries } from "./heatmap";
 
 /** 前后端共用的接口返回类型。 */
@@ -69,4 +70,20 @@ export interface ImportResult {
   errors: string[];
 }
 
-export type { Daily, SourceSeries };
+/** 登录、激活接口的返回；只有请求头带 `X-Hiana-Client: app` 时才有 token。 */
+export interface LoginResponse extends Me {
+  token?: string;
+}
+
+export interface CourseResponse {
+  track: { name: string; weeks: Week[] };
+  currentWeek: number;
+}
+
+export interface AppVersion {
+  latest: string;
+  min: string;
+  apkUrl: string | null;
+}
+
+export type { Daily, SourceSeries, Week };

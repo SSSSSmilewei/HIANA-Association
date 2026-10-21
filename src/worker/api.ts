@@ -17,7 +17,19 @@ import {
   setMemberStatus,
   setOwnPassword,
 } from "./members";
-import { clearCookie, clientIp, recordFailure, requireSecret, safeEqual, sessionCookie, sha256Hex, tooManyFailures } from "./session";
+import { CURRENT_WEEK, MAIN_TRACK } from "../shared/content";
+import {
+  clearCookie,
+  clientIp,
+  issueSession,
+  recordFailure,
+  requireSecret,
+  safeEqual,
+  sessionCookie,
+  sha256Hex,
+  tooManyFailures,
+  wantsAppToken,
+} from "./session";
 
 /**
  * 网站的全部接口。成员用口令登录；会长用后台密码登录。
@@ -69,8 +81,14 @@ api.post("/api/auth/member", async (c) => {
     await recordFailure(c.env.DB, ip);
     throw new HttpError(401, "学号或密码不对。还没设过密码的话，请用会长发的口令激活账号");
   }
-  c.cookies.push(await sessionCookie(c.env, c.req, { role: "member", uid: row.id }));
-  return json({ role: "member", needsPassword: false, member: { id: row.id, studentNo: row.student_no, name: row.name } });
+  const issued = await issueSession(c.env, c.req, { role: "member", uid: row.id });
+  c.cookies.push(issued.cookie);
+  return json({
+    role: "member",
+    needsPassword: false,
+    member: { id: row.id, studentNo: row.student_no, name: row.name },
+    ...(wantsAppToken(c.req) ? { token: issued.token } : {}),
+  });
 });
 
 /** 第一次使用：用会长发的口令激活账号，之后马上设置密码。 */
@@ -83,8 +101,14 @@ api.post("/api/auth/activate", async (c) => {
     await recordFailure(c.env.DB, ip);
     throw new HttpError(401, "口令不对或已经用过了。设过密码的同学请用学号和密码登录");
   }
-  c.cookies.push(await sessionCookie(c.env, c.req, { role: "member", uid: row.id }));
-  return json({ role: "member", needsPassword: true, member: { id: row.id, studentNo: row.student_no, name: row.name } });
+  const issued = await issueSession(c.env, c.req, { role: "member", uid: row.id });
+  c.cookies.push(issued.cookie);
+  return json({
+    role: "member",
+    needsPassword: true,
+    member: { id: row.id, studentNo: row.student_no, name: row.name },
+    ...(wantsAppToken(c.req) ? { token: issued.token } : {}),
+  });
 });
 
 /** 设置或修改密码：新密码输两次；已经有密码时要先输当前密码。 */
@@ -183,6 +207,27 @@ api.post("/api/heatmap/bindings", async (c) => {
 api.delete("/api/heatmap/bindings/:source", async (c) => {
   await unbindSource(c.env.DB, memberId(c), c.params.source);
   return json({ ok: true });
+});
+
+/* ---------- 课程与手机 App ---------- */
+
+/** 主线课程的周次安排。网页目前直接打包这份数据，App 从这里读取。 */
+api.get("/api/course", (c) => {
+  memberId(c);
+  return json({ track: MAIN_TRACK, currentWeek: CURRENT_WEEK });
+});
+
+/**
+ * App 启动时检查更新。会长在 settings 表里改这三项即可，不用重新部署：
+ *  app_latest_version（如 1.0.1）、app_min_version（低于它就强制更新）、app_apk_url（APK 下载地址）。
+ */
+api.get("/api/app/version", async (c) => {
+  const [latest, min, apk] = await Promise.all([
+    getSetting(c.env.DB, "app_latest_version"),
+    getSetting(c.env.DB, "app_min_version"),
+    getSetting(c.env.DB, "app_apk_url"),
+  ]);
+  return json({ latest: latest ?? "1.0.0", min: min ?? "1.0.0", apkUrl: apk ?? null });
 });
 
 /* ---------- 会长后台 ---------- */

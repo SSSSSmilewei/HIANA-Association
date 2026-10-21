@@ -4,7 +4,7 @@ import type { Env } from "./env";
 import { syncEveryone } from "./heatmap/store";
 import { dispatch, json, parseCookies } from "./http";
 import { flush } from "./notify";
-import { COOKIE, verifySession } from "./session";
+import { COOKIE, bearerToken, verifySession } from "./session";
 
 /**
  * 没在 Cloudflare 设置里配置 SESSION_SECRET 时，自动生成一个存在数据库里（只生成一次）。
@@ -40,8 +40,14 @@ async function handleApi(req: Request, env: Env): Promise<Response> {
       },
     });
   }
-  const token = parseCookies(req.headers.get("cookie"))[COOKIE];
-  const session = token && env.SESSION_SECRET ? await verifySession(env.SESSION_SECRET, token) : null;
+  // 网页用 Cookie；手机 App 没有 Cookie，改用 Authorization: Bearer 头，令牌格式相同
+  const token = parseCookies(req.headers.get("cookie"))[COOKIE] ?? bearerToken(req);
+  let session = token && env.SESSION_SECRET ? await verifySession(env.SESSION_SECRET, token) : null;
+  // 会长停用账号后，旧会话（网页和 App）立即失效，不必等到过期
+  if (session?.role === "member") {
+    const row = await env.DB.prepare("SELECT 1 AS ok FROM users WHERE id = ? AND status = 'active'").bind(session.uid).first<{ ok: number }>();
+    if (!row) session = null;
+  }
   return dispatch(api, req, env, session);
 }
 

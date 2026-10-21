@@ -60,10 +60,32 @@ export async function verifySession(secret: string, token: string, now = Date.no
   }
 }
 
-export async function sessionCookie(env: Env, req: Request, session: { role: "member"; uid: string } | { role: "admin" }): Promise<string> {
+type NewSession = { role: "member"; uid: string } | { role: "admin" };
+
+/**
+ * 签发一次会话：同一个签名串既写进 Cookie（网页用），也可以原样交给手机 App
+ * 放进 `Authorization: Bearer` 头。两者有效期相同，校验走同一个 verifySession。
+ */
+export async function issueSession(env: Env, req: Request, session: NewSession): Promise<{ cookie: string; token: string }> {
   const days = session.role === "admin" ? ADMIN_DAYS : MEMBER_DAYS;
   const token = await signSession(requireSecret(env), { ...session, exp: Date.now() + days * 86_400_000 } as Session);
-  return serializeCookie(COOKIE, token, { maxAge: days * 86400, secure: new URL(req.url).protocol === "https:" });
+  const cookie = serializeCookie(COOKIE, token, { maxAge: days * 86400, secure: new URL(req.url).protocol === "https:" });
+  return { cookie, token };
+}
+
+export async function sessionCookie(env: Env, req: Request, session: NewSession): Promise<string> {
+  return (await issueSession(env, req, session)).cookie;
+}
+
+/** 手机 App 登录时在请求头带 `X-Hiana-Client: app`，只有这时才在返回体里给出令牌。 */
+export function wantsAppToken(req: Request): boolean {
+  return req.headers.get("x-hiana-client")?.trim().toLowerCase() === "app";
+}
+
+/** 读 `Authorization: Bearer <token>`；没有或格式不对时返回 null。 */
+export function bearerToken(req: Request): string | null {
+  const m = /^Bearer\s+(\S+)$/i.exec(req.headers.get("authorization")?.trim() ?? "");
+  return m ? m[1] : null;
 }
 
 export function clearCookie(req: Request): string {

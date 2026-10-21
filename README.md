@@ -32,6 +32,16 @@
 | 多邻国 | 网页接口（非官方） | 是否需要登录待实测 |
 | Gitee、洛谷、扇贝、WakaTime | 暂不支持 | 接口还在测试 |
 
+## 手机 App
+
+`app/` 是学员端的手机 App（Flutter + flutter_miuix，HyperOS 风格），说明见 [app/README.md](app/README.md)。它和网页共用同一套接口，另外用到：
+
+- 登录、激活时请求头带 `X-Hiana-Client: app`，返回体里多一个 `token`；之后请求带 `Authorization: Bearer <token>`。网页端不带这个头，行为不变。
+- `GET /api/course`：主线课程周次（数据在 `src/shared/content.ts`，网页和 App 共用）
+- `GET /api/app/version`：App 检查更新，读 `settings` 表里的 `app_latest_version`、`app_min_version`、`app_apk_url`
+
+成员被停用后，网页和 App 的旧会话都会立即失效。
+
 ## 部署
 
 数据库已经建好（`hiana-association-db`，亚太区），`wrangler.jsonc` 里写好了数据库和自定义域名 `study.shanmoew-denied.win`。
