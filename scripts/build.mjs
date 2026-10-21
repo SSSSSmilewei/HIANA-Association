@@ -44,6 +44,8 @@ writeFileSync(
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<script>try{var t=localStorage.getItem("hiana-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);var d=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.querySelector('meta[name="theme-color"]').setAttribute("content","#121316")}catch(e){}</script>
 <meta name="robots" content="noindex">
 <title>智慧网络算法协会 · 学习平台</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">

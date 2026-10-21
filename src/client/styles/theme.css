@@ -1,0 +1,73 @@
+/* ============================================================
+   深色模式。三种状态：
+   - 跟随系统（默认，<html> 上没有 data-theme）：看 prefers-color-scheme
+   - 浅色（data-theme="light"）、深色（data-theme="dark"）：页头的切换按钮设置
+   只改颜色变量；组件一律通过变量取色。
+   ============================================================ */
+
+:root {
+  --on-ink: #ffffff;        /* 黑底按钮上的字 */
+  --ink-hover: #2b2b2b;
+  --on-accent: #ffffff;     /* 红、蓝底按钮上的字 */
+  --red-hover: #8a1a2c;
+  --red-solid: #a31f34;     /* 红底按钮（白字要够清楚） */
+  --input-border: #b9bbc2;
+  --slot-empty: #d6d7dc;
+  --header-bg: #000000;     /* 会长后台的黑色页头 */
+  --header-fg: #ffffff;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121316; --ink: #ececef; --graphite: #a3a6ad; --muted: #7d8088;
+    --rule: #3a3c42; --rule-light: #2a2c31; --grid: #1f2125; --fill: #1b1c20;
+    --red: #e05468; --red-wash: #2a1519; --blue: #7b9cf2; --blue-ink: #9bb4f5; --blue-wash: #161c2c; --green: #5cc48a;
+    --l0: #1f2024; --l1: #4b1c25; --l2: #762432; --l3: #a62f42; --l4: #e05468;
+    --body-ink: #d4d6dc;
+    --on-ink: #121316; --ink-hover: #ffffff; --on-accent: #ffffff; --red-hover: #9c2236; --red-solid: #b42a40;
+    --input-border: #4a4d54; --slot-empty: #3a3c42;
+    --header-bg: #1b1c20; --header-fg: #ececef;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121316; --ink: #ececef; --graphite: #a3a6ad; --muted: #7d8088;
+  --rule: #3a3c42; --rule-light: #2a2c31; --grid: #1f2125; --fill: #1b1c20;
+  --red: #e05468; --red-wash: #2a1519; --blue: #7b9cf2; --blue-ink: #9bb4f5; --blue-wash: #161c2c; --green: #5cc48a;
+  --l0: #1f2024; --l1: #4b1c25; --l2: #762432; --l3: #a62f42; --l4: #e05468;
+  --body-ink: #d4d6dc;
+  --on-ink: #121316; --ink-hover: #ffffff; --on-accent: #ffffff; --red-hover: #9c2236; --red-solid: #b42a40;
+  --input-border: #4a4d54; --slot-empty: #3a3c42;
+  --header-bg: #1b1c20; --header-fg: #ececef;
+  color-scheme: dark;
+}
+
+html, body { background: var(--paper); color: var(--ink); }
+
+/* base.css / app.css 里写死的颜色，改成变量 */
+.btn-ink { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+.btn-ink:hover { background: var(--ink-hover); color: var(--on-ink); }
+.btn-red, .btn-red:hover, .btn-blue, .btn-blue:hover, .btn-outline-red:hover, .btn-outline-blue:hover { color: var(--on-accent); }
+.btn-red { background: var(--red-solid); border-color: var(--red-solid); }
+.btn-red:hover { background: var(--red-hover); border-color: var(--red-hover); }
+.btn-outline-red:hover { background: var(--red-solid); border-color: var(--red-solid); }
+.btn:hover:not(.btn-ink):not(.btn-red):not(.btn-blue) { background: var(--fill); }
+.field input, .field select, .field textarea { border-color: var(--input-border); background: var(--paper); color: var(--ink); }
+.task-num { border-color: var(--input-border); }
+.code-slots span { border-bottom-color: var(--slot-empty); }
+.code-slots span.fill { border-bottom-color: var(--ink); }
+.code-slots span.cur { border-bottom-color: var(--red); }
+.keypad button { color: var(--ink); }
+.site-header { background: var(--paper); border-bottom-color: var(--ink); }
+.admin-header { background: var(--header-bg); color: var(--header-fg); border-bottom-color: var(--header-bg); }
+.admin-header a, .admin-header .link-btn, .admin-header .brand span,
+.admin-header .site-nav a, .admin-header .site-nav a[aria-current="page"] { color: var(--header-fg); }
+
+/* 切换按钮 */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px;
+  border: 1px solid var(--rule); background: transparent; color: inherit; font-size: 13px; cursor: pointer;
+}
+.theme-toggle:hover { border-color: currentColor; }
+.theme-toggle svg { flex: none; }

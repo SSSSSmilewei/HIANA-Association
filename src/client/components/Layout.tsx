@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Me } from "../../shared/api";
 import { api } from "../api";
 import { Link, navigate, useLocation } from "../router";
+import { ThemeToggle } from "../theme";
 
 function Brand({ sub }: { sub: string }) {
   return (
@@ -29,6 +30,7 @@ export function MemberHeader({ me }: { me: Me }) {
           {item("/heatmap", "我的热力图")}
           {item("/checkin", "晚自习打卡")}
           {me.member && <span className="muted">{me.member.name}</span>}
+          <ThemeToggle />
           <button
             className="link-btn muted"
             type="button"
@@ -54,6 +56,7 @@ export function AdminHeader() {
           <Link to="/admin" aria-current="page">
             总览
           </Link>
+          <ThemeToggle />
           <button
             className="link-btn"
             type="button"
