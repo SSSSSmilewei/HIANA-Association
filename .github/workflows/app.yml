@@ -11,6 +11,9 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write # 发布问题清单要用
     defaults:
       run:
         working-directory: app
@@ -40,19 +43,18 @@ jobs:
           if [ ! -s issues.txt ]; then head -10 analyze.txt | sed 's/^/RAW /' > issues.txt; fi
           echo "共 $(wc -l < issues.txt) 条错误和警告"
           cat issues.txt
-      # GitHub 每一步最多显示 10 条 error、10 条 warning、10 条 notice 注释，分三步最多输出 90 条
-      - name: 输出问题注释（1–30）
+      # 把完整的问题清单写成一条单独的检查结果，在 PR / 提交页面和接口里都能直接看到全文
+      - name: 发布问题清单
         if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          sed -n '1,30p' issues.txt | awk '{lvl = NR<=10 ? "error" : (NR<=20 ? "warning" : "notice"); print "::" lvl "::" $0}'
-      - name: 输出问题注释（31–60）
-        if: always()
-        run: |
-          sed -n '31,60p' issues.txt | awk '{lvl = NR<=10 ? "error" : (NR<=20 ? "warning" : "notice"); print "::" lvl "::" $0}'
-      - name: 输出问题注释（61–90）
-        if: always()
-        run: |
-          sed -n '61,90p' issues.txt | awk '{lvl = NR<=10 ? "error" : (NR<=20 ? "warning" : "notice"); print "::" lvl "::" $0}'
+          gh api "repos/${{ github.repository }}/check-runs" \
+            -f name="analyze 结果" -f head_sha="${{ github.sha }}" \
+            -f status=completed -f conclusion=neutral \
+            -f "output[title]=dart analyze：$(wc -l < issues.txt) 条" \
+            -f "output[summary]=错误在前，警告在后" \
+            -f "output[text]=$(head -c 60000 issues.txt)"
       - name: 有错误就停
         if: steps.analyze.outputs.code != '0'
         run: exit 1
