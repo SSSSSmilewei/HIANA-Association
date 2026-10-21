@@ -30,11 +30,14 @@ jobs:
         continue-on-error: true
         run: |
           set +e
-          flutter analyze --no-fatal-infos --no-fatal-warnings --format=machine 2> analyze.txt
+          # --format=machine 只有 dart analyze 支持；机器格式的输出位置随版本不同，两路都收
+          dart analyze --no-fatal-warnings --format=machine > analyze.txt 2>&1
           echo "code=$?" >> "$GITHUB_OUTPUT"
           # 错误排在前面，警告其次；每行：级别|类型|代码|文件|行|列|长度|说明
           { grep '^ERROR' analyze.txt; grep '^WARNING' analyze.txt; } \
             | awk -F'|' '{f=$4; sub(/.*\/app\//, "app/", f); printf "%s %s:%s:%s %s（%s）\n", $1, f, $5, $6, $8, $3}' > issues.txt
+          # 解析不出问题但命令失败时（例如参数写错），把原始输出放进去，至少看得到原因
+          if [ ! -s issues.txt ]; then head -10 analyze.txt | sed 's/^/RAW /' > issues.txt; fi
           echo "共 $(wc -l < issues.txt) 条错误和警告"
           cat issues.txt
       # GitHub 每一步最多显示 10 条 error、10 条 warning、10 条 notice 注释，分三步最多输出 90 条
