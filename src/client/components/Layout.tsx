@@ -29,7 +29,11 @@ export function MemberHeader({ me }: { me: Me }) {
           {item("/", "首页")}
           {item("/heatmap", "我的热力图")}
           {item("/checkin", "晚自习打卡")}
-          {me.member && <span className="muted">{me.member.name}</span>}
+          {me.member && (
+            <Link to="/password" className="muted" title="修改密码">
+              {me.member.name}
+            </Link>
+          )}
           <ThemeToggle />
           <button
             className="link-btn muted"

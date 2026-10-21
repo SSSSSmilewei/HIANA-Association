@@ -53,10 +53,27 @@ describe("接口", () => {
     expect(imp.data.created).toHaveLength(2);
     const linCode = imp.data.created[0].passcode as string;
 
-    expect((await call("lin", "POST", "/api/auth/member", { code: "aaaa-bbbb-cccc" })).status).toBe(401);
-    const login = await call("lin", "POST", "/api/auth/member", { code: linCode });
-    expect(login.data.member.name).toBe("林同学");
-    expect((await call("lin", "GET", "/api/auth/me")).data.member.studentNo).toBe("2025010101");
+    // 第一次：用口令激活，必须先设密码
+    expect((await call("lin", "POST", "/api/auth/activate", { code: "aaaa-bbbb-cccc" })).status).toBe(401);
+    const act = await call("lin", "POST", "/api/auth/activate", { code: linCode });
+    expect(act.data).toMatchObject({ needsPassword: true, member: { name: "林同学" } });
+    expect((await call("lin", "GET", "/api/auth/me")).data.needsPassword).toBe(true);
+    expect((await call("lin", "POST", "/api/auth/password", { password: "abcd1234", confirm: "abcd1235" })).data.error).toContain("不一样");
+    expect((await call("lin", "POST", "/api/auth/password", { password: "short", confirm: "short" })).data.error).toContain("8");
+    expect((await call("lin", "POST", "/api/auth/password", { password: "lin-pass-2026", confirm: "lin-pass-2026" })).status).toBe(200);
+    expect((await call("lin", "GET", "/api/auth/me")).data).toMatchObject({ needsPassword: false, member: { studentNo: "2025010101" } });
+
+    // 口令用过就作废；以后用学号 + 密码登录，可以反复用
+    expect((await call("lin-phone", "POST", "/api/auth/activate", { code: linCode })).status).toBe(401);
+    expect((await call("lin-phone", "POST", "/api/auth/member", { studentNo: "2025010101", password: "wrong-pass" })).status).toBe(401);
+    expect((await call("lin-phone", "POST", "/api/auth/member", { studentNo: "2025010101", password: "lin-pass-2026" })).status).toBe(200);
+    expect((await call("lin-pad", "POST", "/api/auth/member", { studentNo: "2025010101", password: "lin-pass-2026" })).status).toBe(200);
+
+    // 改密码要先输当前密码
+    expect((await call("lin", "POST", "/api/auth/password", { password: "new-pass-2026", confirm: "new-pass-2026" })).data.error).toContain("当前密码");
+    expect((await call("lin", "POST", "/api/auth/password", { current: "lin-pass-2026", password: "new-pass-2026", confirm: "new-pass-2026" })).status).toBe(200);
+    expect((await call("x2", "POST", "/api/auth/member", { studentNo: "2025010101", password: "lin-pass-2026" })).status).toBe(401);
+    expect((await call("x2", "POST", "/api/auth/member", { studentNo: "2025010101", password: "new-pass-2026" })).status).toBe(200);
 
     // 成员不能访问后台
     expect((await call("lin", "GET", "/api/admin/members")).status).toBe(401);
@@ -95,11 +112,16 @@ describe("接口", () => {
     const idle = await call("admin", "GET", "/api/admin/idle?days=7");
     expect(idle.data.map((m: { name: string }) => m.name)).toEqual(["陈同学"]);
 
-    // 停用后口令失效
+    // 忘记密码：会长重置，旧密码作废，用新口令重新激活
     const members = await call("admin", "GET", "/api/admin/members");
-    const linId = members.data.find((m: { name: string }) => m.name === "林同学").id;
-    await call("admin", "POST", `/api/admin/members/${linId}/status`, { status: "archived" });
-    expect((await call("lin2", "POST", "/api/auth/member", { code: linCode })).status).toBe(401);
+    const lin = members.data.find((m: { name: string }) => m.name === "林同学");
+    expect(lin.hasPassword).toBe(true);
+    const reset = await call("admin", "POST", `/api/admin/members/${lin.id}/reset`, {});
+    expect((await call("x3", "POST", "/api/auth/member", { studentNo: "2025010101", password: "new-pass-2026" })).status).toBe(401);
+    expect((await call("x3", "POST", "/api/auth/activate", { code: reset.data.passcode })).data.needsPassword).toBe(true);
+
+    // 停用后不能登录，已登录的会话也失效
+    await call("admin", "POST", `/api/admin/members/${lin.id}/status`, { status: "archived" });
     expect((await call("lin", "GET", "/api/auth/me")).data.role).toBeNull();
 
     void env;

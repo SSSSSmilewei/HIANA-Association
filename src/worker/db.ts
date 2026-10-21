@@ -113,6 +113,11 @@ export const MIGRATIONS: string[][] = [
       value TEXT NOT NULL
     )`,
   ],
+  // v2：成员自己设置密码。口令只用来第一次激活账号；设好密码后口令作废，以后用学号 + 密码登录
+  [
+    `ALTER TABLE users ADD COLUMN password_hash TEXT`,
+    `ALTER TABLE users ADD COLUMN password_set_at INTEGER`,
+  ],
 ];
 
 // 每个数据库连接只迁移一次（Worker 里通常只有一个；测试里每个用例一个内存库）

@@ -4,6 +4,7 @@ import type { Daily, SourceSeries } from "./heatmap";
 
 export interface Me {
   role: "member" | "admin" | null;
+  needsPassword?: boolean; // 刚用口令激活，还没设置自己的密码
   member?: { id: string; studentNo: string; name: string; className?: string | null };
 }
 
@@ -49,6 +50,7 @@ export interface AdminMember {
   name: string;
   className: string | null;
   status: "active" | "archived";
+  hasPassword: boolean;
   lastActiveDay: string | null;
 }
 

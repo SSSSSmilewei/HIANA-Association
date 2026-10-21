@@ -5,7 +5,7 @@ import { AdminHeader, Loading, MemberHeader } from "./components/Layout";
 import { AdminHome } from "./pages/Admin";
 import { CheckinPage } from "./pages/Checkin";
 import { HomePage } from "./pages/Home";
-import { AdminLogin, StudentLogin } from "./pages/Login";
+import { AdminLogin, PasswordPage, StudentLogin } from "./pages/Login";
 import { ProfilePage } from "./pages/Profile";
 import { matchPath, navigate, useLocation } from "./router";
 
@@ -48,6 +48,10 @@ export function App() {
     }
     return <StudentLogin onLogin={setMe} />;
   }
+
+  // 刚用口令激活：先设密码，别的页面都进不去
+  if (me.needsPassword) return <PasswordPage me={me} onDone={() => setMe({ ...me, needsPassword: false })} />;
+  if (path === "/password") return <PasswordPage me={me} onDone={() => {}} />;
 
   let page: React.ReactNode;
   if (path === "/heatmap") page = <ProfilePage />;

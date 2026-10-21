@@ -103,3 +103,9 @@
   .page-title { font-size: 26px; }
   .source-row > .source-name { flex-basis: 100%; }
 }
+
+/* 登录方式切换 */
+.seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 28px; border: 1px solid var(--ink); }
+.seg button { height: 42px; border: 0; background: transparent; font-size: 14px; cursor: pointer; color: var(--ink); }
+.seg button[aria-selected="true"] { background: var(--ink); color: var(--on-ink, #fff); font-weight: 600; }
+.login form { margin-top: 20px; }

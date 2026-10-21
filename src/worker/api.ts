@@ -5,7 +5,18 @@ import { getSetting, setSetting } from "./db";
 import { PROVIDERS, ProviderError } from "./heatmap/providers";
 import { bindSource, listBindings, loadSeries, syncUser, unbindSource } from "./heatmap/store";
 import { type Ctx, HttpError, Router, json } from "./http";
-import { findByPasscode, idleMembers, importMembers, listMembers, parseRoster, resetPasscode, setMemberStatus } from "./members";
+import {
+  PasswordError,
+  findByPasscode,
+  findByStudentNoAndPassword,
+  idleMembers,
+  importMembers,
+  listMembers,
+  parseRoster,
+  resetPasscode,
+  setMemberStatus,
+  setOwnPassword,
+} from "./members";
 import { clearCookie, clientIp, recordFailure, requireSecret, safeEqual, sessionCookie, sha256Hex, tooManyFailures } from "./session";
 
 /**
@@ -34,27 +45,61 @@ async function checkinRule(db: D1Database): Promise<CheckinRule> {
 api.get("/api/auth/me", async (c) => {
   if (!c.session) return json({ role: null });
   if (c.session.role === "admin") return json({ role: "admin" });
-  const row = await c.env.DB.prepare("SELECT id, student_no, name, class_name FROM users WHERE id = ? AND status = 'active'")
+  const row = await c.env.DB.prepare("SELECT id, student_no, name, class_name, password_hash IS NOT NULL AS has_pw FROM users WHERE id = ? AND status = 'active'")
     .bind(c.session.uid)
-    .first<{ id: string; student_no: string; name: string; class_name: string | null }>();
+    .first<{ id: string; student_no: string; name: string; class_name: string | null; has_pw: number }>();
   if (!row) {
     c.cookies.push(clearCookie(c.req));
     return json({ role: null });
   }
-  return json({ role: "member", member: { id: row.id, studentNo: row.student_no, name: row.name, className: row.class_name } });
+  return json({
+    role: "member",
+    needsPassword: row.has_pw !== 1,
+    member: { id: row.id, studentNo: row.student_no, name: row.name, className: row.class_name },
+  });
 });
 
+/** 日常登录：学号 + 自己设的密码。 */
 api.post("/api/auth/member", async (c) => {
+  const { studentNo, password } = z.object({ studentNo: z.string().trim().min(1).max(20), password: z.string().min(1).max(64) }).parse(await c.body());
+  const ip = clientIp(c.req);
+  if (await tooManyFailures(c.env.DB, ip)) throw new HttpError(429, "试错太多次了，请 10 分钟后再试");
+  const row = await findByStudentNoAndPassword(c.env.DB, studentNo, password);
+  if (!row) {
+    await recordFailure(c.env.DB, ip);
+    throw new HttpError(401, "学号或密码不对。还没设过密码的话，请用会长发的口令激活账号");
+  }
+  c.cookies.push(await sessionCookie(c.env, c.req, { role: "member", uid: row.id }));
+  return json({ role: "member", needsPassword: false, member: { id: row.id, studentNo: row.student_no, name: row.name } });
+});
+
+/** 第一次使用：用会长发的口令激活账号，之后马上设置密码。 */
+api.post("/api/auth/activate", async (c) => {
   const { code } = z.object({ code: z.string().trim().min(4).max(40) }).parse(await c.body());
   const ip = clientIp(c.req);
   if (await tooManyFailures(c.env.DB, ip)) throw new HttpError(429, "试错太多次了，请 10 分钟后再试");
   const row = await findByPasscode(c.env.DB, requireSecret(c.env), code);
   if (!row) {
     await recordFailure(c.env.DB, ip);
-    throw new HttpError(401, "口令不对，请检查一下或找会长确认");
+    throw new HttpError(401, "口令不对或已经用过了。设过密码的同学请用学号和密码登录");
   }
   c.cookies.push(await sessionCookie(c.env, c.req, { role: "member", uid: row.id }));
-  return json({ role: "member", member: { id: row.id, studentNo: row.student_no, name: row.name } });
+  return json({ role: "member", needsPassword: true, member: { id: row.id, studentNo: row.student_no, name: row.name } });
+});
+
+/** 设置或修改密码：新密码输两次；已经有密码时要先输当前密码。 */
+api.post("/api/auth/password", async (c) => {
+  const uid = memberId(c);
+  const input = z
+    .object({ password: z.string().max(64), confirm: z.string().max(64), current: z.string().max(64).optional() })
+    .parse(await c.body());
+  try {
+    await setOwnPassword(c.env.DB, { userId: uid, ...input });
+  } catch (err) {
+    if (err instanceof PasswordError) throw new HttpError(400, err.message);
+    throw err;
+  }
+  return json({ ok: true });
 });
 
 api.post("/api/auth/admin", async (c) => {

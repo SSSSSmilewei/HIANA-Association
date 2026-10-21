@@ -75,6 +75,7 @@ export function AdminHome() {
                 <th>学号</th>
                 <th>姓名</th>
                 <th>班级</th>
+                <th>账号</th>
                 <th>最近记录</th>
                 <th>操作</th>
               </tr>
@@ -98,15 +99,16 @@ function MemberRow({ m, onDone }: { m: AdminMember; onDone: () => void }) {
       <td>{m.studentNo}</td>
       <td>{m.name}</td>
       <td>{m.className ?? ""}</td>
+      <td>{m.hasPassword ? "已设密码" : <span className="muted">待激活</span>}</td>
       <td>{m.lastActiveDay ?? "无"}</td>
       <td className="row-wrap">
         {code ? (
           <span>
-            新口令 <b className="mono">{code}</b>（只显示这一次）
+            新口令 <b className="mono">{code}</b>（只显示这一次，旧密码已作废）
           </span>
         ) : (
           <button className="link-btn" type="button" onClick={async () => setCode((await api<{ passcode: string }>(`/api/admin/members/${m.id}/reset`, { body: {} })).passcode)}>
-            重置口令
+            {m.hasPassword ? "忘记密码，重置" : "重新生成口令"}
           </button>
         )}
         <button
@@ -211,7 +213,7 @@ function ImportForm({ onDone }: { onDone: () => void }) {
       {result && (
         <div className="panel stack-s small">
           <p>
-            新增 {result.created.length} 人，更新 {result.updated} 人。口令只显示这一次，请现在发给大家：
+            新增 {result.created.length} 人，更新 {result.updated} 人。口令只显示这一次，请现在发给大家。每人第一次用口令激活，然后自己设密码：
           </p>
           <ul className="plain">
             {result.created.map((c) => (
