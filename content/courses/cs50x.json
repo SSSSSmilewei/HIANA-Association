@@ -1,0 +1,373 @@
+{
+  "slug": "cs50x",
+  "title": "CS50x 计算机科学导论",
+  "titleEn": "CS50's Introduction to Computer Science",
+  "university": "哈佛大学",
+  "area": "programming",
+  "tags": [
+    "C",
+    "Python",
+    "SQL",
+    "Web"
+  ],
+  "difficulty": 2,
+  "required": true,
+  "language": "C、Python、SQL、JavaScript",
+  "prerequisites": "无，零基础可学",
+  "summary": "哈佛最受欢迎的计算机入门课。从 Scratch 积木开始，学 C 语言理解计算机怎么工作，再到 Python、SQL 和网页开发，最后做一个自己的期末项目。作业有官方自动评测，做完可以拿证书。",
+  "why": "协会的主线课。它不只教一门语言，而是让你知道计算机科学大概有哪些东西，后面学什么都能接上。",
+  "access": {
+    "video": "B 站有多个中文字幕搬运，YouTube 需要软路由",
+    "homework": "cs50.dev 基于 GitHub Codespaces，校园网下可能慢；提交作业需要 GitHub 账号",
+    "level": "partial"
+  },
+  "license": "CC BY-NC-SA 4.0",
+  "resources": [
+    {
+      "label": "课程官网",
+      "url": "https://cs50.harvard.edu/x/"
+    },
+    {
+      "label": "在线写代码 cs50.dev",
+      "url": "https://cs50.dev/"
+    },
+    {
+      "label": "B 站搜索：CS50x 中文字幕",
+      "url": "https://search.bilibili.com/all?keyword=CS50x%202025%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+    },
+    {
+      "label": "CSDIY 课程介绍",
+      "url": "https://csdiy.wiki/"
+    }
+  ],
+  "units": [
+    {
+      "id": "w0-lecture",
+      "title": "第 0 周讲座：Scratch",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%200%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/0/"
+        }
+      ]
+    },
+    {
+      "id": "w0-pset",
+      "title": "习题集 0：Scratch",
+      "kind": "pset",
+      "periods": 4,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/0/"
+        }
+      ],
+      "note": "在 Scratch 网站上完成，提交需要 GitHub 账号"
+    },
+    {
+      "id": "w0-shell",
+      "title": "开发者素养：命令行入门",
+      "kind": "practice",
+      "periods": 2,
+      "links": [
+        {
+          "label": "Missing Semester：Shell 入门",
+          "url": "https://missing.csail.mit.edu/2026/course-shell/"
+        }
+      ],
+      "note": "第 1 周开始写 C 之前，先弄懂 cd、ls、make 是什么"
+    },
+    {
+      "id": "w1-lecture",
+      "title": "第 1 周讲座：C",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%201%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/1/"
+        }
+      ]
+    },
+    {
+      "id": "w1-pset",
+      "title": "习题集 1：Hello、Mario、Cash 或 Credit",
+      "kind": "pset",
+      "periods": 6,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/1/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "w2-lecture",
+      "title": "第 2 周讲座：Arrays（数组）",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%202%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/2/"
+        }
+      ]
+    },
+    {
+      "id": "w2-pset",
+      "title": "习题集 2：Scrabble、Readability、Caesar 或 Substitution",
+      "kind": "pset",
+      "periods": 6,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/2/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "w3-lecture",
+      "title": "第 3 周讲座：Algorithms（算法）",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%203%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/3/"
+        }
+      ]
+    },
+    {
+      "id": "w3-pset",
+      "title": "习题集 3：Sort、Plurality、Runoff 或 Tideman",
+      "kind": "pset",
+      "periods": 8,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/3/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "w4-lecture",
+      "title": "第 4 周讲座：Memory（内存）",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%204%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/4/"
+        }
+      ]
+    },
+    {
+      "id": "w4-pset",
+      "title": "习题集 4：Volume、Filter、Recover",
+      "kind": "pset",
+      "periods": 8,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/4/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "w5-lecture",
+      "title": "第 5 周讲座：Data Structures（数据结构）",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%205%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/5/"
+        }
+      ]
+    },
+    {
+      "id": "w5-pset",
+      "title": "习题集 5：Inheritance、Speller",
+      "kind": "pset",
+      "periods": 8,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/5/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "w6-lecture",
+      "title": "第 6 周讲座：Python",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%206%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/6/"
+        }
+      ]
+    },
+    {
+      "id": "w6-pset",
+      "title": "习题集 6：Hello、Mario、Cash、Readability、DNA（Python 版）",
+      "kind": "pset",
+      "periods": 6,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/6/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "w7-lecture",
+      "title": "第 7 周讲座：SQL",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%207%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/7/"
+        }
+      ]
+    },
+    {
+      "id": "w7-pset",
+      "title": "习题集 7：Songs、Movies、Fiftyville",
+      "kind": "pset",
+      "periods": 6,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/7/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "w8-lecture",
+      "title": "第 8 周讲座：HTML, CSS, JavaScript",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%208%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/8/"
+        }
+      ]
+    },
+    {
+      "id": "w8-pset",
+      "title": "习题集 8：Trivia、Homepage",
+      "kind": "pset",
+      "periods": 6,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/8/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "w9-lecture",
+      "title": "第 9 周讲座：Flask",
+      "kind": "lecture",
+      "periods": 3,
+      "links": [
+        {
+          "label": "B 站中文字幕",
+          "url": "https://search.bilibili.com/all?keyword=CS50x%20Lecture%209%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+        },
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/weeks/9/"
+        }
+      ]
+    },
+    {
+      "id": "w9-pset",
+      "title": "习题集 9：Birthdays、Finance",
+      "kind": "pset",
+      "periods": 8,
+      "links": [
+        {
+          "label": "习题要求",
+          "url": "https://cs50.harvard.edu/x/psets/9/"
+        }
+      ],
+      "note": "在 cs50.dev 写代码，用 check50 自测、submit50 提交（需要 GitHub 账号）"
+    },
+    {
+      "id": "ai-lecture",
+      "title": "特别讲座：人工智能",
+      "kind": "lecture",
+      "periods": 2,
+      "links": [
+        {
+          "label": "官方课程页",
+          "url": "https://cs50.harvard.edu/x/"
+        }
+      ]
+    },
+    {
+      "id": "final",
+      "title": "期末项目",
+      "kind": "project",
+      "periods": 16,
+      "links": [
+        {
+          "label": "期末项目要求",
+          "url": "https://cs50.harvard.edu/x/project/"
+        }
+      ],
+      "note": "做一个自己想做的东西，交了就能拿 CS50 证书"
+    }
+  ]
+}

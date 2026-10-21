@@ -1,0 +1,100 @@
+{
+  "slug": "mit-1801",
+  "title": "MIT 18.01 单变量微积分",
+  "titleEn": "MIT 18.01SC Single Variable Calculus",
+  "university": "MIT",
+  "area": "math",
+  "tags": [
+    "微积分",
+    "数学"
+  ],
+  "difficulty": 2,
+  "required": false,
+  "language": "无",
+  "prerequisites": "高中数学",
+  "summary": "MIT 的单变量微积分，按单元组织，每个单元有视频、讲义和带答案的习题。和学校的高等数学内容基本对应，讲法更直观。",
+  "why": "适合放进“里课程表”，在高数课前后用来预习和复习。",
+  "access": {
+    "video": "MIT OCW 网站国内一般能打开，B 站有搬运",
+    "homework": "习题和答案都是 PDF，不依赖外网",
+    "level": "good"
+  },
+  "license": "CC BY-NC-SA 4.0",
+  "resources": [
+    {
+      "label": "MIT OCW 课程页",
+      "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+    },
+    {
+      "label": "B 站搜索：MIT 18.01",
+      "url": "https://search.bilibili.com/all?keyword=MIT%2018.01%20%E5%8D%95%E5%8F%98%E9%87%8F%E5%BE%AE%E7%A7%AF%E5%88%86"
+    }
+  ],
+  "units": [
+    {
+      "id": "diff",
+      "title": "第 1 单元：求导",
+      "kind": "lecture",
+      "periods": 12,
+      "links": [
+        {
+          "label": "MIT OCW 课程页",
+          "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+        }
+      ],
+      "note": "每个单元有讲座视频、讲义和习题，配合学校的高数课一起学"
+    },
+    {
+      "id": "app",
+      "title": "第 2 单元：导数的应用",
+      "kind": "lecture",
+      "periods": 12,
+      "links": [
+        {
+          "label": "MIT OCW 课程页",
+          "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+        }
+      ],
+      "note": "每个单元有讲座视频、讲义和习题，配合学校的高数课一起学"
+    },
+    {
+      "id": "int",
+      "title": "第 3 单元：定积分及其应用",
+      "kind": "lecture",
+      "periods": 12,
+      "links": [
+        {
+          "label": "MIT OCW 课程页",
+          "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+        }
+      ],
+      "note": "每个单元有讲座视频、讲义和习题，配合学校的高数课一起学"
+    },
+    {
+      "id": "tech",
+      "title": "第 4 单元：积分技巧",
+      "kind": "lecture",
+      "periods": 12,
+      "links": [
+        {
+          "label": "MIT OCW 课程页",
+          "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+        }
+      ],
+      "note": "每个单元有讲座视频、讲义和习题，配合学校的高数课一起学"
+    },
+    {
+      "id": "inf",
+      "title": "第 5 单元：无穷的探索（级数）",
+      "kind": "lecture",
+      "periods": 12,
+      "links": [
+        {
+          "label": "MIT OCW 课程页",
+          "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+        }
+      ],
+      "note": "每个单元有讲座视频、讲义和习题，配合学校的高数课一起学"
+    }
+  ]
+}

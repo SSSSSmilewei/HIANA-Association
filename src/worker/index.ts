@@ -1,6 +1,6 @@
-import { api } from "./api";
+import { api } from "./api/index";
 import { ensureSchema, getSetting } from "./db";
-import type { Env } from "./env";
+import type { CurrentUser, Env } from "./env";
 import { syncEveryone } from "./heatmap/store";
 import { dispatch, json, parseCookies } from "./http";
 import { flush } from "./notify";
@@ -37,18 +37,33 @@ async function handleApi(req: Request, env: Env): Promise<Response> {
         AI_API_KEY: has("AI_API_KEY"),
         GITHUB_TOKEN: has("GITHUB_TOKEN"),
         WXPUSHER_SPT: has("WXPUSHER_SPT"),
+        FILES: !!env.FILES,
       },
     });
   }
   // 网页用 Cookie；手机 App 没有 Cookie，改用 Authorization: Bearer 头，令牌格式相同
   const token = parseCookies(req.headers.get("cookie"))[COOKIE] ?? bearerToken(req);
   let session = token && env.SESSION_SECRET ? await verifySession(env.SESSION_SECRET, token) : null;
-  // 会长停用账号后，旧会话（网页和 App）立即失效，不必等到过期
+  let user: CurrentUser | null = null;
+  // 每次请求都读一下账号：停用后旧会话（网页和 App）立即失效；改成管理员也立即生效
   if (session?.role === "member") {
-    const row = await env.DB.prepare("SELECT 1 AS ok FROM users WHERE id = ? AND status = 'active'").bind(session.uid).first<{ ok: number }>();
+    const row = await env.DB.prepare(
+      "SELECT id, student_no, name, class_name, role, password_hash IS NOT NULL AS has_pw FROM users WHERE id = ? AND status = 'active'",
+    )
+      .bind(session.uid)
+      .first<{ id: string; student_no: string; name: string; class_name: string | null; role: string; has_pw: number }>();
     if (!row) session = null;
+    else
+      user = {
+        id: row.id,
+        studentNo: row.student_no,
+        name: row.name,
+        className: row.class_name,
+        role: row.role === "admin" ? "admin" : "member",
+        hasPassword: row.has_pw === 1,
+      };
   }
-  return dispatch(api, req, env, session);
+  return dispatch(api, req, env, session, user);
 }
 
 export default {

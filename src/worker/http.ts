@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import type { Env, Session } from "./env";
+import type { CurrentUser, Env, Session } from "./env";
 
 /**
  * 一个很小的路由层，只用到这个站需要的几样东西：
@@ -23,6 +23,8 @@ export interface Ctx {
   env: Env;
   params: Record<string, string>;
   session: Session | null;
+  /** 当前登录的账号（ADMIN_PASSWORD 初始化会话没有账号） */
+  user: CurrentUser | null;
   /** 待写入响应的 Set-Cookie 头 */
   cookies: string[];
   body<T = unknown>(): Promise<T>;
@@ -109,7 +111,7 @@ export function serializeCookie(name: string, value: string, opts: { maxAge: num
   return `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${opts.maxAge}${opts.secure ? "; Secure" : ""}`;
 }
 
-export async function dispatch(router: Router, req: Request, env: Env, session: Session | null): Promise<Response> {
+export async function dispatch(router: Router, req: Request, env: Env, session: Session | null, user: CurrentUser | null = null): Promise<Response> {
   const url = new URL(req.url);
   const m = router.match(req.method, url.pathname);
   if (m === null) return json({ error: "没有这个接口" }, 404);
@@ -121,6 +123,7 @@ export async function dispatch(router: Router, req: Request, env: Env, session: 
     env,
     params: m.params,
     session,
+    user,
     cookies: [],
     async body<T>() {
       try {

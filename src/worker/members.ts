@@ -21,6 +21,7 @@ export interface Member {
   name: string;
   className: string | null;
   status: "active" | "archived";
+  role: "member" | "admin";
   hasPassword: boolean; // 已经激活并设置了自己的密码
   lastActiveDay: string | null; // 最近一次站内学习记录或外部平台有活动的日期
 }
@@ -86,6 +87,12 @@ export async function resetPasscode(db: D1Database, secret: string, userId: stri
   return res.meta.changes ? passcode : null;
 }
 
+/** 设为管理员（会长、老师）或改回普通成员。 */
+export async function setMemberRole(db: D1Database, userId: string, role: "member" | "admin", now = Date.now()) {
+  const res = await db.prepare("UPDATE users SET role = ?, updated_at = ? WHERE id = ?").bind(role, now, userId).run();
+  return !!res.meta.changes;
+}
+
 /** 停用后不能登录，也不再同步外部平台；数据保留，可以恢复。 */
 export async function setMemberStatus(db: D1Database, userId: string, status: "active" | "archived", now = Date.now()) {
   await db.prepare("UPDATE users SET status = ?, updated_at = ? WHERE id = ?").bind(status, now, userId).run();
@@ -100,12 +107,12 @@ export async function findByPasscode(db: D1Database, secret: string, passcode: s
 
 export async function findByStudentNoAndPassword(db: D1Database, studentNo: string, password: string) {
   const row = await db
-    .prepare("SELECT id, student_no, name, password_hash FROM users WHERE student_no = ? AND status = 'active'")
+    .prepare("SELECT id, student_no, name, role, password_hash FROM users WHERE student_no = ? AND status = 'active'")
     .bind(studentNo.trim())
-    .first<{ id: string; student_no: string; name: string; password_hash: string | null }>();
+    .first<{ id: string; student_no: string; name: string; role: string; password_hash: string | null }>();
   // 学号不存在时也做一次同样耗时的计算，避免从响应时间猜出哪些学号存在
   const ok = await verifyPassword(password, row?.password_hash ?? "pbkdf2$100000$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-  return row && ok ? { id: row.id, student_no: row.student_no, name: row.name } : null;
+  return row && ok ? { id: row.id, student_no: row.student_no, name: row.name, role: row.role === "admin" ? "admin" : "member" } : null;
 }
 
 export class PasswordError extends Error {}
@@ -137,18 +144,19 @@ export async function setOwnPassword(
 export async function listMembers(db: D1Database): Promise<Member[]> {
   const rows = await db
     .prepare(
-      `SELECT u.id, u.student_no, u.name, u.class_name, u.status, u.password_hash IS NOT NULL AS has_password,
+      `SELECT u.id, u.student_no, u.name, u.class_name, u.status, u.role, u.password_hash IS NOT NULL AS has_password,
          MAX(COALESCE((SELECT MAX(day) FROM activity_events a WHERE a.user_id = u.id), ''),
              COALESCE((SELECT MAX(day) FROM external_daily e WHERE e.user_id = u.id), '')) AS last_day
        FROM users u ORDER BY u.status, u.student_no`,
     )
-    .all<{ id: string; student_no: string; name: string; class_name: string | null; status: "active" | "archived"; has_password: number; last_day: string }>();
+    .all<{ id: string; student_no: string; name: string; class_name: string | null; status: "active" | "archived"; role: string; has_password: number; last_day: string }>();
   return rows.results.map((r) => ({
     id: r.id,
     studentNo: r.student_no,
     name: r.name,
     className: r.class_name,
     status: r.status,
+    role: r.role === "admin" ? "admin" : "member",
     hasPassword: r.has_password === 1,
     lastActiveDay: r.last_day || null,
   }));
@@ -157,5 +165,5 @@ export async function listMembers(db: D1Database): Promise<Member[]> {
 /** 会长后台的“最近没动静”名单：在籍成员里，最近 n 天站内和外部平台都没有记录的人。 */
 export function idleMembers(members: Member[], n: number, today = cnDate(Date.now())): Member[] {
   const from = addDays(today, -(n - 1));
-  return members.filter((m) => m.status === "active" && (!m.lastActiveDay || m.lastActiveDay < from));
+  return members.filter((m) => m.status === "active" && m.role !== "admin" && (!m.lastActiveDay || m.lastActiveDay < from));
 }

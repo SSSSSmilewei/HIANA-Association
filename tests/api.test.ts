@@ -3,6 +3,9 @@ import { memoryD1 } from "../scripts/local-d1";
 import type { Env } from "../src/worker/env";
 import worker from "../src/worker/index";
 
+/** 一张最小的 JPEG（只用来过文件头检查） */
+const JPEG_B64 = btoa(String.fromCharCode(0xff, 0xd8, 0xff, 0xe0, ...new Array(200).fill(0), 0xff, 0xd9));
+
 /** 用内存数据库把整个 Worker 跑起来，像浏览器一样带着 Cookie 调接口。 */
 function setup() {
   const env = {
@@ -76,11 +79,11 @@ describe("接口", () => {
     expect((await call("x2", "POST", "/api/auth/member", { studentNo: "2025010101", password: "new-pass-2026" })).status).toBe(200);
 
     // 成员不能访问后台
-    expect((await call("lin", "GET", "/api/admin/members")).status).toBe(401);
+    expect((await call("lin", "GET", "/api/admin/members")).status).toBe(403);
 
     const hm = await call("lin", "GET", "/api/heatmap");
     expect(hm.status).toBe(200);
-    expect(hm.data.series[0].source).toBe("site");
+    expect(hm.data.series.map((s: { source: string }) => s.source)).toEqual(["site:attendance", "site:reflection", "site:study"]);
     expect(hm.data.providers.find((p: { id: string }) => p.id === "maimemo").needsUserSecret).toContain("开放 API");
 
     // 绑定一个待实测的平台被拒绝，提示清楚
@@ -88,25 +91,39 @@ describe("接口", () => {
     expect(bad.status).toBe(400);
     expect(bad.data.error).toContain("暂不支持");
 
-    // 打卡：把打卡时间段设成全天，避免测试受当前时间影响
-    expect((await call("admin", "PUT", "/api/admin/checkin/settings", { window: "00:00-23:59", requireCode: true })).status).toBe(200);
-    const today = await call("admin", "GET", "/api/admin/checkin/today");
+    // 签到：把晚自习设成每天全天，避免测试受当前时间影响；打开现场口令
+    expect((await call("admin", "PUT", "/api/admin/attendance/settings", { days: "1,2,3,4,5,6,7", window: "00:00-23:59", requireCode: true })).status).toBe(200);
+    const today = await call("admin", "GET", "/api/admin/attendance/today");
     expect(today.data.code).toMatch(/^\d{4}$/);
-    expect((await call("lin", "POST", "/api/checkin", { code: "0000" === today.data.code ? "1111" : "0000" })).status).toBe(400);
-    const ok = await call("lin", "POST", "/api/checkin", { code: today.data.code });
+    const photo = JPEG_B64;
+    expect((await call("lin", "POST", "/api/attendance/in", { kind: "evening", photo, code: today.data.code === "0000" ? "1111" : "0000" })).status).toBe(400);
+    expect((await call("lin", "POST", "/api/attendance/in", { kind: "evening", photo: "x".repeat(200), code: today.data.code })).status).toBe(400);
+    const ok = await call("lin", "POST", "/api/attendance/in", { kind: "evening", photo, code: today.data.code });
     expect(ok.data.ok).toBe(true);
-    const again = await call("lin", "POST", "/api/checkin", { code: today.data.code });
-    expect(again.data.reason).toBe("already");
-    expect((await call("lin", "GET", "/api/checkin")).data.checkedAt).toBe(ok.data.at);
-    expect((await call("admin", "GET", "/api/admin/checkin/today")).data.count).toBe(1);
+    const again = await call("lin", "POST", "/api/attendance/in", { kind: "venue", photo });
+    expect(again.status).toBe(409);
+    const state = await call("lin", "GET", "/api/attendance");
+    expect(state.data.current).toMatchObject({ kind: "evening", inAt: ok.data.inAt });
+    expect((await call("lin", "POST", "/api/attendance/out", { photo })).data.ok).toBe(true);
+    expect((await call("lin", "GET", "/api/attendance")).data.current).toBeNull();
 
-    // 打卡出现在热力图“协会平台”那一行
+    // 照片：本人和管理员能看，别人不能
+    const adminToday = await call("admin", "GET", "/api/admin/attendance/today");
+    expect(adminToday.data.records).toHaveLength(1);
+    const photoKey = adminToday.data.records[0].inPhoto as string;
+    const img = await call("admin", "GET", `/api/files/${photoKey}`);
+    expect(img.status).toBe(200);
+    expect(img.headers.get("content-type")).toBe("image/jpeg");
+    expect((await call("lin", "GET", `/api/files/${photoKey}`)).status).toBe(200);
+
+    // 签到出现在热力图“签到”那一行（签到 + 签退两条）
     const after = await call("lin", "GET", "/api/heatmap");
-    expect(Object.values(after.data.series[0].days)).toEqual([1]);
+    expect(Object.values(after.data.series[0].days)).toEqual([2]);
 
-    const csv = await call("admin", "GET", `/api/admin/checkins.csv?from=${ok.data.day}&to=${ok.data.day}`);
+    const csv = await call("admin", "GET", `/api/admin/attendance.csv?from=${state.data.today}&to=${state.data.today}`);
     expect(csv.headers.get("content-type")).toContain("text/csv");
     expect(String(csv.data)).toContain("2025010101,林同学,计科2501");
+    expect(String(csv.data)).toContain("已签退");
 
     // 没动静名单里只有陈同学
     const idle = await call("admin", "GET", "/api/admin/idle?days=7");
@@ -130,7 +147,7 @@ describe("接口", () => {
   test("错误的打卡时间段格式被拒绝", async () => {
     const { call } = setup();
     await call("admin", "POST", "/api/auth/admin", { password: "hiana-admin" });
-    const r = await call("admin", "PUT", "/api/admin/checkin/settings", { window: "22:00-18:00", requireCode: false });
+    const r = await call("admin", "PUT", "/api/admin/attendance/settings", { days: "1,2,4", window: "22:00-18:00", requireCode: false });
     expect(r.status).toBe(400);
   });
 

@@ -118,6 +118,84 @@ export const MIGRATIONS: string[][] = [
     `ALTER TABLE users ADD COLUMN password_hash TEXT`,
     `ALTER TABLE users ADD COLUMN password_set_at INTEGER`,
   ],
+  // v3（技术方案阶段 0/1）：只做加法，main 上的旧代码照常能跑
+  [
+    // 会长和老师都是 users 里 role = 'admin' 的账号；ADMIN_PASSWORD 只留作首次初始化
+    `ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'member'`,
+    // 统一事件表加分类：attendance（签到）/ reflection（晨思夜思）/ study（站内学习）
+    `ALTER TABLE activity_events ADD COLUMN category TEXT`,
+    `UPDATE activity_events SET category = CASE kind WHEN 'checkin' THEN 'attendance' ELSE 'study' END WHERE category IS NULL`,
+    // 签到签退：晚自习（evening）和大创场地（venue），各拍一张照片
+    `CREATE TABLE IF NOT EXISTS attendance (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      day TEXT NOT NULL,
+      in_at INTEGER NOT NULL,
+      out_at INTEGER,
+      in_photo TEXT,
+      out_photo TEXT,
+      status TEXT NOT NULL DEFAULT 'open',
+      ip TEXT
+    )`,
+    `CREATE INDEX IF NOT EXISTS attendance_by_user ON attendance(user_id, day)`,
+    `CREATE INDEX IF NOT EXISTS attendance_by_day ON attendance(day, kind)`,
+    // 旧的晚自习打卡记录搬进新表（没有照片，状态记为已结束）
+    `INSERT OR IGNORE INTO attendance (id, user_id, kind, day, in_at, out_at, status, ip)
+       SELECT 'legacy-' || user_id || '-' || day, user_id, 'evening', day, at, NULL, 'closed', ip FROM checkins`,
+    // 文件：没开通 R2 时，照片直接存这张表（每张约 100 KB）
+    `CREATE TABLE IF NOT EXISTS files (
+      key TEXT PRIMARY KEY,
+      owner_id TEXT,
+      mime TEXT NOT NULL,
+      size INTEGER NOT NULL,
+      data BLOB,
+      in_r2 INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL
+    )`,
+    // 公告栏与比赛卡
+    `CREATE TABLE IF NOT EXISTS notices (
+      id TEXT PRIMARY KEY,
+      kind TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL DEFAULT '',
+      doc_url TEXT,
+      group_info TEXT,
+      deadline TEXT,
+      tags TEXT,
+      pinned INTEGER NOT NULL DEFAULT 0,
+      author_id TEXT,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      deleted_at INTEGER
+    )`,
+    `CREATE INDEX IF NOT EXISTS notices_by_time ON notices(deleted_at, pinned, created_at)`,
+    `CREATE TABLE IF NOT EXISTS competition_entries (
+      notice_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      team TEXT,
+      contact TEXT,
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY (notice_id, user_id)
+    )`,
+    // 选课 = 学习区块；课程本身放在仓库 content/courses/ 里
+    `CREATE TABLE IF NOT EXISTS enrollments (
+      user_id TEXT NOT NULL,
+      course_slug TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active',
+      started_at INTEGER NOT NULL,
+      target_day TEXT,
+      updated_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, course_slug)
+    )`,
+    `CREATE TABLE IF NOT EXISTS unit_progress (
+      user_id TEXT NOT NULL,
+      course_slug TEXT NOT NULL,
+      unit_id TEXT NOT NULL,
+      done_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, course_slug, unit_id)
+    )`,
+  ],
 ];
 
 // 每个数据库连接只迁移一次（Worker 里通常只有一个；测试里每个用例一个内存库）

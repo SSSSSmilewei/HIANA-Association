@@ -17,6 +17,8 @@ export interface SourceSeries {
   days: Daily;
   error?: string; // 同步失败时的原因；失败不影响其他来源
   syncedAt?: number;
+  /** 分类：站内的签到 / 晨思夜思 / 学习，或外部平台。热力图可以按分类开关。 */
+  group?: "attendance" | "reflection" | "study" | "external";
 }
 
 export type Level = 0 | 1 | 2 | 3 | 4;

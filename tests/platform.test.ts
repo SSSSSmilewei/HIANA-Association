@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { memoryD1 } from "../scripts/local-d1";
-import { recordActivity, recordActivityOnce, siteDaily } from "../src/worker/activity";
-import { checkIn, checkinsCsv, cnClock, dailyCode, inWindow, listCheckins, parseWindow } from "../src/worker/checkin";
+import { recordActivity, recordActivityOnce, siteDaily, siteDailyByCategory } from "../src/worker/activity";
+import { attendanceCsv, autoClose, cnClock, dailyCode, eveningState, listAttendance, parseDays, parseWindow, signIn, signOut } from "../src/worker/attendance";
 import { MIGRATIONS } from "../src/worker/db";
 import { type Fetch, bbdc, bbdcDate, duolingo, maimemo } from "../src/worker/heatmap/providers";
 import { bindSource, listBindings, loadSeries, syncEveryone, syncUser, unbindSource } from "../src/worker/heatmap/store";
@@ -46,63 +46,84 @@ describe("令牌加密", () => {
   });
 });
 
-describe("晚自习打卡", () => {
+describe("签到签退", () => {
   let db: D1Database;
   beforeEach(async () => {
     db = await freshDb();
   });
-  const rule = { window: "18:30-22:30", requireCode: false };
+  // 2026-10-21 是周三；默认晚自习是周一、二、四 19:00–20:40
+  const rule = { days: [1, 2, 4], window: ["19:00", "20:40"] as [string, string], earlyMinutes: 15, requireCode: false };
+  const thu = (hhmm: string) => at(`2026-10-22T${hhmm}:00+08:00`);
+  const base = { rule, secret: SECRET, photoKey: "attendance/x/1" };
 
-  test("时间段解析", () => {
-    expect(parseWindow("18:30-22:30")).toEqual(["18:30", "22:30"]);
+  test("时间与日期解析", () => {
+    expect(parseWindow("19:00-20:40")).toEqual(["19:00", "20:40"]);
     expect(parseWindow("22:30-18:30")).toBeNull();
-    expect(parseWindow("25:00-26:00")).toBeNull();
+    expect(parseDays("1,2,4")).toEqual([1, 2, 4]);
+    expect(parseDays("0,8")).toBeNull();
     expect(cnClock(at("2026-10-21T11:05:00Z"))).toBe("19:05");
-    expect(inWindow("18:30-22:30", at("2026-10-21T19:00:00+08:00"))).toBe(true);
-    expect(inWindow("18:30-22:30", at("2026-10-21T23:00:00+08:00"))).toBe(false);
   });
 
-  test("每晚只记一次，第二次返回已打卡", async () => {
-    const t = at("2026-10-21T19:10:00+08:00");
-    const first = await checkIn(db, { userId: "u1", rule, secret: SECRET, now: t });
-    expect(first).toEqual({ ok: true, day: "2026-10-21", at: t });
-    const second = await checkIn(db, { userId: "u1", rule, secret: SECRET, now: t + 60_000 });
-    expect(second).toEqual({ ok: false, reason: "already", day: "2026-10-21", at: t });
+  test("晚自习日的签到时间：提前 15 分钟开放，20:40 结束", () => {
+    expect(eveningState(rule, thu("18:40")).open).toBe(false);
+    expect(eveningState(rule, thu("18:45")).open).toBe(true);
+    expect(eveningState(rule, thu("20:40")).open).toBe(true);
+    expect(eveningState(rule, thu("20:41")).open).toBe(false);
+    expect(eveningState(rule, at("2026-10-21T19:30:00+08:00")).isDay).toBe(false); // 周三
   });
 
-  test("不在晚自习时间段不能打卡", async () => {
-    const r = await checkIn(db, { userId: "u1", rule, secret: SECRET, now: at("2026-10-21T15:00:00+08:00") });
-    expect(r).toEqual({ ok: false, reason: "closed", window: "18:30-22:30" });
+  test("签到、签退各记一条，进热力图的签到分类", async () => {
+    const r = await signIn(db, { ...base, userId: "u1", kind: "evening" }, thu("19:02"));
+    expect(r.status).toBe("open");
+    await expect(signIn(db, { ...base, userId: "u1", kind: "venue" }, thu("19:05"))).rejects.toThrow("已经在晚自习签到");
+    const out = await signOut(db, { userId: "u1", rule, photoKey: "attendance/x/2" }, thu("20:30"));
+    expect(out.status).toBe("closed");
+    expect((await siteDailyByCategory(db, "u1", "2026-10-01")).attendance).toEqual({ "2026-10-22": 2 });
+    await expect(signIn(db, { ...base, userId: "u1", kind: "evening" }, thu("20:35"))).rejects.toThrow("已经签到过了");
   });
 
-  test("开启现场口令后要输对", async () => {
-    const t = at("2026-10-21T19:10:00+08:00");
+  test("不是晚自习日或不在时段内，不能晚自习签到；场地签到任何时间都可以", async () => {
+    await expect(signIn(db, { ...base, userId: "u1", kind: "evening" }, at("2026-10-21T19:30:00+08:00"))).rejects.toThrow("今天没有晚自习");
+    await expect(signIn(db, { ...base, userId: "u1", kind: "evening" }, thu("15:00"))).rejects.toThrow("不在晚自习签到时间");
+    expect((await signIn(db, { ...base, userId: "u1", kind: "venue" }, thu("15:00"))).kind).toBe("venue");
+  });
+
+  test("没照片不能签到", async () => {
+    await expect(signIn(db, { ...base, photoKey: null, userId: "u1", kind: "venue" }, thu("15:00"))).rejects.toThrow("照片");
+  });
+
+  test("开启现场口令后，晚自习要输对", async () => {
     const strict = { ...rule, requireCode: true };
-    expect((await checkIn(db, { userId: "u1", rule: strict, secret: SECRET, code: "0000x", now: t })).ok).toBe(false);
-    const code = await dailyCode(SECRET, "2026-10-21");
+    const code = await dailyCode(SECRET, "2026-10-22");
     expect(code).toMatch(/^\d{4}$/);
-    expect(await dailyCode(SECRET, "2026-10-21")).toBe(code); // 同一天口令固定
-    expect((await checkIn(db, { userId: "u1", rule: strict, secret: SECRET, code, now: t })).ok).toBe(true);
+    await expect(signIn(db, { ...base, rule: strict, code: "x", userId: "u1", kind: "evening" }, thu("19:10"))).rejects.toThrow("口令不对");
+    expect((await signIn(db, { ...base, rule: strict, code, userId: "u1", kind: "evening" }, thu("19:10"))).status).toBe("open");
   });
 
-  test("打卡同时记一条学习记录", async () => {
-    await checkIn(db, { userId: "u1", rule, secret: SECRET, now: at("2026-10-21T19:10:00+08:00") });
-    expect(await siteDaily(db, "u1", "2026-10-01")).toEqual({ "2026-10-21": 1 });
+  test("忘记签退：晚自习到 20:40、场地到 23:59 自动结束，记为未签退", async () => {
+    await signIn(db, { ...base, userId: "u1", kind: "evening" }, thu("19:10"));
+    await signIn(db, { ...base, userId: "u2", kind: "venue" }, thu("21:00"));
+    expect(await autoClose(db, rule, thu("20:50"))).toBe(1);
+    expect(await autoClose(db, rule, at("2026-10-23T00:01:00+08:00"))).toBe(1);
+    const rows = await listAttendance(db, "2026-10-22", "2026-10-22");
+    expect(rows.map((r) => [r.name, r.status, cnClock(r.out_at!)])).toEqual([
+      ["林同学", "auto_closed", "20:40"],
+      ["陈同学", "auto_closed", "23:59"],
+    ]);
   });
 
   test("导出给学校的表格", async () => {
-    await checkIn(db, { userId: "u2", rule, secret: SECRET, now: at("2026-10-21T19:20:00+08:00") });
-    await checkIn(db, { userId: "u1", rule, secret: SECRET, now: at("2026-10-21T19:10:00+08:00") });
-    await checkIn(db, { userId: "u1", rule, secret: SECRET, now: at("2026-10-22T20:00:00+08:00") });
-    const rows = await listCheckins(db, "2026-10-21", "2026-10-21");
-    expect(rows.map((r) => r.name)).toEqual(["林同学", "陈同学"]); // 按学号排序
-    const csv = checkinsCsv(rows);
-    expect(csv.startsWith("﻿学号,姓名,班级,日期,打卡时间\r\n")).toBe(true);
-    expect(csv).toContain("2025010101,林同学,计科2501,2026-10-21,19:10");
+    await signIn(db, { ...base, userId: "u2", kind: "evening" }, thu("19:20"));
+    await signIn(db, { ...base, userId: "u1", kind: "evening" }, thu("19:10"));
+    await signOut(db, { userId: "u1", rule, photoKey: "p" }, thu("20:30"));
+    const csv = attendanceCsv(await listAttendance(db, "2026-10-22", "2026-10-22", "evening"));
+    expect(csv.startsWith("\uFEFF学号,姓名,班级,日期,场景,签到时间,签退时间,状态\r\n")).toBe(true);
+    expect(csv).toContain("2025010101,林同学,计科2501,2026-10-22,晚自习,19:10,20:30,已签退");
+    expect(csv).toContain("2025010102,陈同学,计科2501,2026-10-22,晚自习,19:20,,进行中");
   });
 
   test("表格防公式注入", () => {
-    const csv = checkinsCsv([{ student_no: "1", name: "=HYPERLINK(1)", class_name: null, day: "2026-10-21", at: at("2026-10-21T19:00:00+08:00") }]);
+    const csv = attendanceCsv([{ student_no: "1", name: "=HYPERLINK(1)", class_name: null, day: "2026-10-22", kind: "venue", in_at: thu("19:00"), out_at: null, status: "open" }]);
     expect(csv).toContain("'=HYPERLINK(1)");
   });
 });
@@ -173,8 +194,8 @@ describe("绑定、同步、读取", () => {
     await syncUser(db, env, "u1", f, at("2026-10-21T23:30:00+08:00"));
     expect(f.calls.every((c) => c.auth === "Bearer tok")).toBe(true);
     const series = await loadSeries(db, "u1", "2026-10-21");
-    expect(series.map((s) => s.source)).toEqual(["site", "maimemo"]);
-    expect(series[1].days).toEqual({ "2026-10-20": 80, "2026-10-21": 120 });
+    expect(series.map((s) => s.source)).toEqual(["site:attendance", "site:reflection", "site:study", "maimemo"]);
+    expect(series[3].days).toEqual({ "2026-10-20": 80, "2026-10-21": 120 });
   });
 
   test("同步失败记在绑定上，旧数据保留", async () => {
@@ -186,8 +207,8 @@ describe("绑定、同步、读取", () => {
     const [b] = await listBindings(db, "u1");
     expect(b.lastError).toContain("找不到");
     const series = await loadSeries(db, "u1", "2026-10-21");
-    expect(series[1].days).toEqual({ "2026-10-20": 5 });
-    expect(series[1].error).toContain("找不到");
+    expect(series[3].days).toEqual({ "2026-10-20": 5 });
+    expect(series[3].error).toContain("找不到");
   });
 
   test("需要令牌的平台不填令牌不能绑定；待实测的平台不能绑定", async () => {
@@ -209,7 +230,7 @@ describe("绑定、同步、读取", () => {
     await bindSource(db, SECRET, { userId: "u1", source: "bbdc", handle: "123" });
     await syncUser(db, { SESSION_SECRET: SECRET }, "u1", fakeFetch(() => ({ result_code: 200, data_body: { learnList: [{ date: "今日", learnNum: 5 }] } })));
     await unbindSource(db, "u1", "bbdc");
-    expect(await loadSeries(db, "u1")).toHaveLength(1);
+    expect(await loadSeries(db, "u1")).toHaveLength(3);
     expect(await db.prepare("SELECT COUNT(*) AS n FROM external_daily").first<{ n: number }>()).toEqual({ n: 0 });
   });
 

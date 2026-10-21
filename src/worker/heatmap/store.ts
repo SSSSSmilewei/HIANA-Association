@@ -1,7 +1,7 @@
 import { type Daily, type SourceSeries, addDays, cnDate } from "../../shared/heatmap";
-import { siteDaily } from "../activity";
+import { siteDailyByCategory } from "../activity";
 import { openSecret, sealSecret } from "../secret-box";
-import { type Fetch, PROVIDERS, ProviderError, SITE_SOURCE, getProvider } from "./providers";
+import { type Fetch, PROVIDERS, ProviderError, getProvider } from "./providers";
 import { syncBindings } from "./sync";
 
 /**
@@ -95,7 +95,7 @@ export async function syncUser(
 export async function loadSeries(db: D1Database, userId: string, today = cnDate(Date.now())): Promise<SourceSeries[]> {
   const from = addDays(today, -371);
   const [site, bindings, daily] = await Promise.all([
-    siteDaily(db, userId, from),
+    siteDailyByCategory(db, userId, from),
     listBindings(db, userId),
     db
       .prepare("SELECT source, day, count FROM external_daily WHERE user_id = ? AND day >= ?")
@@ -108,7 +108,12 @@ export async function loadSeries(db: D1Database, userId: string, today = cnDate(
     d[r.day] = r.count;
     bySource.set(r.source, d);
   }
-  const out: SourceSeries[] = [{ source: SITE_SOURCE.id, label: SITE_SOURCE.label, unit: SITE_SOURCE.unit, days: site }];
+  // 站内记录按分类各占一行：签到、晨思夜思、站内学习（技术方案“热力图”一节）
+  const out: SourceSeries[] = [
+    { source: "site:attendance", label: "签到", unit: "次签到签退", days: site.attendance, group: "attendance" },
+    { source: "site:reflection", label: "晨思夜思", unit: "次", days: site.reflection, group: "reflection" },
+    { source: "site:study", label: "站内学习", unit: "次学习记录", days: site.study, group: "study" },
+  ];
   const order = new Map(PROVIDERS.map((p, i) => [p.id, i]));
   for (const b of [...bindings].sort((x, y) => (order.get(x.source) ?? 99) - (order.get(y.source) ?? 99))) {
     const p = getProvider(b.source);
@@ -119,6 +124,7 @@ export async function loadSeries(db: D1Database, userId: string, today = cnDate(
       days: bySource.get(b.source) ?? {},
       error: b.lastError ?? undefined,
       syncedAt: b.syncedAt ?? undefined,
+      group: "external",
     });
   }
   return out;

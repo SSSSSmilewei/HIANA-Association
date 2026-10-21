@@ -52,10 +52,9 @@ describe("手机 App 接口", () => {
 
     const auth = { authorization: `Bearer ${act.data.token}` };
     expect((await call("GET", "/api/heatmap", { headers: auth })).status).toBe(200);
-    expect((await call("GET", "/api/checkin", { headers: auth })).status).toBe(200);
-    const course = await call("GET", "/api/course", { headers: auth });
-    expect(course.data.currentWeek).toBeGreaterThanOrEqual(0);
-    expect(course.data.track.weeks.length).toBeGreaterThan(0);
+    expect((await call("GET", "/api/attendance", { headers: auth })).status).toBe(200);
+    const courses = await call("GET", "/api/courses", { headers: auth });
+    expect(courses.data.length).toBeGreaterThan(0);
   });
 
   test("网页登录的返回体里没有令牌", async () => {
@@ -70,7 +69,7 @@ describe("手机 App 接口", () => {
   test("伪造或缺失令牌返回 401", async () => {
     const { call } = setup();
     expect((await call("GET", "/api/heatmap", { headers: { authorization: "Bearer abc.def" } })).status).toBe(401);
-    expect((await call("GET", "/api/course")).status).toBe(401);
+    expect((await call("GET", "/api/courses")).status).toBe(401);
   });
 
   test("账号被停用后，已发出的令牌立即失效", async () => {
