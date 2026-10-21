@@ -16,11 +16,16 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
-  // 不写 database_id：第一次 wrangler deploy 时自动创建数据库（automatic provisioning）
+  // 自定义域名：部署时自动绑定（域名需要已经在这个 Cloudflare 账号下）
+  "routes": [{ "pattern": "study.shanmoew-denied.win", "custom_domain": true }],
+  // 保留 *.workers.dev 地址作为备用（国内经常打不开，学员请用上面的域名）
+  "workers_dev": true,
+  // 数据库已在 Cloudflare 上建好（亚太区）。fork 本项目自己部署时删掉 database_id，第一次部署会自动新建
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "hiana-association-db"
+      "database_name": "hiana-association-db",
+      "database_id": "bae83829-31fb-402a-869e-5b01507cdd30"
     }
   ],
   // 每 5 分钟把攒下的通知合并成一条发到微信；每晚 23:30（北京时间，即 UTC 15:30）同步各平台热力图
