@@ -1,0 +1,296 @@
+/*
+ * HIANA 设计变量。两套皮肤 × 深浅两色，组件只用变量，不直接写颜色。
+ *
+ *   <html data-skin="glass|classic" data-mode="light|dark">
+ *
+ * data-mode 由 index.html 里的小脚本在首帧前算好（“跟随系统”时按系统设置），
+ * 所以这里不需要再写 prefers-color-scheme。
+ */
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/fonts/plex/IBMPlexSans-Regular-Latin1.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-201D, U+2022, U+2026, U+20AC;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/fonts/plex/IBMPlexSans-Medium-Latin1.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-201D, U+2022, U+2026, U+20AC;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/fonts/plex/IBMPlexSans-SemiBold-Latin1.woff2") format("woff2");
+  font-weight: 600 800;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-201D, U+2022, U+2026, U+20AC;
+}
+
+:root {
+  --font-sans: "IBM Plex Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  /* 动效：进场快、退场更快；弹簧只用在面板和成功动画上 */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --spring: linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.077 22.4%, 1.102 25.5%, 1.098 28.6%, 1.05 34.6%, 1.01 41.5%, 0.996 48.7%, 1.001 64%, 1);
+  --t-fast: 140ms;
+  --t-mid: 220ms;
+  --t-slow: 360ms;
+
+  /* 液态玻璃 · 浅色（默认） */
+  --bg: #f6f5f3;
+  --surface: #ffffff;
+  --well: #f4f1ed;
+  --line: rgba(27, 26, 25, 0.08);
+  --line-strong: rgba(27, 26, 25, 0.22);
+  --ink: #1b1a19;
+  --sub: #66625e;
+  --nav-idle: #4e4a46;
+  --track: rgba(27, 26, 25, 0.08);
+  --chevron: #c9c5c0;
+
+  --accent: #f26b1d;
+  --accent-text: #b8460b;
+  --link: #b8460b;
+  --cta: #c2410f;
+  --cta-ink: #ffffff;
+  --cta-shadow: rgba(194, 65, 15, 0.28);
+  --tint: rgba(242, 107, 29, 0.12);
+  --next-bg: rgba(242, 107, 29, 0.08);
+  --now: #e03a2f;
+
+  --glass: rgba(255, 255, 255, 0.58);
+  --glass-strong: rgba(255, 255, 255, 0.86);
+  --glass-edge: rgba(255, 255, 255, 0.85);
+  --glass-hi: rgba(255, 255, 255, 0.95);
+  --glass-shadow: rgba(90, 40, 10, 0.12);
+  --glass-blur: blur(24px) saturate(180%);
+  --pill: #ffffff;
+  --pill-shadow: 0 1px 2px rgba(90, 40, 10, 0.06), 0 6px 16px rgba(90, 40, 10, 0.08);
+  --ghost: rgba(255, 255, 255, 0.7);
+  --glow: rgba(242, 107, 29, 0.15);
+  --glow-2: rgba(255, 170, 107, 0.16);
+
+  --night: #2b1b13;
+  --night-ink: #fff6ee;
+  --night-sub: #e5cdbb;
+  --night-accent: #ffaa6b;
+  --n0: rgba(255, 255, 255, 0.06);
+  --n1: #5a2d17;
+  --n2: #9c4419;
+  --n3: #e2601f;
+  --n4: #ff4a3d;
+  --night-tag: rgba(255, 170, 107, 0.18);
+  --night-tag-ink: #ffc79c;
+
+  --wall: #fff1e6;
+  --heat-line: rgba(184, 70, 11, 0.18);
+  --l1: #ffd9ba;
+  --l2: #ffaa6b;
+  --l3: #f26b1d;
+  --l4: #d52a20;
+
+  --ok-bg: rgba(242, 107, 29, 0.12);
+  --ok-ink: #b8460b;
+  --muted-bg: #f1eeea;
+  --muted-ink: #4e4a46;
+  --bad-bg: rgba(224, 58, 47, 0.1);
+  --bad-ink: #b32a20;
+
+  --scrim: rgba(40, 24, 14, 0.28);
+  --focus: #f26b1d;
+
+  --r-cell: 3px;
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-ctl: 14px;
+  --r-btn: 16px;
+  --r-card: 22px;
+  --r-panel: 26px;
+  --r-hero: 28px;
+  --r-pill: 999px;
+  --rule: 1px solid var(--line);
+
+  color-scheme: light;
+}
+
+/* 液态玻璃 · 深色 */
+:root[data-mode="dark"] {
+  --bg: #0e0d0c;
+  --surface: #1c1a19;
+  --well: rgba(255, 255, 255, 0.05);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.24);
+  --ink: #f3f1ee;
+  --sub: #a8a29c;
+  --nav-idle: #c9c3bd;
+  --track: rgba(255, 255, 255, 0.1);
+  --chevron: #57524d;
+
+  --accent: #ff7a2e;
+  --accent-text: #ff9a5c;
+  --link: #ff9a5c;
+  --cta: #c2410f;
+  --cta-shadow: rgba(194, 65, 15, 0.35);
+  --tint: rgba(255, 122, 46, 0.16);
+  --next-bg: rgba(255, 122, 46, 0.1);
+  --now: #ff5145;
+
+  --glass: rgba(40, 36, 34, 0.55);
+  --glass-strong: rgba(36, 32, 30, 0.86);
+  --glass-edge: rgba(255, 255, 255, 0.14);
+  --glass-hi: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.45);
+  --pill: rgba(255, 255, 255, 0.12);
+  --pill-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --ghost: rgba(255, 255, 255, 0.06);
+  --glow: rgba(255, 122, 46, 0.1);
+  --glow-2: rgba(213, 42, 32, 0.07);
+
+  --night: #211510;
+
+  --wall: #160f0b;
+  --heat-line: rgba(255, 154, 92, 0.14);
+  --l1: #5a2d17;
+  --l2: #9c4419;
+  --l3: #e2601f;
+  --l4: #ff4a3d;
+
+  --ok-bg: rgba(255, 122, 46, 0.16);
+  --ok-ink: #ff9a5c;
+  --muted-bg: rgba(255, 255, 255, 0.08);
+  --muted-ink: #d8d2cc;
+  --bad-bg: rgba(255, 81, 69, 0.16);
+  --bad-ink: #ff8a80;
+
+  --scrim: rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+/* 经典直角 · 浅色：MIT 红、细线、零圆角、不透明 */
+:root[data-skin="classic"] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --well: #f6f6f7;
+  --line: rgba(20, 20, 22, 0.14);
+  --line-strong: #141416;
+  --ink: #141416;
+  --sub: #5b5d64;
+  --nav-idle: #141416;
+  --track: rgba(20, 20, 22, 0.1);
+  --chevron: #a9abb2;
+
+  --accent: #a31f34;
+  --accent-text: #a31f34;
+  --link: #2050c8;
+  --cta: #a31f34;
+  --cta-shadow: transparent;
+  --tint: rgba(163, 31, 52, 0.08);
+  --next-bg: #f6f6f7;
+  --now: #a31f34;
+
+  --glass: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-edge: rgba(20, 20, 22, 0.14);
+  --glass-hi: transparent;
+  --glass-shadow: transparent;
+  --glass-blur: none;
+  --pill: #f6f6f7;
+  --pill-shadow: none;
+  --ghost: transparent;
+  --glow: transparent;
+  --glow-2: transparent;
+
+  --night: #141416;
+  --night-ink: #ffffff;
+  --night-sub: #c9cad0;
+  --night-accent: #ff8fa1;
+  --n1: #3a3c42;
+  --n2: #5e616a;
+  --n3: #9a9da6;
+  --n4: #e6e7ea;
+  --night-tag: rgba(255, 143, 161, 0.16);
+  --night-tag-ink: #ffb3c0;
+
+  --wall: #ffffff;
+  --heat-line: rgba(20, 20, 22, 0.16);
+  --l1: #d9dade;
+  --l2: #a9abb2;
+  --l3: #6e7179;
+  --l4: #2e3036;
+
+  --ok-bg: transparent;
+  --ok-ink: #141416;
+  --muted-bg: transparent;
+  --muted-ink: #5b5d64;
+  --bad-bg: transparent;
+  --bad-ink: #a31f34;
+
+  --scrim: rgba(20, 20, 22, 0.4);
+  --focus: #2050c8;
+
+  --r-cell: 0;
+  --r-xs: 0;
+  --r-sm: 0;
+  --r-ctl: 0;
+  --r-btn: 0;
+  --r-card: 0;
+  --r-panel: 0;
+  --r-hero: 0;
+  --r-pill: 0;
+}
+
+/* 经典直角 · 深色 */
+:root[data-skin="classic"][data-mode="dark"] {
+  --bg: #111113;
+  --surface: #111113;
+  --well: rgba(255, 255, 255, 0.04);
+  --line: rgba(237, 237, 240, 0.16);
+  --line-strong: #ededf0;
+  --ink: #ededf0;
+  --sub: #a3a5ad;
+  --nav-idle: #ededf0;
+  --track: rgba(237, 237, 240, 0.14);
+  --chevron: #5e616a;
+
+  --accent: #e0526a;
+  --accent-text: #e0526a;
+  --link: #8faeff;
+  --cta: #b8243d;
+  --tint: rgba(224, 82, 106, 0.12);
+  --next-bg: rgba(255, 255, 255, 0.04);
+  --now: #e0526a;
+
+  --glass: #111113;
+  --glass-strong: #17171a;
+  --glass-edge: rgba(237, 237, 240, 0.16);
+  --pill: rgba(255, 255, 255, 0.06);
+
+  --night: #1d1d21;
+  --wall: #111113;
+  --heat-line: rgba(237, 237, 240, 0.18);
+  --l1: #3a3c42;
+  --l2: #5e616a;
+  --l3: #9a9da6;
+  --l4: #e6e7ea;
+
+  --ok-ink: #ededf0;
+  --muted-ink: #a3a5ad;
+  --bad-ink: #e0526a;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --focus: #8faeff;
+  color-scheme: dark;
+}
+
+/* 系统要求减少透明度时，玻璃换成实心 */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass: var(--surface);
+    --glass-strong: var(--surface);
+    --glass-blur: none;
+  }
+}

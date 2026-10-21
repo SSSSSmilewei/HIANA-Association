@@ -121,6 +121,9 @@ export function learningRoutes(api: Router) {
     const p = progress(course, doneSet);
     if (p.doneUnits === p.units) {
       await c.env.DB.prepare("UPDATE enrollments SET status = 'done', updated_at = ? WHERE user_id = ? AND course_slug = ?").bind(now, uid, course.slug).run();
+    } else {
+      // 学完后又取消了某个单元：改回“在学”，首页重新出现下一步
+      await c.env.DB.prepare("UPDATE enrollments SET status = 'active', updated_at = ? WHERE user_id = ? AND course_slug = ? AND status = 'done'").bind(now, uid, course.slug).run();
     }
     return json({ ok: true, progress: p, next: nextUnit(course, doneSet) });
   });
@@ -132,7 +135,8 @@ export function learningRoutes(api: Router) {
     const today = cnDate(Date.now());
     const items = enrolls
       .filter((e) => e.status === "active")
-      .sort((a, b) => b.started_at - a.started_at)
+      // 按课程目录的顺序：必修在前（Missing Semester → Git → CS50x），选修在后
+      .sort((a, b) => COURSES.findIndex((c) => c.slug === a.course_slug) - COURSES.findIndex((c) => c.slug === b.course_slug))
       .flatMap((e) => {
         const course = getCourse(e.course_slug);
         if (!course) return [];

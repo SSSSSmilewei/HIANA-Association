@@ -1,4 +1,4 @@
-// 打包前端到 dist/client：esbuild 打包 React + KaTeX（含字体），复制 public/，生成 index.html。
+// 打包前端到 dist/client：esbuild 打包 React 和样式，复制 public/，生成 index.html。
 // Worker 本身由 wrangler deploy 打包，不在这里处理。
 import { build } from "esbuild";
 import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -42,14 +42,15 @@ writeFileSync(
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#ffffff">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f5f3">
 <meta name="color-scheme" content="light dark">
-<script>try{var t=localStorage.getItem("hiana-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);var d=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.querySelector('meta[name="theme-color"]').setAttribute("content","#121316")}catch(e){}</script>
+<script>(function(){var r=document.documentElement,s="glass",d=false;try{var p=JSON.parse(localStorage.getItem("hiana-prefs")||"{}");if(p.skin==="classic")s="classic";d=p.theme==="dark"||(p.theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches)}catch(e){}r.setAttribute("data-skin",s);r.setAttribute("data-mode",d?"dark":"light");var c=s==="classic"?(d?"#111113":"#ffffff"):(d?"#0e0d0c":"#f6f5f3");document.querySelector('meta[name="theme-color"]').setAttribute("content",c)})()</script>
 <meta name="robots" content="noindex">
-<title>智慧网络算法协会 · 学习平台</title>
+<title>HIANA 协会学习平台</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/plex/IBMPlexSans-Regular-Latin1.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/plex/IBMPlexSans-SemiBold-Latin1.woff2" as="font" type="font/woff2" crossorigin>
 ${css ? `<link rel="stylesheet" href="${rel(css)}">` : ""}
 <script type="module" src="${rel(js)}"></script>
 </head>

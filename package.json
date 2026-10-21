@@ -2,7 +2,7 @@
   "name": "hiana-association",
   "private": true,
   "type": "module",
-  "description": "智慧网络算法协会学习平台：CS50x 主线、统一热力图、晚自习打卡、会长后台。运行在 Cloudflare Workers + D1。",
+  "description": "智慧网络算法协会学习平台：选课目录、拍照签到签退、统一热力图、公告与比赛、管理后台。运行在 Cloudflare Workers + D1。",
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "node scripts/build.mjs && wrangler dev",
@@ -13,13 +13,11 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
-    "katex": "0.16.47",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@types/katex": "0.16.7",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "esbuild": "0.28.2",

@@ -1,208 +1,346 @@
 import { useMemo, useState } from "react";
-import type { HeatmapPayload, ProviderInfo } from "../../shared/api";
-import { addDays, buildGrid, clip, overview, weekdayMon0 } from "../../shared/heatmap";
-import { api, useApi } from "../api";
-import { HeatLegend, HeatmapGrid } from "../components/Heatmap";
-import { ErrorView, Loading } from "../components/Layout";
+import { type SourceSeries, buildGrid, overview } from "../../shared/heatmap";
+import { api, clearCache, invalidate, longDay, relativeTime, useApi } from "../api";
+import { HeatGrid, Legend, Strip } from "../components/Heatmap";
+import { Icon } from "../icons";
+import { usePrefs } from "../prefs";
+import { Link } from "../router";
+import type { HeatmapPayload, Me } from "../types";
+import { Dialog, ErrorBox, Seg, Skeleton, Spinner, useConfirm, useDialogClose, useTitle, useToast } from "../ui";
 
-const GROUPS: { key: ProviderInfo["category"] | "site"; label: string }[] = [
-  { key: "site", label: "协会平台" },
-  { key: "code", label: "写代码" },
-  { key: "algo", label: "刷题" },
-  { key: "english", label: "英语" },
-];
-const WD = "一二三四五六日";
+const GROUP_COLOR: Record<string, string> = { "site:attendance": "var(--l3)", "site:reflection": "var(--l2)", "site:study": "var(--l4)" };
+const colorOf = (s: SourceSeries) => GROUP_COLOR[s.source] ?? "var(--sub)";
+const MONO: Record<string, string> = { github: "GH", "leetcode-cn": "力扣", leetcode: "LC", codeforces: "CF", atcoder: "AT", wakatime: "WT", maimemo: "墨墨", bbdc: "不背", duolingo: "多邻" };
 
-export function ProfilePage() {
+export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) {
+  useTitle("我的");
   const { data, error, reload } = useApi<HeatmapPayload>("/api/heatmap");
-  const [selected, setSelected] = useState<string | null>(null);
+  const [off, setOff] = useState<Set<string>>(new Set());
+  const [sel, setSel] = useState<string | null>(null);
+  const [binding, setBinding] = useState(false);
+  const toast = useToast();
+  const confirm = useConfirm();
+  const [prefs, setPrefs] = usePrefs();
 
-  const ov = useMemo(() => (data ? overview(data.series, data.today) : null), [data]);
-  if (error) return <ErrorView message={error.message} />;
-  if (!data || !ov) return <Loading />;
+  const series = data?.series ?? [];
+  const on = series.filter((s) => !off.has(s.source) && !s.error);
+  const grid = useMemo(() => (data ? overview(on, data.today, 53) : null), [data, off]);
+  const today = data?.today ?? "";
+  const day = sel ?? today;
+  const parts = on.map((s) => ({ s, n: s.days[day] ?? 0 })).filter((x) => x.n > 0);
 
-  const providers = new Map(data.providers.map((p) => [p.id, p]));
-  const day = selected ?? data.today;
-  const last7 = addDays(data.today, -6);
-  const recent = new Set(data.series.flatMap((s) => (s.error ? [] : Object.keys(clip(s.days, last7, data.today))))).size;
-  const parts = data.series.filter((s) => s.days[day]).map((s) => `${s.label} ${s.days[day]} ${s.unit}`);
+  const unbind = async (source: string, label: string) => {
+    if (!(await confirm({ title: `解绑 ${label}？`, body: "解绑后热力图里不再显示这个平台的记录，以后可以重新绑定。", ok: "解绑", danger: true }))) return;
+    try {
+      await api(`/api/heatmap/bindings/${encodeURIComponent(source)}`, { method: "DELETE" });
+      toast(`已解绑 ${label}`);
+      invalidate("/api/heatmap");
+    } catch (e) {
+      toast((e as Error).message, "error");
+    }
+  };
+
+  const logout = async () => {
+    await api("/api/auth/logout", { method: "POST" }).catch(() => {});
+    clearCache();
+    onLogout();
+  };
 
   return (
-    <main className="wrap page-pad stack-xl">
-      <section className="split-head">
-        <div>
-          <h1 className="page-title">我的学习记录</h1>
-          <p className="muted">协会平台上的学习，加上你绑定的平台，每晚 23:30 同步一次。</p>
+    <div className="page">
+      <header className="row wrap" style={{ gap: 18 }}>
+        <span className="avatar avatar-lg" aria-hidden="true">
+          {me.member?.name.slice(0, 1)}
+        </span>
+        <span className="grow stack" style={{ gap: 4 }}>
+          <h1 className="h1" style={{ fontSize: 30, lineHeight: "38px" }}>
+            {me.member?.name}
+          </h1>
+          <span className="small sub">{[me.member?.className, `学号 ${me.member?.studentNo}`, me.isAdmin ? "管理员" : null].filter(Boolean).join(" · ")}</span>
+        </span>
+      </header>
+
+      <section className="card stack" aria-labelledby="hm-h" style={{ gap: 16, padding: 22, borderRadius: 26 }}>
+        <div className="row wrap" style={{ justifyContent: "space-between" }}>
+          <span className="stack" style={{ gap: 2 }}>
+            <h2 id="hm-h" className="h3" style={{ fontSize: 18 }}>
+              一年的学习
+            </h2>
+            <span className="small sub">{grid ? `过去一年有 ${grid.activeDays} 天在学。没有连续天数，哪天没来不会断。` : " "}</span>
+          </span>
+          <div role="group" aria-label="显示哪些记录" className="row wrap" style={{ gap: 6 }}>
+            {series.map((s) => (
+              <button
+                key={s.source}
+                type="button"
+                className="chip"
+                aria-pressed={!off.has(s.source)}
+                style={{ "--c": colorOf(s) } as React.CSSProperties}
+                onClick={() => {
+                  const n = new Set(off);
+                  if (n.has(s.source)) n.delete(s.source);
+                  else n.add(s.source);
+                  setOff(n);
+                }}
+              >
+                <span className="dot" aria-hidden="true" />
+                {s.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <dl className="stats">
-          <div>
-            <dt>过去一年有记录</dt>
-            <dd>{ov.activeDays} 天</dd>
+        {error && !data ? (
+          <ErrorBox error={error} onRetry={reload} />
+        ) : !grid ? (
+          <Skeleton h={150} />
+        ) : (
+          <HeatGrid
+            grid={grid}
+            today={today}
+            selected={sel}
+            onSelect={setSel}
+            label="一年的学习热力图，每格是一天，方向键可以移动"
+            describe={(d) => {
+              const xs = on.map((s) => (s.days[d] ? `${s.label} ${s.days[d]}` : "")).filter(Boolean);
+              return xs.length ? xs.join("，") : "没有记录";
+            }}
+          />
+        )}
+        <div className="row wrap" style={{ justifyContent: "space-between", paddingTop: 14, borderTop: "1px solid var(--line)" }}>
+          <div aria-live="polite" className="row wrap" style={{ gap: "6px 16px", alignItems: "baseline" }}>
+            <span style={{ fontSize: 15, lineHeight: "22px", fontWeight: 600 }}>{today ? `${day === today ? "今天 · " : ""}${longDay(day)}` : ""}</span>
+            {today &&
+              (parts.length ? (
+                parts.map(({ s, n }) => (
+                  <span key={s.source} className="small sub">
+                    {s.label} {n} {s.unit}
+                  </span>
+                ))
+              ) : (
+                <span className="small sub">这天没有记录</span>
+              ))}
           </div>
-          <div>
-            <dt>最近 7 天</dt>
-            <dd>{recent} 天</dd>
-          </div>
-        </dl>
+          <Legend />
+        </div>
       </section>
 
-      <section className="stack-s" aria-labelledby="ov">
-        <div className="row-between">
-          <h2 id="ov" className="h2">
-            总览
+      <div className="grid-2">
+        <section className="card stack" aria-labelledby="src-h" style={{ gap: 4 }}>
+          <div className="section-head" style={{ marginBottom: 4 }}>
+            <h2 id="src-h" className="h3">
+              来源
+            </h2>
+            <button type="button" className="btn btn-soft btn-sm" onClick={() => setBinding(true)}>
+              <Icon name="plus" size={16} stroke={2} />
+              绑定平台
+            </button>
+          </div>
+          <p className="small sub" style={{ marginBottom: 8 }}>
+            站外平台每天夜里同步一次，只读公开数据。
+          </p>
+          {!data && <Skeleton h={160} />}
+          {series.map((s) => {
+            const b = data?.bindings.find((x) => x.source === s.source);
+            const g = buildGrid(s.days, today, 26);
+            return (
+              <div key={s.source} className="list-row" style={{ flexWrap: "wrap" }}>
+                <span className="stack grow" style={{ gap: 6, minWidth: 180 }}>
+                  <span className="row" style={{ gap: 8 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 4, background: colorOf(s), flexShrink: 0 }} aria-hidden="true" />
+                    <span style={{ fontSize: 14, lineHeight: "20px", fontWeight: 500 }}>{s.label}</span>
+                    <span className="xsmall sub num">
+                      半年 {g.total} {s.unit}
+                    </span>
+                  </span>
+                  {s.error ? <span className="xsmall error-text">同步失败：{s.error}</span> : <Strip grid={g} />}
+                  {b && (
+                    <span className="xsmall sub">
+                      {b.handle}
+                      {b.syncedAt ? ` · ${relativeTime(b.syncedAt)}同步` : " · 还没同步"}
+                    </span>
+                  )}
+                </span>
+                {b && (
+                  <button type="button" className="btn btn-quiet btn-sm" onClick={() => unbind(s.source, s.label)}>
+                    解绑
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </section>
+
+        <section className="card stack" id="settings" aria-labelledby="set-h" style={{ gap: 16 }}>
+          <h2 id="set-h" className="h3">
+            外观
           </h2>
-          <HeatLegend />
-        </div>
-        <HeatmapGrid grid={ov} cell={13} label="过去一年总览热力图" selected={day} onSelect={setSelected} />
-        <p className="day-detail">
-          <b>
-            {day} 周{WD[weekdayMon0(day)]}
-          </b>
-          ：{parts.length ? parts.join("，") : "这一天没有记录"}
-        </p>
-      </section>
-
-      <section className="stack-s" aria-labelledby="by">
-        <h2 id="by" className="h2">
-          按平台
-        </h2>
-        {GROUPS.map((g) => {
-          const rows = data.series.filter((s) => (s.source === "site" ? g.key === "site" : providers.get(s.source)?.category === g.key));
-          if (rows.length === 0) return null;
-          return (
-            <div key={g.key}>
-              <h3 className="group-title">{g.label}</h3>
-              {rows.map((s) => {
-                const grid = buildGrid(s.days, data.today, 26);
-                const p = providers.get(s.source);
-                return (
-                  <div className="source-row" key={s.source}>
-                    <div className="source-name">
-                      <b>{s.label}</b>
-                      <span className="muted xsmall">
-                        {grid.activeDays} 天，{grid.total.toLocaleString("zh-CN")} {s.unit}
-                      </span>
-                    </div>
-                    <HeatmapGrid grid={grid} cell={9} label={`${s.label}最近 26 周`} />
-                    <div className={`source-status${s.error ? " bad" : ""}`}>
-                      {s.source === "site" ? "站内自动记录" : s.error ? `同步失败：${s.error}` : s.syncedAt ? "同步正常" : "等待今晚同步"}
-                      {s.source !== "site" && <UnbindButton source={s.source} label={p?.label ?? s.label} onDone={reload} />}
-                    </div>
-                  </div>
-                );
-              })}
+          <div className="stack" style={{ gap: 8 }}>
+            <span className="small sub">风格</span>
+            <div role="group" aria-label="风格" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
+              <SkinTile label="液态玻璃" active={prefs.skin === "glass"} onClick={() => setPrefs({ skin: "glass" })}>
+                <span style={{ position: "absolute", inset: 0, background: "#FFF1E6" }} />
+                <span style={{ position: "absolute", right: 8, top: 8, width: 14, height: 14, borderRadius: 4, background: "#F26B1D" }} />
+                <span style={{ position: "absolute", right: 26, top: 8, width: 14, height: 14, borderRadius: 4, background: "#FFAA6B" }} />
+                <span style={{ position: "absolute", left: 8, right: 30, bottom: 8, height: 22, borderRadius: 9, background: "rgba(255,255,255,0.7)", border: "1px solid #fff" }} />
+              </SkinTile>
+              <SkinTile label="经典直角" active={prefs.skin === "classic"} onClick={() => setPrefs({ skin: "classic" })}>
+                <span style={{ position: "absolute", inset: 0, background: "#fff", border: "1px solid #141416" }} />
+                <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 6, background: "#A31F34" }} />
+                <span style={{ position: "absolute", left: 16, top: 12, width: 50, height: 6, background: "#141416" }} />
+                <span style={{ position: "absolute", left: 16, top: 26, width: 72, height: 4, background: "#A9ABB2" }} />
+              </SkinTile>
             </div>
-          );
-        })}
-      </section>
-
-      <section className="two-col">
-        <BindForm providers={data.providers} bound={new Set(data.bindings.map((b) => b.source))} onDone={reload} />
-        <div className="stack-s small">
-          <h2 className="h2">记录哪些、用在哪</h2>
-          <p>记录你做了什么：打卡、完成课时、提问和回答，以及绑定平台每天的次数。不记录停留时长，也不算连续天数。</p>
-          <p>会长能看到谁最近 7 天没有任何记录，用来线下问问你是不是卡住了。不做排名。</p>
-          <p>令牌加密保存。解绑时连同攒下的数据一起删除。</p>
-        </div>
-      </section>
-    </main>
+          </div>
+          <div className="stack" style={{ gap: 8 }}>
+            <span className="small sub">深浅</span>
+            <Seg
+              label="深浅"
+              flat
+              value={prefs.theme}
+              onChange={(t) => setPrefs({ theme: t })}
+              options={[
+                { value: "light" as const, label: "浅色" },
+                { value: "dark" as const, label: "深色" },
+                { value: "system" as const, label: "跟随系统" },
+              ]}
+            />
+            <span className="xsmall sub">只保存在这台设备上。</span>
+          </div>
+          <div className="row wrap" style={{ paddingTop: 14, borderTop: "1px solid var(--line)" }}>
+            <Link to="/password" className="btn btn-ghost">
+              <Icon name="key" size={18} />
+              修改密码
+            </Link>
+            <button type="button" className="btn btn-quiet" onClick={logout}>
+              <Icon name="logout" size={18} />
+              退出登录
+            </button>
+          </div>
+        </section>
+      </div>
+      {binding && data && <BindDialog data={data} onClose={() => setBinding(false)} />}
+    </div>
   );
 }
 
-function UnbindButton({ source, label, onDone }: { source: string; label: string; onDone: () => void }) {
-  const [confirm, setConfirm] = useState(false);
-  if (!confirm)
-    return (
-      <button type="button" className="link-btn muted" onClick={() => setConfirm(true)}>
-        解绑
-      </button>
-    );
+function SkinTile({ label, active, onClick, children }: { label: string; active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <span className="inline-confirm">
-      解绑 {label} 并删除数据？
-      <button
-        type="button"
-        className="link-btn"
-        onClick={async () => {
-          await api(`/api/heatmap/bindings/${encodeURIComponent(source)}`, { method: "DELETE" });
-          onDone();
-        }}
-      >
-        确定
-      </button>
-      <button type="button" className="link-btn muted" onClick={() => setConfirm(false)}>
-        取消
-      </button>
-    </span>
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      style={{
+        padding: 12,
+        borderRadius: "var(--r-card)",
+        border: `2px solid ${active ? "var(--accent)" : "var(--line)"}`,
+        background: active ? "var(--well)" : "transparent",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        textAlign: "left",
+      }}
+    >
+      <span aria-hidden="true" style={{ height: 54, borderRadius: 10, position: "relative", overflow: "hidden", display: "block" }}>
+        {children}
+      </span>
+      <span style={{ fontSize: 14, lineHeight: "20px", fontWeight: active ? 600 : 500 }}>{label}</span>
+    </button>
   );
 }
 
-function BindForm({ providers, bound, onDone }: { providers: ProviderInfo[]; bound: Set<string>; onDone: () => void }) {
-  const choices = providers.filter((p) => p.status !== "pending");
-  const [source, setSource] = useState(choices[0]?.id ?? "");
+function BindDialog({ data, onClose }: { data: HeatmapPayload; onClose: () => void }) {
+  return (
+    <Dialog title="绑定平台" sub="填你在那个平台的用户名，热力图会多一行。" onClose={onClose}>
+      <BindForm data={data} />
+    </Dialog>
+  );
+}
+
+function BindForm({ data }: { data: HeatmapPayload }) {
+  const close = useDialogClose();
+  const toast = useToast();
+  const usable = data.providers.filter((p) => p.status !== "pending");
+  const [source, setSource] = useState(usable.find((p) => !data.bindings.some((b) => b.source === p.id))?.id ?? usable[0]?.id ?? "");
   const [handle, setHandle] = useState("");
   const [secret, setSecret] = useState("");
-  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
-  const p = choices.find((x) => x.id === source);
-  const pending = providers.filter((x) => x.status === "pending");
-
+  const [error, setError] = useState<string | null>(null);
+  const p = usable.find((x) => x.id === source);
+  const groups: [string, string][] = [
+    ["code", "写代码"],
+    ["algo", "刷题"],
+    ["english", "英语"],
+  ];
   return (
     <form
-      className="stack-s form-narrow"
+      className="form"
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
-        setMsg(null);
+        setError(null);
         try {
-          const r = await api<{ error: string | null; days: number }>("/api/heatmap/bindings", { body: { source, handle, secret: secret || undefined } });
-          setMsg(r.error ? { ok: false, text: `已绑定，但这次同步失败：${r.error}` } : { ok: true, text: `已绑定，同步到 ${r.days} 天的数据。` });
-          setHandle("");
-          setSecret("");
-          onDone();
+          const r = await api<{ error: string | null; days: number }>("/api/heatmap/bindings", { body: { source, handle: handle.trim(), secret: secret.trim() || undefined } });
+          if (r.error) toast(`绑定了，但这次没同步成功：${r.error}`, "error");
+          else toast(`绑定好了，同步到 ${r.days} 天的记录`);
+          invalidate("/api/heatmap");
+          close();
         } catch (err) {
-          setMsg({ ok: false, text: (err as Error).message });
-        } finally {
+          setError((err as Error).message);
           setBusy(false);
         }
       }}
     >
-      <h2 className="h2">绑定一个平台</h2>
-      <label className="field" htmlFor="bind-source">
-        平台
-        <select id="bind-source" value={source} onChange={(e) => setSource(e.target.value)}>
-          {choices.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.label}
-              {bound.has(c.id) ? "（已绑定，改用户名）" : ""}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="stack" style={{ gap: 8 }}>
+        {groups.map(([cat, name]) => {
+          const ps = usable.filter((x) => x.category === cat);
+          if (!ps.length) return null;
+          return (
+            <div key={cat} className="stack" style={{ gap: 6 }}>
+              <span className="xsmall sub">{name}</span>
+              <div className="row wrap" style={{ gap: 6 }}>
+                {ps.map((x) => (
+                  <button key={x.id} type="button" className="chip" aria-pressed={x.id === source} onClick={() => setSource(x.id)} style={{ "--c": "var(--accent)" } as React.CSSProperties}>
+                    <span className="mono xsmall" aria-hidden="true">
+                      {MONO[x.id] ?? x.id.slice(0, 2).toUpperCase()}
+                    </span>
+                    {x.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
       {p && (
         <>
-          <label className="field" htmlFor="bind-handle">
+          <label className="field">
             {p.handleHint}
-            <input id="bind-handle" value={handle} onChange={(e) => setHandle(e.target.value)} autoComplete="off" required />
+            <input className="input" value={handle} onChange={(e) => setHandle(e.target.value)} autoComplete="off" required />
+            {p.status === "unofficial" && <span className="hint xsmall">这个平台没有公开接口，用的是网页上能看到的数据，偶尔会同步失败。</span>}
           </label>
           {p.needsUserSecret && (
-            <label className="field" htmlFor="bind-secret">
+            <label className="field">
               令牌
-              <input id="bind-secret" value={secret} onChange={(e) => setSecret(e.target.value)} autoComplete="off" type="password" />
-              <span className="muted xsmall">{p.needsUserSecret}</span>
+              <input className="input mono" value={secret} onChange={(e) => setSecret(e.target.value)} autoComplete="off" />
+              <span className="hint xsmall">{p.needsUserSecret}。令牌加密保存，只用来读取你的记录。</span>
             </label>
           )}
-          <p className="muted xsmall">
-            {p.coverage === "snapshot" ? "这个平台只给最近几天的数据，从今天开始攒，之前的日子不会有格子。" : "会同步过去一年的数据。"}
-            {p.status === "unofficial" ? "数据来自平台网页用的接口，平台改版时可能暂时同步不了。" : ""}
-          </p>
         </>
       )}
-      <button className="btn btn-ink" type="submit" disabled={busy || !handle.trim()}>
-        {busy ? "正在同步…" : "绑定并同步一次"}
-      </button>
-      {msg && <p className={msg.ok ? "ok-text" : "error-text"}>{msg.text}</p>}
-      {pending.length > 0 && <p className="muted xsmall">暂不支持：{pending.map((x) => x.label).join("、")}。接口还在测试。</p>}
+      {error && (
+        <span className="error-text" role="alert">
+          {error}
+        </span>
+      )}
+      <div className="dialog-actions">
+        <button type="button" className="btn btn-ghost" onClick={close}>
+          取消
+        </button>
+        <button type="submit" className="btn btn-primary" disabled={busy || !handle.trim() || !p}>
+          {busy ? <Spinner /> : "绑定并同步"}
+        </button>
+      </div>
     </form>
   );
 }
