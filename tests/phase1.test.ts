@@ -174,3 +174,26 @@ describe("管理员角色", () => {
     expect((await call("teacher", "GET", "/api/calendar")).data.semesterStart).toBe("2026-09-07");
   });
 });
+
+describe("晨思夜思", () => {
+  test("同一天同一时段覆盖，热力图只记一次；不能写未来", async () => {
+    const { call, member } = setup();
+    await member("lin", "2025010101", "林同学");
+    const today = new Date(Date.now() + 8 * 3_600_000).toISOString().slice(0, 10);
+    expect((await call("lin", "PUT", `/api/reflections/${today}/morning`, { text: "先学完 CS50x 第 2 周讲座", source: "course-table" })).status).toBe(200);
+    expect((await call("lin", "PUT", `/api/reflections/${today}/morning`, { text: "改一下：先做习题集 1" })).status).toBe(200);
+    await call("lin", "PUT", `/api/reflections/${today}/evening`, { text: "讲座看完了" });
+    expect((await call("lin", "PUT", `/api/reflections/2099-01-01/evening`, { text: "x" })).status).toBe(400);
+    expect((await call("lin", "PUT", `/api/reflections/${today}/noon`, { text: "x" })).status).toBe(400);
+    expect((await call("lin", "PUT", `/api/reflections/${today}/evening`, { text: "  " })).status).toBe(400);
+
+    const list = await call("lin", "GET", "/api/reflections");
+    expect(list.data).toHaveLength(2);
+    expect(list.data.find((r: { slot: string }) => r.slot === "morning").text).toBe("改一下：先做习题集 1");
+
+    const hm = await call("lin", "GET", "/api/heatmap");
+    const s = hm.data.series.find((x: { source: string }) => x.source === "site:reflection");
+    expect(s.days[today]).toBe(2);
+    expect((await call("nobody", "GET", "/api/reflections")).status).toBe(401);
+  });
+});
