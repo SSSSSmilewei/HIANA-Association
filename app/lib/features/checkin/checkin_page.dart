@@ -182,6 +182,7 @@ class _MainPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final h = Hx.of(context);
+    final p = this.p; // 字段不能做类型提升，先放进局部变量
     final ev = s.evening;
     final now = DateTime.now().millisecondsSinceEpoch;
     final evFrom = cnTime(s.today, ev.windowStart);
