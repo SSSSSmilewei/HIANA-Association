@@ -24,7 +24,7 @@ class ApiClient {
           BaseOptions(
             baseUrl: kBaseUrl,
             connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 30), // 绑定平台时后端要现场同步一次，会慢一些
+            receiveTimeout: const Duration(seconds: 30), // 绑定平台时后端要现场同步一次、上传照片也要一会儿
             headers: const {'X-Hiana-Client': 'app'},
             responseType: ResponseType.json,
             validateStatus: (_) => true, // 状态码自己判断，才能拿到后端的错误文案
@@ -48,6 +48,18 @@ class ApiClient {
   void Function()? onUnauthorized;
 
   Future<Map<String, dynamic>> _send(String method, String path, {Object? body, bool authCall = false}) async {
+    final data = await _raw(method, path, body: body, authCall: authCall);
+    if (data is Map<String, dynamic>) return data;
+    throw const ApiException('服务器返回的内容看不懂，稍后再试');
+  }
+
+  Future<List<dynamic>> _sendList(String method, String path) async {
+    final data = await _raw(method, path);
+    if (data is List) return data;
+    throw const ApiException('服务器返回的内容看不懂，稍后再试');
+  }
+
+  Future<Object?> _raw(String method, String path, {Object? body, bool authCall = false}) async {
     final Response<dynamic> res;
     try {
       res = await _dio.request<dynamic>(path, data: body, options: Options(method: method));
@@ -62,8 +74,7 @@ class ApiClient {
       if (status == 401 && !authCall) onUnauthorized?.call();
       throw ApiException(msg, status: status);
     }
-    if (data is Map<String, dynamic>) return data;
-    throw const ApiException('服务器返回的内容看不懂，稍后再试');
+    return data;
   }
 
   String _networkMessage(DioException e) {
@@ -117,14 +128,65 @@ class ApiClient {
     await _tokens.clear();
   }
 
-  /* ---------- 课程、打卡、热力图 ---------- */
+  /* ---------- 首页、签到 ---------- */
 
-  Future<Course> course() async => Course.fromJson(await _send('GET', '/api/course'));
+  Future<CalendarInfo> calendar() async => CalendarInfo.fromJson(await _send('GET', '/api/calendar'));
 
-  Future<CheckinState> checkinState() async => CheckinState.fromJson(await _send('GET', '/api/checkin'));
+  Future<AttendanceState> attendance() async => AttendanceState.fromJson(await _send('GET', '/api/attendance'));
 
-  Future<CheckinResult> checkIn({String? code}) async =>
-      CheckinResult.fromJson(await _send('POST', '/api/checkin', body: {if (code != null && code.isNotEmpty) 'code': code}));
+  /// 签到：[photo] 是 JPEG 的 base64；晚自习开了现场口令时带上 [code]。返回签到时间（毫秒）。
+  Future<int> signIn({required String kind, required String photo, String? code}) async {
+    final d = await _send('POST', '/api/attendance/in', body: {
+      'kind': kind,
+      'photo': photo,
+      if (code != null && code.isNotEmpty) 'code': code,
+    });
+    return (d['inAt'] as num).toInt();
+  }
+
+  Future<int> signOut({required String photo}) async {
+    final d = await _send('POST', '/api/attendance/out', body: {'photo': photo});
+    return (d['outAt'] as num).toInt();
+  }
+
+  /* ---------- 课程 ---------- */
+
+  Future<List<CourseSummary>> courses() async {
+    final d = await _sendList('GET', '/api/courses');
+    return d.map((e) => CourseSummary.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<CourseDetail> course(String slug) async => CourseDetail.fromJson(await _send('GET', '/api/courses/$slug'));
+
+  Future<List<NextItem>> learningNext() async {
+    final d = await _send('GET', '/api/learning/next');
+    return (d['items'] as List).map((e) => NextItem.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  /// 标记单元完成或取消；返回下一个要学的单元（全部学完返回 null）。
+  Future<Unit?> setUnitDone(String slug, String unitId, bool done) async {
+    final d = await _send('PUT', '/api/courses/$slug/units/$unitId', body: {'done': done});
+    return d['next'] == null ? null : Unit.fromJson(d['next'] as Map<String, dynamic>);
+  }
+
+  /// 选课 / 暂停 / 退课：status 是 active、paused 或 dropped。
+  Future<void> setEnrollment(String slug, String status) => _send('PUT', '/api/courses/$slug/enrollment', body: {'status': status});
+
+  /* ---------- 公告与比赛 ---------- */
+
+  Future<List<Notice>> notices() async {
+    final d = await _sendList('GET', '/api/notices');
+    return d.map((e) => Notice.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<void> joinCompetition(String id, {String? team, String? contact}) => _send('PUT', '/api/notices/$id/entry', body: {
+        if (team != null && team.isNotEmpty) 'team': team,
+        if (contact != null && contact.isNotEmpty) 'contact': contact,
+      });
+
+  Future<void> leaveCompetition(String id) => _send('DELETE', '/api/notices/$id/entry');
+
+  /* ---------- 热力图 ---------- */
 
   Future<HeatmapPayload> heatmap() async => HeatmapPayload.fromJson(await _send('GET', '/api/heatmap'));
 

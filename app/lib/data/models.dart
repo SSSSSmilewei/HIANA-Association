@@ -1,8 +1,12 @@
-/// 接口返回的数据结构，对照网页端 src/shared/api.ts 与 src/shared/content.ts 一一写成。
-/// 后端改了字段，这里和 api.ts 要一起改。
+/// 接口返回的数据结构，对照网页端 src/client/types.ts 一一写成。
+/// 后端改了字段，这里和 types.ts 要一起改。
 library;
 
 import '../core/heatmap.dart';
+
+int? _int(Object? v) => (v as num?)?.toInt();
+List<T> _list<T>(Object? v, T Function(Map<String, dynamic>) f) =>
+    (v as List? ?? const []).map((e) => f(e as Map<String, dynamic>)).toList();
 
 class Member {
   const Member({required this.id, required this.studentNo, required this.name, this.className});
@@ -19,13 +23,14 @@ class Member {
       );
 }
 
-/// `/api/auth/me` 以及登录、激活的返回。App 只处理学员；会长后台留在网页。
+/// `/api/auth/me` 以及登录、激活的返回。App 给学员用（会长、老师也是学员账号，后台留在网页）。
 class Me {
-  const Me({required this.role, this.needsPassword = false, this.member});
+  const Me({required this.role, this.needsPassword = false, this.isAdmin = false, this.member});
   const Me.guest() : this(role: null);
 
   final String? role; // "member" | "admin" | null
   final bool needsPassword; // 刚用口令激活，还没设置自己的密码
+  final bool isAdmin;
   final Member? member;
 
   bool get isMember => role == 'member' && member != null;
@@ -33,97 +38,393 @@ class Me {
   factory Me.fromJson(Map<String, dynamic> j) => Me(
         role: j['role'] as String?,
         needsPassword: j['needsPassword'] as bool? ?? false,
+        isAdmin: j['isAdmin'] as bool? ?? false,
         member: j['member'] == null ? null : Member.fromJson(j['member'] as Map<String, dynamic>),
       );
 }
 
-class CourseTask {
-  const CourseTask({required this.title, required this.detail, this.href});
-  final String title;
-  final String detail;
-  final String? href;
+/// `GET /api/calendar`：教学周。
+class CalendarInfo {
+  const CalendarInfo({required this.today, this.week});
+  final String today;
+  final int? week;
 
-  factory CourseTask.fromJson(Map<String, dynamic> j) =>
-      CourseTask(title: j['title'] as String, detail: j['detail'] as String, href: j['href'] as String?);
+  factory CalendarInfo.fromJson(Map<String, dynamic> j) => CalendarInfo(today: j['today'] as String, week: _int(j['week']));
 }
 
-class CourseWeek {
-  const CourseWeek({
-    required this.title,
-    required this.summary,
-    required this.lectureCn,
-    required this.official,
-    required this.tasks,
+/* ---------- 签到 ---------- */
+
+class EveningRecord {
+  const EveningRecord({required this.inAt, this.outAt, required this.status});
+  final int inAt;
+  final int? outAt;
+  final String status; // open | closed | auto_closed
+
+  factory EveningRecord.fromJson(Map<String, dynamic> j) =>
+      EveningRecord(inAt: _int(j['in_at'])!, outAt: _int(j['out_at']), status: j['status'] as String);
+}
+
+class Evening {
+  const Evening({
+    required this.days,
+    required this.windowStart,
+    required this.windowEnd,
+    required this.isDay,
+    required this.open,
+    required this.opensAt,
+    required this.endsAt,
+    required this.requireCode,
+    this.record,
   });
-  final String title;
-  final String summary;
-  final String lectureCn; // B 站搜索结果页：国内能打开
-  final String official;
-  final List<CourseTask> tasks;
+  final List<int> days; // 1 = 周一 … 7 = 周日
+  final String windowStart;
+  final String windowEnd;
+  final bool isDay;
+  final bool open;
+  final int opensAt;
+  final int endsAt;
+  final bool requireCode;
+  final EveningRecord? record;
 
-  factory CourseWeek.fromJson(Map<String, dynamic> j) => CourseWeek(
-        title: j['title'] as String,
-        summary: j['summary'] as String,
-        lectureCn: j['lectureCn'] as String,
-        official: j['official'] as String,
-        tasks: (j['tasks'] as List).map((t) => CourseTask.fromJson(t as Map<String, dynamic>)).toList(),
-      );
-}
-
-/// `/api/course`
-class Course {
-  const Course({required this.name, required this.weeks, required this.currentWeek});
-  final String name;
-  final List<CourseWeek> weeks;
-  final int currentWeek;
-
-  CourseWeek? get thisWeek => currentWeek >= 0 && currentWeek < weeks.length ? weeks[currentWeek] : null;
-
-  factory Course.fromJson(Map<String, dynamic> j) {
-    final track = j['track'] as Map<String, dynamic>;
-    return Course(
-      name: track['name'] as String,
-      weeks: (track['weeks'] as List).map((w) => CourseWeek.fromJson(w as Map<String, dynamic>)).toList(),
-      currentWeek: (j['currentWeek'] as num).toInt(),
+  factory Evening.fromJson(Map<String, dynamic> j) {
+    final w = (j['window'] as List).cast<String>();
+    return Evening(
+      days: (j['days'] as List).map((d) => (d as num).toInt()).toList(),
+      windowStart: w[0],
+      windowEnd: w[1],
+      isDay: j['isDay'] as bool,
+      open: j['open'] as bool,
+      opensAt: _int(j['opensAt'])!,
+      endsAt: _int(j['endsAt'])!,
+      requireCode: j['requireCode'] as bool,
+      record: j['record'] == null ? null : EveningRecord.fromJson(j['record'] as Map<String, dynamic>),
     );
   }
 }
 
-/// `GET /api/checkin`
-class CheckinState {
-  const CheckinState({
-    required this.today,
-    required this.window,
-    required this.requireCode,
-    required this.checkedAt,
-    required this.total,
-  });
-  final String today;
-  final String window; // 例如 "19:00-21:30"
-  final bool requireCode;
-  final int? checkedAt; // 毫秒时间戳；null 表示今晚还没打卡
-  final int total;
+class AttendanceRecord {
+  const AttendanceRecord({required this.id, required this.kind, required this.day, required this.inAt, this.outAt, required this.status});
+  final String id;
+  final String kind; // evening | venue
+  final String day;
+  final int inAt;
+  final int? outAt;
+  final String status;
 
-  String get windowText => window.replaceAll('-', ' 到 ');
-
-  factory CheckinState.fromJson(Map<String, dynamic> j) => CheckinState(
-        today: j['today'] as String,
-        window: j['window'] as String,
-        requireCode: j['requireCode'] as bool,
-        checkedAt: (j['checkedAt'] as num?)?.toInt(),
-        total: (j['total'] as num).toInt(),
+  factory AttendanceRecord.fromJson(Map<String, dynamic> j) => AttendanceRecord(
+        id: j['id'] as String,
+        kind: j['kind'] as String,
+        day: j['day'] as String,
+        inAt: _int(j['inAt'])!,
+        outAt: _int(j['outAt']),
+        status: j['status'] as String,
       );
 }
 
-/// `POST /api/checkin`：ok 或 already；时间外、口令不对由后端返回错误文案。
-class CheckinResult {
-  const CheckinResult({required this.ok, required this.at});
-  final bool ok;
-  final int at;
+/// `GET /api/attendance`
+class AttendanceState {
+  const AttendanceState({
+    required this.now,
+    required this.today,
+    required this.evening,
+    this.currentKind,
+    this.currentInAt,
+    required this.recent,
+    required this.eveningTotal,
+    required this.venueTotal,
+  });
+  final int now;
+  final String today;
+  final Evening evening;
+  final String? currentKind; // 进行中的签到：evening | venue
+  final int? currentInAt;
+  final List<AttendanceRecord> recent;
+  final int eveningTotal;
+  final int venueTotal;
 
-  factory CheckinResult.fromJson(Map<String, dynamic> j) =>
-      CheckinResult(ok: j['ok'] as bool, at: (j['at'] as num).toInt());
+  bool get isIn => currentKind != null;
+
+  factory AttendanceState.fromJson(Map<String, dynamic> j) {
+    final cur = j['current'] as Map<String, dynamic>?;
+    final totals = j['totals'] as Map<String, dynamic>? ?? const {};
+    return AttendanceState(
+      now: _int(j['now'])!,
+      today: j['today'] as String,
+      evening: Evening.fromJson(j['evening'] as Map<String, dynamic>),
+      currentKind: cur?['kind'] as String?,
+      currentInAt: _int(cur?['inAt']),
+      recent: _list(j['recent'], AttendanceRecord.fromJson),
+      eveningTotal: _int(totals['evening']) ?? 0,
+      venueTotal: _int(totals['venue']) ?? 0,
+    );
+  }
 }
+
+/* ---------- 课程 ---------- */
+
+class CourseLink {
+  const CourseLink(this.label, this.url);
+  final String label;
+  final String url;
+
+  factory CourseLink.fromJson(Map<String, dynamic> j) => CourseLink(j['label'] as String, j['url'] as String);
+}
+
+class Unit {
+  const Unit({required this.id, required this.title, required this.kind, required this.periods, required this.links, this.note});
+  final String id;
+  final String title;
+  final String kind; // lecture | pset | practice | reading | project
+  final int periods;
+  final List<CourseLink> links;
+  final String? note;
+
+  String get kindLabel => const {'lecture': '讲座', 'pset': '习题', 'practice': '练习', 'reading': '阅读', 'project': '项目'}[kind] ?? kind;
+
+  factory Unit.fromJson(Map<String, dynamic> j) => Unit(
+        id: j['id'] as String,
+        title: j['title'] as String,
+        kind: j['kind'] as String,
+        periods: _int(j['periods']) ?? 0,
+        links: _list(j['links'], CourseLink.fromJson),
+        note: j['note'] as String?,
+      );
+}
+
+class Progress {
+  const Progress({required this.doneUnits, required this.units, required this.donePeriods, required this.totalPeriods, required this.ratio});
+  final int doneUnits;
+  final int units;
+  final int donePeriods;
+  final int totalPeriods;
+  final double ratio;
+
+  factory Progress.fromJson(Map<String, dynamic> j) => Progress(
+        doneUnits: _int(j['doneUnits']) ?? 0,
+        units: _int(j['units']) ?? 0,
+        donePeriods: _int(j['donePeriods']) ?? 0,
+        totalPeriods: _int(j['totalPeriods']) ?? 0,
+        ratio: (j['ratio'] as num? ?? 0).toDouble(),
+      );
+}
+
+const kAreas = [('all', '全部'), ('tools', '开发者素养'), ('programming', '编程入门'), ('math', '数学基础'), ('systems', '计算机系统')];
+const kDifficulty = ['', '入门', '中等', '较难', '难', '很难'];
+const kAccess = {'good': '国内能顺利学', 'partial': '部分环节要软路由', 'hard': '需要软路由'};
+
+/// 课程卡片上的小标签：学校 · 课号。
+String courseCode(String slug, String university) {
+  const uni = {'哈佛大学': 'HARVARD', 'MIT': 'MIT', 'UC Berkeley': 'BERKELEY', '协会自编': 'HIANA'};
+  const short = {'missing-semester': 'MISSING SEMESTER', 'git': 'GIT', 'cs50x': 'CS50x', 'cs50p': 'CS50P', 'cs61a': 'CS61A', 'mit-1801': '18.01'};
+  return '${uni[university] ?? university} · ${short[slug] ?? slug.toUpperCase()}';
+}
+
+/// 目录里的一门课（不带单元）。
+class CourseSummary {
+  const CourseSummary({
+    required this.slug,
+    required this.title,
+    required this.university,
+    required this.area,
+    required this.difficulty,
+    required this.required,
+    required this.summary,
+    required this.prerequisites,
+    required this.accessLevel,
+    required this.learners,
+    required this.enrollStatus,
+    required this.progress,
+  });
+  final String slug;
+  final String title;
+  final String university;
+  final String area;
+  final int difficulty;
+  final bool required;
+  final String summary;
+  final String prerequisites;
+  final String accessLevel;
+  final int learners;
+  final String? enrollStatus; // active | paused | done | dropped | null
+  final Progress progress;
+
+  String get code => courseCode(slug, university);
+
+  factory CourseSummary.fromJson(Map<String, dynamic> j) => CourseSummary(
+        slug: j['slug'] as String,
+        title: j['title'] as String,
+        university: j['university'] as String,
+        area: j['area'] as String,
+        difficulty: _int(j['difficulty']) ?? 1,
+        required: j['required'] as bool? ?? false,
+        summary: j['summary'] as String? ?? '',
+        prerequisites: j['prerequisites'] as String? ?? '',
+        accessLevel: (j['access'] as Map<String, dynamic>?)?['level'] as String? ?? 'good',
+        learners: _int(j['learners']) ?? 0,
+        enrollStatus: (j['enrollment'] as Map<String, dynamic>?)?['status'] as String?,
+        progress: Progress.fromJson(j['progress'] as Map<String, dynamic>),
+      );
+}
+
+/// `GET /api/courses/:slug`
+class CourseDetail {
+  const CourseDetail({
+    required this.slug,
+    required this.title,
+    this.titleEn,
+    required this.university,
+    required this.summary,
+    this.why,
+    required this.video,
+    required this.homework,
+    required this.license,
+    required this.units,
+    required this.resources,
+    required this.enrollStatus,
+    required this.done,
+    required this.peers,
+  });
+  final String slug;
+  final String title;
+  final String? titleEn;
+  final String university;
+  final String summary;
+  final String? why;
+  final String video;
+  final String homework;
+  final String license;
+  final List<Unit> units;
+  final List<CourseLink> resources;
+  final String? enrollStatus;
+  final Set<String> done;
+  final List<String> peers;
+
+  String get code => courseCode(slug, university);
+  int get totalPeriods => units.fold(0, (n, u) => n + u.periods);
+  int get donePeriods => units.where((u) => done.contains(u.id)).fold(0, (n, u) => n + u.periods);
+  Unit? get next {
+    for (final u in units) {
+      if (!done.contains(u.id)) return u;
+    }
+    return null;
+  }
+
+  CourseDetail copyWith({Set<String>? done, String? enrollStatus}) => CourseDetail(
+        slug: slug,
+        title: title,
+        titleEn: titleEn,
+        university: university,
+        summary: summary,
+        why: why,
+        video: video,
+        homework: homework,
+        license: license,
+        units: units,
+        resources: resources,
+        enrollStatus: enrollStatus ?? this.enrollStatus,
+        done: done ?? this.done,
+        peers: peers,
+      );
+
+  factory CourseDetail.fromJson(Map<String, dynamic> j) {
+    final c = j['course'] as Map<String, dynamic>;
+    final access = c['access'] as Map<String, dynamic>? ?? const {};
+    return CourseDetail(
+      slug: c['slug'] as String,
+      title: c['title'] as String,
+      titleEn: c['titleEn'] as String?,
+      university: c['university'] as String,
+      summary: c['summary'] as String? ?? '',
+      why: c['why'] as String?,
+      video: access['video'] as String? ?? '',
+      homework: access['homework'] as String? ?? '',
+      license: c['license'] as String? ?? '',
+      units: _list(c['units'], Unit.fromJson),
+      resources: _list(c['resources'], CourseLink.fromJson),
+      enrollStatus: (j['enrollment'] as Map<String, dynamic>?)?['status'] as String?,
+      done: (j['done'] as Map<String, dynamic>? ?? const {}).keys.toSet(),
+      peers: (j['peers'] as List? ?? const []).cast<String>(),
+    );
+  }
+}
+
+/// 首页“接下来”的一项。
+class NextItem {
+  const NextItem({required this.slug, required this.title, this.next, required this.progress});
+  final String slug;
+  final String title;
+  final Unit? next;
+  final Progress progress;
+
+  factory NextItem.fromJson(Map<String, dynamic> j) => NextItem(
+        slug: j['slug'] as String,
+        title: j['title'] as String,
+        next: j['next'] == null ? null : Unit.fromJson(j['next'] as Map<String, dynamic>),
+        progress: Progress.fromJson(j['progress'] as Map<String, dynamic>),
+      );
+}
+
+/* ---------- 公告 ---------- */
+
+class Entry {
+  const Entry({required this.name, this.team, this.contact});
+  final String name;
+  final String? team;
+  final String? contact;
+
+  factory Entry.fromJson(Map<String, dynamic> j) => Entry(name: j['name'] as String, team: j['team'] as String?, contact: j['contact'] as String?);
+}
+
+class Notice {
+  const Notice({
+    required this.id,
+    required this.kind,
+    required this.title,
+    required this.body,
+    this.docUrl,
+    this.groupInfo,
+    this.deadline,
+    required this.tags,
+    required this.pinned,
+    this.author,
+    required this.createdAt,
+    required this.entries,
+    required this.joined,
+  });
+  final String id;
+  final String kind; // notice | competition
+  final String title;
+  final String body;
+  final String? docUrl;
+  final String? groupInfo;
+  final String? deadline;
+  final List<String> tags;
+  final bool pinned;
+  final String? author;
+  final int createdAt;
+  final List<Entry> entries;
+  final bool joined;
+
+  bool get isCompetition => kind == 'competition';
+
+  factory Notice.fromJson(Map<String, dynamic> j) => Notice(
+        id: j['id'] as String,
+        kind: j['kind'] as String,
+        title: j['title'] as String,
+        body: j['body'] as String? ?? '',
+        docUrl: j['docUrl'] as String?,
+        groupInfo: j['groupInfo'] as String?,
+        deadline: j['deadline'] as String?,
+        tags: (j['tags'] as List? ?? const []).cast<String>(),
+        pinned: j['pinned'] as bool? ?? false,
+        author: j['author'] as String?,
+        createdAt: _int(j['createdAt']) ?? 0,
+        entries: _list(j['entries'], Entry.fromJson),
+        joined: j['joined'] as bool? ?? false,
+      );
+}
+
+/* ---------- 热力图 ---------- */
 
 class ProviderInfo {
   const ProviderInfo({
@@ -132,7 +433,6 @@ class ProviderInfo {
     required this.unit,
     required this.category,
     required this.status,
-    required this.coverage,
     required this.handleHint,
     this.needsUserSecret,
   });
@@ -141,9 +441,8 @@ class ProviderInfo {
   final String unit;
   final String category; // code | algo | english
   final String status; // official | unofficial | pending
-  final String coverage; // history | snapshot
   final String handleHint;
-  final String? needsUserSecret; // 需要学员自己填令牌时，这里是提示文字
+  final String? needsUserSecret;
 
   bool get available => status != 'pending';
 
@@ -153,7 +452,6 @@ class ProviderInfo {
         unit: j['unit'] as String,
         category: j['category'] as String,
         status: j['status'] as String,
-        coverage: j['coverage'] as String,
         handleHint: j['handleHint'] as String,
         needsUserSecret: j['needsUserSecret'] as String?,
       );
@@ -171,7 +469,7 @@ class BindingInfo {
         source: j['source'] as String,
         handle: j['handle'] as String,
         hasSecret: j['hasSecret'] as bool? ?? false,
-        syncedAt: (j['syncedAt'] as num?)?.toInt(),
+        syncedAt: _int(j['syncedAt']),
         lastError: j['lastError'] as String?,
       );
 }
@@ -193,9 +491,9 @@ class HeatmapPayload {
 
   factory HeatmapPayload.fromJson(Map<String, dynamic> j) => HeatmapPayload(
         today: j['today'] as String,
-        series: (j['series'] as List).map((s) => SourceSeries.fromJson(s as Map<String, dynamic>)).toList(),
-        bindings: (j['bindings'] as List).map((b) => BindingInfo.fromJson(b as Map<String, dynamic>)).toList(),
-        providers: (j['providers'] as List).map((p) => ProviderInfo.fromJson(p as Map<String, dynamic>)).toList(),
+        series: _list(j['series'], SourceSeries.fromJson),
+        bindings: _list(j['bindings'], BindingInfo.fromJson),
+        providers: _list(j['providers'], ProviderInfo.fromJson),
       );
 }
 

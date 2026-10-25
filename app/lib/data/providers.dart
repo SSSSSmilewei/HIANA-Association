@@ -71,24 +71,53 @@ class SessionNotifier extends AsyncNotifier<Me> {
 
 final sessionProvider = AsyncNotifierProvider<SessionNotifier, Me>(SessionNotifier.new);
 
-/* 下面三份数据都跟着登录状态走：换账号或退出时自动重新加载 */
+/* 下面的数据都跟着登录状态走：换账号或退出时自动重新加载 */
 
-final courseProvider = FutureProvider<Course>((ref) {
-  ref.watch(sessionProvider.select((s) => s.valueOrNull?.member?.id));
-  return ref.read(apiProvider).course();
+String? _uid(Ref ref) => ref.watch(sessionProvider.select((s) => s.valueOrNull?.member?.id));
+
+final calendarProvider = FutureProvider<CalendarInfo>((ref) {
+  _uid(ref);
+  return ref.read(apiProvider).calendar();
 });
 
-final checkinProvider = FutureProvider<CheckinState>((ref) {
-  ref.watch(sessionProvider.select((s) => s.valueOrNull?.member?.id));
-  return ref.read(apiProvider).checkinState();
+final attendanceProvider = FutureProvider<AttendanceState>((ref) {
+  _uid(ref);
+  return ref.read(apiProvider).attendance();
+});
+
+final nextProvider = FutureProvider<List<NextItem>>((ref) {
+  _uid(ref);
+  return ref.read(apiProvider).learningNext();
+});
+
+final coursesProvider = FutureProvider<List<CourseSummary>>((ref) {
+  _uid(ref);
+  return ref.read(apiProvider).courses();
+});
+
+final courseProvider = FutureProvider.family<CourseDetail, String>((ref, slug) {
+  _uid(ref);
+  return ref.read(apiProvider).course(slug);
+});
+
+final noticesProvider = FutureProvider<List<Notice>>((ref) {
+  _uid(ref);
+  return ref.read(apiProvider).notices();
 });
 
 final heatmapProvider = FutureProvider<HeatmapPayload>((ref) {
-  ref.watch(sessionProvider.select((s) => s.valueOrNull?.member?.id));
+  _uid(ref);
   return ref.read(apiProvider).heatmap();
 });
 
-/* 深色模式：跟随系统 / 浅色 / 深色 / 跟随壁纸取色，存在本地 */
+/// 学习进度变了以后，相关页面一起刷新。
+void refreshLearning(WidgetRef ref) {
+  ref.invalidate(nextProvider);
+  ref.invalidate(coursesProvider);
+  ref.invalidate(heatmapProvider);
+}
+
+/* 深色模式：跟随系统 / 浅色 / 深色，存在本地 */
 
 class ThemeModeNotifier extends Notifier<MiuixColorSchemeMode> {
   @override

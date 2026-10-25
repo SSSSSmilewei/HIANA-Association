@@ -16,14 +16,16 @@ class SourceSeries {
     required this.days,
     this.error,
     this.syncedAt,
+    this.group,
   });
 
-  final String source; // provider id，例如 "github"；站内记录是 "site"
+  final String source; // provider id，例如 "github"；站内记录是 "site:attendance" 这样
   final String label;
   final String unit;
   final Daily days;
   final String? error; // 同步失败时的原因；失败不影响其他来源
   final int? syncedAt;
+  final String? group; // attendance | reflection | study | external
 
   factory SourceSeries.fromJson(Map<String, dynamic> j) => SourceSeries(
         source: j['source'] as String,
@@ -33,6 +35,7 @@ class SourceSeries {
             .map((k, v) => MapEntry(k, (v as num).toInt())),
         error: j['error'] as String?,
         syncedAt: (j['syncedAt'] as num?)?.toInt(),
+        group: j['group'] as String?,
       );
 }
 

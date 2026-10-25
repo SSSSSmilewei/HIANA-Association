@@ -19,6 +19,7 @@ dependencies:
   dio: ^5.7.0 # 网络请求，拦截器统一加令牌、解析后端的中文错误
   flutter_secure_storage: ^9.2.2 # 令牌存在 Android Keystore / iOS Keychain
   url_launcher: ^6.3.1 # 打开 B 站讲座、CS50 官方页、APK 下载
+  image_picker: ^1.1.2 # 签到拍照：只开相机，不给相册入口
   package_info_plus: ^8.1.0 # 读当前版本号，配合 /api/app/version 检查更新
 
 dev_dependencies:

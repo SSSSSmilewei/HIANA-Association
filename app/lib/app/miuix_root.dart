@@ -9,6 +9,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/providers.dart';
 import '../features/auth/auth_gate.dart';
+import 'tokens.dart';
+
+/// miuix 自带的蓝色换成协会的橙色；背景、卡片和网页端同一套。
+final _lightColors = lightColorScheme().copy(
+  primary: Hx.light.cta,
+  onPrimary: const Color(0xFFFFFFFF),
+  background: Hx.light.bg,
+  onBackground: Hx.light.ink,
+  surface: Hx.light.surface,
+  onSurface: Hx.light.ink,
+);
+final _darkColors = darkColorScheme().copy(
+  primary: const Color(0xFFE2601F),
+  onPrimary: const Color(0xFFFFFFFF),
+  background: Hx.darkTheme.bg,
+  onBackground: Hx.darkTheme.ink,
+  surface: Hx.darkTheme.surface,
+  onSurface: Hx.darkTheme.ink,
+);
 
 class HianaApp extends ConsumerWidget {
   const HianaApp({super.key});
@@ -18,11 +37,13 @@ class HianaApp extends ConsumerWidget {
     final mode = ref.watch(themeModeProvider);
     return MiuixThemeController(
       colorSchemeMode: mode,
+      lightColors: _lightColors,
+      darkColors: _darkColors,
       child: Builder(
         builder: (context) {
           final theme = MiuixTheme.of(context);
           return MaterialApp(
-            title: '协会学习',
+            title: 'HIANA 学习',
             debugShowCheckedModeBanner: false,
             // 只为了让 flutter_miuix 内部用到的文本编辑基建取到颜色；关掉水波纹，避免出现 Material 观感
             theme: ThemeData(
@@ -35,6 +56,11 @@ class HianaApp extends ConsumerWidget {
             locale: const Locale('zh', 'CN'),
             supportedLocales: const [Locale('zh', 'CN')],
             localizationsDelegates: GlobalMaterialLocalizations.delegates,
+            // 页面里直接用 Text 时的默认样式（没有 Material 的 Scaffold 提供它）
+            builder: (context, child) => DefaultTextStyle(
+              style: TextStyle(color: Hx.of(context).ink, fontSize: 15, height: 1.45),
+              child: child ?? const SizedBox.shrink(),
+            ),
             home: const AuthGate(),
           );
         },

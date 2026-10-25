@@ -79,6 +79,11 @@ jobs:
           channel: stable
           cache: true
       - run: flutter create . --org win.shanmoew --project-name hiana_app --platforms=android
+      - name: 补上联网权限和应用名
+        run: |
+          m=android/app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.INTERNET' $m || sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/>\n    <application|' $m
+          sed -i 's|android:label="hiana_app"|android:label="HIANA 学习"|' $m
       - run: flutter pub get
       - name: 构建 APK
         run: flutter build apk --release --split-per-abi
