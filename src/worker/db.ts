@@ -196,6 +196,18 @@ export const MIGRATIONS: string[][] = [
       PRIMARY KEY (user_id, course_slug, unit_id)
     )`,
   ],
+  // v4：晨思夜思（课程表 App 的晨间 / 晚间一分钟会同步过来）。只做加法
+  [
+    `CREATE TABLE IF NOT EXISTS reflections (
+      user_id TEXT NOT NULL,
+      day TEXT NOT NULL,
+      slot TEXT NOT NULL CHECK (slot IN ('morning', 'evening')),
+      text TEXT NOT NULL,
+      source TEXT,
+      updated_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, day, slot)
+    )`,
+  ],
 ];
 
 // 每个数据库连接只迁移一次（Worker 里通常只有一个；测试里每个用例一个内存库）
