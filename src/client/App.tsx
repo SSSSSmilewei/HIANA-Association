@@ -6,7 +6,7 @@ import { AttendancePage } from "./pages/Attendance";
 import { CoursePage } from "./pages/Course";
 import { CoursesPage } from "./pages/Courses";
 import { HomePage } from "./pages/Home";
-import { AdminLogin, LoginPage, PasswordPage } from "./pages/Login";
+import { LoginPage, PasswordPage } from "./pages/Login";
 import { NoticesPage } from "./pages/Notices";
 import { ProfilePage } from "./pages/Profile";
 import { matchPath, navigate, useLocation } from "./router";
@@ -45,8 +45,13 @@ export function App() {
     navigate("/login", { replace: true });
   };
 
-  if (path === "/admin/login") return <AdminLogin onLogin={setMe} />;
-  if (!me.role) return path === "/login" ? <LoginPage onLogin={setMe} /> : <Redirect to="/login" />;
+  // 没登录：/login 是学号登录，/admin/login（或者想进后台）直接打开“会长”那一栏
+  if (!me.role) {
+    if (path === "/login") return <LoginPage onLogin={setMe} />;
+    if (path === "/admin/login") return <LoginPage key="admin" initialMode="admin" onLogin={setMe} />;
+    return <Redirect to={path.startsWith("/admin") ? "/admin/login" : "/login"} />;
+  }
+  if (path === "/admin/login") return <Redirect to="/admin" />;
   if (path === "/login") return <Redirect to={me.role === "admin" ? "/admin" : "/"} />;
 
   // 刚用口令激活：先设密码，别的页面都进不去

@@ -39,9 +39,12 @@ function LoginFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function LoginPage({ initialCode, onLogin }: { initialCode?: string; onLogin: (me: Me) => void }) {
-  useTitle("登录");
-  const [mode, setMode] = useState<"password" | "activate">(initialCode ? "activate" : "password");
+type LoginMode = "password" | "activate" | "admin";
+
+export function LoginPage({ initialCode, initialMode, onLogin }: { initialCode?: string; initialMode?: LoginMode; onLogin: (me: Me) => void }) {
+  useTitle(initialMode === "admin" ? "会长登录" : "登录");
+  const [mode, setMode] = useState<LoginMode>(initialCode ? "activate" : (initialMode ?? "password"));
+  const [adminPassword, setAdminPassword] = useState("");
   const [studentNo, setStudentNo] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState(initialCode ?? "");
@@ -80,9 +83,32 @@ export function LoginPage({ initialCode, onLogin }: { initialCode?: string; onLo
         options={[
           { value: "password", label: "学号登录" },
           { value: "activate", label: "第一次使用" },
+          { value: "admin", label: "会长" },
         ]}
       />
-      {mode === "password" ? (
+      {mode === "admin" ? (
+        <form
+          className="form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void run("/api/auth/admin", { password: adminPassword }, "/admin");
+          }}
+        >
+          <label className="field">
+            后台密码
+            <input className="input" type="password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} autoFocus autoComplete="current-password" />
+          </label>
+          {error && (
+            <span className="error-text" role="alert">
+              {error}
+            </span>
+          )}
+          <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || !adminPassword}>
+            {busy ? <Spinner /> : "进入后台"}
+          </button>
+          <p className="xsmall sub pretty">用后台密码进管理后台：管成员、发口令、开签到、发公告。如果你在「成员」里把自己的账号设成了管理员，也可以直接用学号登录，学习和管理在一个账号里。</p>
+        </form>
+      ) : mode === "password" ? (
         <form
           className="form"
           onSubmit={(e) => {
@@ -221,55 +247,6 @@ export function PasswordPage({ me, onDone }: { me: Me; onDone: () => void }) {
             取消
           </button>
         )}
-      </form>
-    </LoginFrame>
-  );
-}
-
-/** 初始化用的后台登录：还没有管理员账号时，用部署时设的 ADMIN_PASSWORD 进来，把会长的账号设为管理员。 */
-export function AdminLogin({ onLogin }: { onLogin: (me: Me) => void }) {
-  useTitle("后台初始化登录");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  return (
-    <LoginFrame>
-      <div className="stack" style={{ gap: 6 }}>
-        <h1 className="h2">后台初始化登录</h1>
-        <p className="small sub pretty">平时管理员用自己的学号和密码登录就行。这里只在还没有管理员账号时用。</p>
-      </div>
-      <form
-        className="form"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setBusy(true);
-          setError(null);
-          try {
-            const me = await api<Me>("/api/auth/admin", { body: { password } });
-            clearCache();
-            onLogin(me);
-            navigate("/admin", { replace: true });
-          } catch (err) {
-            setError((err as Error).message);
-            setBusy(false);
-          }
-        }}
-      >
-        <label className="field">
-          后台密码
-          <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoFocus autoComplete="current-password" />
-        </label>
-        {error && (
-          <span className="error-text" role="alert">
-            {error}
-          </span>
-        )}
-        <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || !password}>
-          {busy ? <Spinner /> : "进入后台"}
-        </button>
-        <button className="btn btn-quiet btn-block" type="button" onClick={() => navigate("/login")}>
-          回到学号登录
-        </button>
       </form>
     </LoginFrame>
   );
