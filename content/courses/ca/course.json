@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "ca",
+ "title": "ETH: Computer Architecture",
+ "category": "体系结构",
+ "provider": "ETH Zurich",
+ "instructors": [],
+ "language": "C/C++，verilog",
+ "prerequisites": "[DDCA](https://csdiy.wiki/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/DDCA/)",
+ "difficulty": 4,
+ "hours": "70 小时 +",
+ "summary": "讲解计算机体系结构，授课教师是 Onur Mutlu 教授。本课程根据课程描述应该是DDCA的进阶课程，课程目标是学习如何为类MIPS处理器设计控制和数据通路硬件，如何通过流水线和简单的超标量执行使机器指令同时执行，以及如何设计快速的内存和存储系统。根据同学反馈……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n讲解计算机体系结构，授课教师是 Onur Mutlu 教授。本课程根据课程描述应该是[DDCA](https://csdiy.wiki/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/DDCA/)的进阶课程，课程目标是学习如何为类MIPS处理器设计控制和数据通路硬件，如何通过流水线和简单的超标量执行使机器指令同时执行，以及如何设计快速的内存和存储系统。根据同学反馈，从课程本身的难度上说，至少高于 CS61C ，课程的部分内容十分前沿，B站搬运UP主建议大家作为卡内基梅隆大学18-447的补充。所提供的阅读材料十分丰富，相当于听了一学期讲座。\n\n以下是官网的介绍：\n>We will learn the fundamental concepts of the different parts of modern computing systems, as well as the latest major research topics in Industry and Academia. We will extensively cover memory systems (including DRAM and new Non-Volatile Memory technologies, memory controllers, flash memory), new paradigms like processing-in-memory, parallel computing systems (including multicore processors, coherence and consistency, GPUs), heterogeneous computing, interconnection networks, specialized systems for major data-intensive workloads (e.g. graph analytics, bioinformatics, machine learning), etc. We will focus on fundamentals as well as cutting-edge research. Significant attention will be given to real-life examples and tradeoffs, as well as critical analysis of modern computing systems.\n\n编程实践采取 Verilog 设计和模拟类 MIPS 流水线处理器的寄存器传输（RT）实现，以此加强对理论课程的理解。因此前几个实验会有 verilog 的 CPU 流水线编程。同时还将使用C语言开发一个周期精确的处理器模拟器，并使用该模拟器探索处理器设计选项。\n\n## 课程资源\n\n- 课程网站：[2020 Fall](https://safari.ethz.ch/architecture/fall2022/doku.php?id=start), [2022 Fall](https://safari.ethz.ch/architecture/fall2022/doku.php?id=start)\n- 课程视频：官方视频详见课程网站。B站有个[2020年版本搬运](https://www.bilibili.com/video/BV1Vf4y1i7YG/?vd_source=77d47fcb2bac41ab4ad02f265b3273cf)。\n- 课程教材：无指定教材，每个 lecture 都有大量文献可供阅读\n- 课程作业：5 个 Project ，大多与内存和cache相关，具体内容见[课程网站的lab界面](https://safari.ethz.ch/architecture/fall2022/doku.php?id=labs)\n\n## 资源汇总\n国内有高校引入了这门课，因此有需要的同学可以搜索到一些资源。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/CA/"
+  },
+  "official": "本课程讲解计算机体系结构，涵盖现代计算系统不同部分的基础概念，以及工业界和学术界的最新主要研究课题。课程广泛涵盖内存系统（包括 DRAM 和新型非易失性内存技术、内存控制器、闪存）、处理内存范式、并行计算系统（包括多核处理器、相干性和一致性、GPU）、异构计算、互连网络、为大规模数据密集型工作负载（如图分析、生物信息学、机器学习）设计的专用系统。课程强调基础以及前沿研究，特别关注现实生活中的示例、权衡和对现代计算系统的批判性分析。"
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · 2020 Fall",
+   "url": "https://safari.ethz.ch/architecture/fall2022/doku.php?id=start"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · 2022 Fall",
+   "url": "https://safari.ethz.ch/architecture/fall2022/doku.php?id=start"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · 2020年版本搬运",
+   "url": "https://www.bilibili.com/video/BV1Vf4y1i7YG/?vd_source=77d47fcb2bac41ab4ad02f265b3273cf"
+  },
+  {
+   "kind": "assignments",
+   "label": "网站的lab界面",
+   "url": "https://safari.ethz.ch/architecture/fall2022/doku.php?id=labs"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Computer Architecture"
+}

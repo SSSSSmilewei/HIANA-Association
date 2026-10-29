@@ -246,34 +246,60 @@ describe("绑定、同步、读取", () => {
 });
 
 describe("成员管理", () => {
-  test("解析从 Excel 粘贴的名单", async () => {
-    const { parseRoster } = await import("../src/worker/members");
-    const { rows, errors } = parseRoster("学号\t姓名\t班级\n2025010103\t王同学\t计科2502\n2025010104,赵同学\nabc 无名\n2025010103 王同学\n");
-    expect(rows).toEqual([
-      { studentNo: "2025010103", name: "王同学", className: "计科2502" },
-      { studentNo: "2025010104", name: "赵同学", className: undefined },
-    ]);
-    expect(errors).toHaveLength(2);
+  test("邀请码：同一个码同时注册两次只有一个成功；过期的码不能用", async () => {
+    const { register } = await import("../src/worker/members");
+    const { createInvites, listInvites } = await import("../src/worker/invites");
+    const db = await freshDb();
+    const t0 = at("2026-10-01T00:00:00+08:00");
+    const { codes } = await createInvites(db, SECRET, { count: 1, days: 1, note: null, by: "u1" }, t0);
+    const input = (no: string) => ({ studentNo: no, name: "新同学", password: "pass-2026-x", confirm: "pass-2026-x", invite: codes[0] });
+    const results = await Promise.allSettled([register(db, SECRET, input("250101011"), { open: true }, t0), register(db, SECRET, input("250101012"), { open: true }, t0)]);
+    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+    expect((await db.prepare("SELECT COUNT(*) AS n FROM users WHERE student_no LIKE '25010101_'").first<{ n: number }>())?.n).toBe(1);
+
+    const late = await createInvites(db, SECRET, { count: 1, days: 1, note: null, by: "u1" }, t0);
+    const t2 = t0 + 2 * 86_400_000;
+    await expect(register(db, SECRET, { ...input("250101013"), invite: late.codes[0] }, { open: true }, t2)).rejects.toThrow("过期");
+    expect((await listInvites(db, t2)).map((x) => x.state).sort()).toEqual(["expired", "used"]);
   });
 
-  test("导入、口令登录、重置、停用", async () => {
-    const { importMembers, findByPasscode, resetPasscode, setMemberStatus } = await import("../src/worker/members");
+  test("之前导入、还没激活的账号：旧口令当重置码用；也可以用邀请码认领", async () => {
+    const { register, resetWithCode, createResetCode, findByAccountAndPassword, setMemberStatus } = await import("../src/worker/members");
+    const { hashPasscode } = await import("../src/worker/passcode");
+    const { createInvites } = await import("../src/worker/invites");
     const db = await freshDb();
-    const r = await importMembers(db, SECRET, [
-      { studentNo: "2025010101", name: "林同学（改名）", className: "计科2501" }, // 已存在：只更新
-      { studentNo: "2025010199", name: "新同学" },
-    ]);
-    expect(r.updated).toBe(1);
-    expect(r.created).toHaveLength(1);
-    const code = r.created[0].passcode;
-    expect(code).toMatch(/^[a-z2-9]{4}-[a-z2-9]{4}-[a-z2-9]{4}$/);
-    const me = await findByPasscode(db, SECRET, code.toUpperCase().replace(/-/g, " "));
-    expect(me?.name).toBe("新同学");
-    const fresh = await resetPasscode(db, SECRET, me!.id);
-    expect(await findByPasscode(db, SECRET, code)).toBeNull();
-    expect((await findByPasscode(db, SECRET, fresh!))?.id).toBe(me!.id);
-    await setMemberStatus(db, me!.id, "archived");
-    expect(await findByPasscode(db, SECRET, fresh!)).toBeNull();
+    // u1 拿着会长以前发的口令
+    await db.prepare("UPDATE users SET passcode_hash = ? WHERE id = 'u1'").bind(await hashPasscode(SECRET, "abcd-efgh-jkmn")).run();
+    const pw = { password: "pass-2026-x", confirm: "pass-2026-x" };
+    await expect(resetWithCode(db, SECRET, { account: "2025010102", code: "abcd-efgh-jkmn", ...pw })).rejects.toThrow("重置码");
+    const u1 = await resetWithCode(db, SECRET, { account: "2025010101", code: "ABCD EFGH JKMN", ...pw });
+    expect(u1).toMatchObject({ id: "u1", name: "林同学", session_version: 1 });
+    expect((await findByAccountAndPassword(db, "2025010101", "pass-2026-x"))?.id).toBe("u1");
+
+    // 重置码：停用的账号不能用
+    const code = (await createResetCode(db, SECRET, "u1")) as string;
+    expect(await findByAccountAndPassword(db, "2025010101", "pass-2026-x")).toBeNull();
+    await setMemberStatus(db, "u1", "archived");
+    await expect(resetWithCode(db, SECRET, { account: "2025010101", code, ...pw })).rejects.toThrow();
+
+    // 没有密码的旧账号（学号已经是 9 位）可以用邀请码认领，原来的 id 和记录保留
+    await db.prepare("INSERT INTO users (id, student_no, name, created_at, updated_at) VALUES ('u3', '250101003', '王同学', 0, 0)").run();
+    const { codes } = await createInvites(db, SECRET, { count: 1, days: null, note: null, by: "u2" });
+    const claimed = await register(db, SECRET, { studentNo: "250101003", name: "王同学", invite: codes[0], ...pw }, { open: true });
+    expect(claimed.id).toBe("u3");
+  });
+
+  test("首个管理员：要指定学号 + 密钥，且系统里还没有管理员", async () => {
+    const { register } = await import("../src/worker/members");
+    const db = await freshDb();
+    const pw = { password: "boss-pass-1", confirm: "boss-pass-1" };
+    const opts = { open: false, firstAdminCode: "first-admin-secret" };
+    // 注册关闭时也能注册首个管理员
+    const boss = await register(db, SECRET, { studentNo: "254030411", name: "会长", invite: "first-admin-secret", ...pw }, opts);
+    expect(boss.role).toBe("admin");
+    // 没配置密钥时，这条路不存在
+    const db2 = await freshDb();
+    await expect(register(db2, SECRET, { studentNo: "254030411", name: "会长", invite: "", ...pw }, { open: true })).rejects.toThrow("邀请码");
   });
 
   test("最近没动静名单：站内和外部平台都算活动", async () => {

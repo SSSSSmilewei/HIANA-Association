@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { decodeBase64, sniffImage } from "../files";
 import { HttpError, type Router, json } from "../http";
 import { enqueue } from "../notify";
-import { memberId, requireAdmin } from "./common";
+import { memberId, requireAdmin, seesNames, viewerId } from "./common";
 
 /**
  * 公告栏与比赛卡（技术方案“交流”一节）。
@@ -24,6 +25,8 @@ interface NoticeRow {
   author_name: string | null;
 }
 
+const MAX_IMAGE_BYTES = 3_000_000;
+
 const NoticeInput = z.object({
   kind: z.enum(["notice", "competition"]),
   title: z.string().trim().min(1, "标题不能为空").max(80),
@@ -35,7 +38,13 @@ const NoticeInput = z.object({
   pinned: z.boolean().default(false),
 });
 
-function shape(r: NoticeRow, entries: { notice_id: string; name: string; team: string | null; contact: string | null; user_id: string }[], uid: string | null) {
+function shape(
+  r: NoticeRow,
+  entries: { notice_id: string; name: string; team: string | null; contact: string | null; user_id: string }[],
+  uid: string | null,
+  confirmed: Set<string>,
+  names: boolean,
+) {
   const mine = entries.filter((e) => e.notice_id === r.id);
   return {
     id: r.id,
@@ -47,16 +56,19 @@ function shape(r: NoticeRow, entries: { notice_id: string; name: string; team: s
     deadline: r.deadline,
     tags: r.tags ? (JSON.parse(r.tags) as string[]) : [],
     pinned: r.pinned === 1,
-    author: r.author_name,
+    // 游客和校外账号看不到发布人和报名名单（都是真名，名单里还有联系方式），只看到报名人数；校外账号能看到自己报的那一条
+    author: names ? r.author_name : null,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
-    entries: r.kind === "competition" ? mine.map((e) => ({ name: e.name, team: e.team, contact: e.contact })) : [],
+    entries: r.kind === "competition" && uid ? mine.filter((e) => names || e.user_id === uid).map((e) => ({ name: e.name, team: e.team, contact: e.contact })) : [],
+    entryCount: r.kind === "competition" ? mine.length : 0,
     joined: uid ? mine.some((e) => e.user_id === uid) : false,
+    confirmed: uid ? confirmed.has(r.id) : false,
   };
 }
 
-async function list(db: D1Database, uid: string | null, limit = 50) {
-  const [rows, entries] = await Promise.all([
+async function list(db: D1Database, uid: string | null, names: boolean, limit = 50) {
+  const [rows, entries, reads] = await Promise.all([
     db
       .prepare(
         `SELECT n.*, u.name AS author_name FROM notices n LEFT JOIN users u ON u.id = n.author_id
@@ -67,12 +79,26 @@ async function list(db: D1Database, uid: string | null, limit = 50) {
     db
       .prepare("SELECT e.notice_id, e.user_id, e.team, e.contact, u.name FROM competition_entries e JOIN users u ON u.id = e.user_id ORDER BY e.created_at")
       .all<{ notice_id: string; user_id: string; team: string | null; contact: string | null; name: string }>(),
+    uid
+      ? db.prepare("SELECT notice_id FROM notice_reads WHERE user_id = ?").bind(uid).all<{ notice_id: string }>()
+      : Promise.resolve({ results: [] as { notice_id: string }[] }),
   ]);
-  return rows.results.map((r) => shape(r, entries.results, uid));
+  const confirmed = new Set(reads.results.map((r) => r.notice_id));
+  return rows.results.map((r) => shape(r, entries.results, uid, confirmed, names));
 }
 
 export function noticeRoutes(api: Router) {
-  api.get("/api/notices", async (c) => json(await list(c.env.DB, memberId(c))));
+  /** 公告和比赛。游客也能看。 */
+  api.get("/api/notices", async (c) => json(await list(c.env.DB, viewerId(c), seesNames(c))));
+
+  /** 确认已阅读公告（登录后弹窗里的“我已阅读”）。重复确认无影响。 */
+  api.post("/api/notices/:id/confirm", async (c) => {
+    const uid = memberId(c);
+    const n = await c.env.DB.prepare("SELECT id FROM notices WHERE id = ? AND deleted_at IS NULL").bind(c.params.id).first();
+    if (!n) throw new HttpError(404, "没有这条公告");
+    await c.env.DB.prepare("INSERT OR IGNORE INTO notice_reads (notice_id, user_id, confirmed_at) VALUES (?, ?, ?)").bind(c.params.id, uid, Date.now()).run();
+    return json({ ok: true });
+  });
 
   /** 我要参加 / 组队：team 留空表示个人报名；再次提交会更新队名和联系方式。 */
   api.put("/api/notices/:id/entry", async (c) => {
@@ -95,6 +121,26 @@ export function noticeRoutes(api: Router) {
   });
 
   /* ---------- 管理员 ---------- */
+
+  /** 公告配图：存进公开的图床存储桶，返回可直接引用的地址。 */
+  api.post("/api/admin/notices/image", async (c) => {
+    requireAdmin(c);
+    if (!c.env.IMAGES || !c.env.IMAGE_BASE_URL) throw new HttpError(400, "图床未配置：需要绑定 IMAGES 存储桶并设置 IMAGE_BASE_URL");
+    const { data } = z.object({ data: z.string().min(1) }).parse(await c.body());
+    let bytes: Uint8Array;
+    try {
+      bytes = decodeBase64(data);
+    } catch {
+      throw new HttpError(400, "图片数据无效");
+    }
+    if (bytes.length > MAX_IMAGE_BYTES) throw new HttpError(400, "图片不能超过 3 MB");
+    const mime = sniffImage(bytes);
+    if (!mime) throw new HttpError(400, "仅支持 JPEG、PNG、WebP 图片");
+    const ext = mime === "image/jpeg" ? "jpg" : mime === "image/png" ? "png" : "webp";
+    const key = `notices/${new Date(Date.now() + 8 * 3_600_000).toISOString().slice(0, 7)}/${crypto.randomUUID()}.${ext}`;
+    await c.env.IMAGES.put(key, bytes, { httpMetadata: { contentType: mime } });
+    return json({ url: `${c.env.IMAGE_BASE_URL.replace(/\/+$/, "")}/${key}` });
+  });
 
   api.post("/api/admin/notices", async (c) => {
     const { userId } = requireAdmin(c);

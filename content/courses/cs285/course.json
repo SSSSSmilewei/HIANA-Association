@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs285",
+ "title": "CS285: Deep Reinforcement Learning",
+ "category": "深度学习",
+ "provider": "UC Berkeley",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "CS188, CS189",
+ "difficulty": 4,
+ "hours": "80 小时",
+ "summary": "CS285 这一课程现由 Sergey Levine 教授讲授，课程内容覆盖了深度强化学习领域的各方面内容，适合有一定机器学习基础的同学进行学习，具体要求包括了解马尔可夫决策过程（MDP）等。整门课程中含有较多的公式，上课前需要有一定的心理准备。此外……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nCS285 这一课程现由 Sergey Levine 教授讲授，课程内容覆盖了深度强化学习领域的各方面内容，适合有一定机器学习基础的同学进行学习，具体要求包括了解马尔可夫决策过程（MDP）等。整门课程中含有较多的公式，上课前需要有一定的心理准备。此外，教授会根据每年最新的研究进展更新课程内容以及作业，课程中能感受到教授尝试将深度强化学习领域的所有基础知识以及最近的发展在短短的数节课中进行传达。\n\n有关课程内容获取，22Fall 的授课方式为课前观看提前录制的视频，课上主要为 Q&A 环节，教授选择部分或者所有视频内的知识进行讲解同时回答学生现场提出的问题，因此所提供的课程视频链接实际上是已经包含了所有内容。课程作业则由5个编程作业组成，每一次作业主要为复现经典模型以及进行模型间的对比，偶尔也包含一些对最近提出的模型的复现，最后递交一份报告。考虑到作业本身已经提供了框架，且都是根据 hint 进行代码填空，因此作业难度并不大。\n\n总的来说，该课程适合新手入门深度强化学习。虽然学到后面越来越感觉到难，但整门课下来个人感觉还是收获颇丰。\n\n（另外 Levine 教授人真的很 nice）\n\n## 课程资源\n\n- 课程网站：<http://rail.eecs.berkeley.edu/deeprlcourse/>\n- 课程视频：<https://www.youtube.com/playlist?list=PL_iWQOsE6TfX7MaC6C3HcdOf1g337dlC9>\n- 课程教材：无\n- 课程作业：<http://rail.eecs.berkeley.edu/deeprlcourse/>，5个编程作业\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/CS285/"
+  },
+  "official": "本课程涵盖强化学习的核心理论与实践应用，包括模仿学习、策略梯度方法、价值函数学习、演员-评论家算法、变分推断以及离线强化学习等主题。学生将学习从基础的行为克隆技术到高级主题如大型语言模型的强化学习应用。课程的重点是培养学生理解和实现深度强化学习算法的能力，涵盖模型无关方法、模型基础方法、探索策略和多任务学习等高级概念。",
+  "officialSource": {
+   "kind": "website",
+   "label": "rail.eecs.berkeley.edu",
+   "url": "http://rail.eecs.berkeley.edu/deeprlcourse/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://rail.eecs.berkeley.edu/deeprlcourse/"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.youtube.com/playlist?list=PL_iWQOsE6TfX7MaC6C3HcdOf1g337dlC9"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "http://rail.eecs.berkeley.edu/deeprlcourse/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Deep Reinforcement Learning"
+}

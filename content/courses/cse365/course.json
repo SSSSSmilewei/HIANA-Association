@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cse365",
+ "title": "ASU CSE365: Introduction to Cybersecurity",
+ "category": "计算机系统安全",
+ "provider": "Arizona State University",
+ "instructors": [],
+ "language": "C, Python, x86 assembly",
+ "prerequisites": "无",
+ "difficulty": 4,
+ "hours": "因人而异",
+ "summary": "亚利桑那州立大学 Web 安全的导论课，课程以模块化的形式构成，主要包含以下方面：",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n亚利桑那州立大学 Web 安全的导论课，课程以模块化的形式构成，主要包含以下方面：\n\n- Program Misuse: Linux commandline, privilege escalation\n- Web fundamentals: http, server, intercept\n- Assembly: registers, memory, control flow\n- Cryptography: Symmetric/Asymmetric encryption, hashing, trust\n- Web security: Command/HTML/SQL/Stack injection\n\n课程以 Challenge 为主，Lectures and Reading 为辅。Challenge 中的习题以 CTF 的形式展开，难度依次递增。\n\n对于基础较弱的学习者，卡关是正常现象。如果在解题过程中遇到困难，可以在首页 Chat 栏目中给出的 Discord Server 寻求帮助。\n\n## 课程资源\n\n- 课程网站：<https://pwn.college/cse365-s2025/>\n- 课程视频：参见课程网站\n- 课程教材：无\n- 课程作业：8 个模块（444 个 challenges）\n\n## 资源汇总\n\n- Lectures on YouTube: <https://youtube.com/pwncollege>\n- Live Broadcasts on Twitch: <https://twitch.tv/pwncollege>\n- Chat on Discord: <https://discord.com/channels/750635557666816031/1328463339528913058>\n- Open Source on GitHub: <https://github.com/pwncollege>\n- Contact us via Email: <cse365@pwn.college>\n\n另外，出于评定 ASU 学生课程成绩的重要因素，官方不鼓励上传解题思路，每个模块的前两题除外。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/CSE365/"
+  },
+  "official": "本课程通过十个模块进行，每个模块包含讲座和实践挑战。课程通过 495 个分布式挑战涵盖了从基础命令和漏洞利用技术到内存错误和高级安全概念的网络安全基础。学生通过 pwn.college dojo 系统进行交互式学习，可以完成讲座、解决挑战并追踪进度。",
+  "officialSource": {
+   "kind": "website",
+   "label": "pwn.college",
+   "url": "https://pwn.college/cse365-s2025/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://pwn.college/cse365-s2025/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Introduction to Cybersecurity"
+}

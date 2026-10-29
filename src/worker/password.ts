@@ -44,10 +44,11 @@ export async function verifyPassword(password: string, stored: string | null | u
 }
 
 /** 密码要求：8 到 64 个字符，不能全是同一个字符，不能和学号一样。返回错误说明，合格时返回 null。 */
-export function passwordProblem(password: string, studentNo: string): string | null {
+/** account：学号（校内）或用户名（校外），密码不能和它一样。 */
+export function passwordProblem(password: string, account: string, label = "学号"): string | null {
   if (password.length < 8) return "密码至少 8 个字符";
   if (password.length > 64) return "密码最多 64 个字符";
   if (/^(.)\1+$/.test(password)) return "密码不能全是同一个字符";
-  if (password === studentNo) return "密码不能和学号一样";
+  if (password.toLowerCase() === account.toLowerCase()) return `密码不能和${label}一样`;
   return null;
 }

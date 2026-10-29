@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "ml",
+ "title": "Coursera: Machine Learning",
+ "category": "机器学习",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "AI 入门 + 熟练使用 Python",
+ "difficulty": 3,
+ "hours": "100 小时",
+ "summary": "说起吴恩达，在 AI 届应该无人不晓。他是著名在线教育平台 Coursera 的创始人之一，同时也是 Stanford 的网红教授。这门机器学习入门课应该算得上是他的成名作之一（另一个是深度学习课程），在 Coursera 上拥有数十万的学习者（注意这是花钱买了证书的人……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n说起吴恩达，在 AI 届应该无人不晓。他是著名在线教育平台 [Coursera](https://www.coursera.org) 的创始人之一，同时也是 Stanford 的网红教授。这门机器学习入门课应该算得上是他的成名作之一（另一个是深度学习课程），在 Coursera 上拥有数十万的学习者（注意这是花钱买了证书的人，一个证书几百刀），白嫖学习者数量应该是另一个数量级了。\n\n这门课对新手极其友好，吴恩达拥有把机器学习讲成 1+1=2 一样直白的能力。你将会学习到线性回归、逻辑回归、支持向量机、无监督学习、降维、异常检测和推荐系统等等知识，并且在编程实践中夯实自己的理解。作业质量自然不必多言，保姆级代码框架，作业背景也多取自生活，让人学以致用。\n\n当然，这门课作为一个公开慕课，难度上刻意放低了些，很多数学推导大多一带而过，如果你有志于从事机器学习理论研究，想要深究这些算法背后的数学理论，可以参考 [CS229](/courses/cs229) 和 [CS189](/courses/cs189)。\n\n新版课程更新成了一个包含三个课程的系列，可以尝试在 Coursera 申请助学金后不用订阅即可学习。\n\n## 课程资源\n\n- 课程网站：<https://www.coursera.org/specializations/machine-learning-introduction>\n- 课程视频：参见课程网站\n- 课程教材：无\n- 课程作业：参见课程网站\n\n## 资源汇总\n\n当时重装系统误删了文件，我的代码实现消失在了磁盘的 01 串中。不过这门课由于太过出名，网上想搜不到答案都难，相关课程资料 Coursera 上也一应俱全。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/ML/"
+  },
+  "official": "本专项是由 Stanford Online 和 DeepLearning.AI 创建的初学者友好的 3 门课程项目，由 Andrew Ng 领导。课程教授基本的机器学习概念和构建实际 AI 应用的实践技能。内容包括监督学习技术（线性和逻辑回归、使用 TensorFlow 构建的神经网络、决策树）和无监督学习方法（聚类、异常检测、推荐系统和强化学习）。课程强调实际应用而非纯理论，为期约 2 个月。",
+  "officialSource": {
+   "kind": "website",
+   "label": "www.coursera.org",
+   "url": "https://www.coursera.org/specializations/machine-learning-introduction"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://www.coursera.org/specializations/machine-learning-introduction"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Machine Learning Specialization"
+}

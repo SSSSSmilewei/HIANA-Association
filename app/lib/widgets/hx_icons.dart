@@ -4,10 +4,42 @@ import 'package:flutter/widgets.dart';
 
 /// 线条图标，和网页端 src/client/icons.tsx 同一套（24×24 网格，1.8 线宽）。
 /// 自己画是因为 App 不用 Material 图标，miuix 的图标里也没有相机、喇叭这些。
-enum HxIcon { home, book, camera, megaphone, user, check, arrowRight, back, close, play, terminal, pencil, flag, star, external, flip, bell, key, logout, plus, sun, video, code, pin }
+enum HxIcon {
+  home,
+  book,
+  camera,
+  megaphone,
+  user,
+  check,
+  arrowRight,
+  back,
+  close,
+  play,
+  terminal,
+  pencil,
+  flag,
+  star,
+  external,
+  flip,
+  bell,
+  key,
+  logout,
+  plus,
+  sun,
+  video,
+  code,
+  pin,
+}
 
 class HxIconView extends StatelessWidget {
-  const HxIconView(this.icon, {super.key, this.size = 22, this.color, this.stroke = 1.8, this.semanticLabel});
+  const HxIconView(
+    this.icon, {
+    super.key,
+    this.size = 22,
+    this.color,
+    this.stroke = 1.8,
+    this.semanticLabel,
+  });
   final HxIcon icon;
   final double size;
   final Color? color;
@@ -16,8 +48,14 @@ class HxIconView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? DefaultTextStyle.of(context).style.color ?? const Color(0xFF1B1A19);
-    final paint = CustomPaint(size: Size.square(size), painter: _IconPainter(icon, c, stroke));
+    final c =
+        color ??
+        DefaultTextStyle.of(context).style.color ??
+        const Color(0xFF1B1A19);
+    final paint = CustomPaint(
+      size: Size.square(size),
+      painter: _IconPainter(icon, c, stroke),
+    );
     if (semanticLabel == null) return ExcludeSemantics(child: paint);
     return Semantics(label: semanticLabel, child: paint);
   }
@@ -48,10 +86,34 @@ class _IconPainter extends CustomPainter {
       }
     }
 
-    void circle(double cx, double cy, double r) => path.addOval(Rect.fromCircle(center: Offset(cx, cy), radius: r));
+    void circle(double cx, double cy, double r) =>
+        path.addOval(Rect.fromCircle(center: Offset(cx, cy), radius: r));
     switch (icon) {
       case HxIcon.home:
-        line([4, 10.5, 12, 4, 20, 10.5, 20, 19, 19, 20, 14.5, 20, 14.5, 14.5, 9.5, 14.5, 9.5, 20, 5, 20, 4, 19]);
+        line([
+          4,
+          10.5,
+          12,
+          4,
+          20,
+          10.5,
+          20,
+          19,
+          19,
+          20,
+          14.5,
+          20,
+          14.5,
+          14.5,
+          9.5,
+          14.5,
+          9.5,
+          20,
+          5,
+          20,
+          4,
+          19,
+        ]);
         path.close();
       case HxIcon.book:
         path.moveTo(4, 6.5);
@@ -63,7 +125,9 @@ class _IconPainter extends CustomPainter {
         path.close();
         line([12, 7.3, 12, 18.3]);
       case HxIcon.camera:
-        path.addRRect(RRect.fromLTRBR(4, 7, 20, 19, const Radius.circular(1.8)));
+        path.addRRect(
+          RRect.fromLTRBR(4, 7, 20, 19, const Radius.circular(1.8)),
+        );
         line([7.7, 7, 9.2, 5, 14.8, 5, 16.3, 7]);
         circle(12, 12.8, 3.4);
       case HxIcon.megaphone:
@@ -119,9 +183,15 @@ class _IconPainter extends CustomPainter {
         line([10, 8, 16, 8, 16, 14]);
       case HxIcon.flip:
         path.moveTo(4, 9);
-        path.arcToPoint(const Offset(18.5, 6), radius: const Radius.circular(8));
+        path.arcToPoint(
+          const Offset(18.5, 6),
+          radius: const Radius.circular(8),
+        );
         path.moveTo(20, 15);
-        path.arcToPoint(const Offset(5.5, 18), radius: const Radius.circular(8));
+        path.arcToPoint(
+          const Offset(5.5, 18),
+          radius: const Radius.circular(8),
+        );
         line([18.5, 2.5, 18.5, 6, 15, 6]);
         line([5.5, 21.5, 5.5, 18, 9, 18]);
       case HxIcon.bell:
@@ -150,10 +220,17 @@ class _IconPainter extends CustomPainter {
         circle(12, 12, 4);
         for (var i = 0; i < 8; i++) {
           final a = i * math.pi / 4;
-          line([12 + 7 * math.cos(a), 12 + 7 * math.sin(a), 12 + 9 * math.cos(a), 12 + 9 * math.sin(a)]);
+          line([
+            12 + 7 * math.cos(a),
+            12 + 7 * math.sin(a),
+            12 + 9 * math.cos(a),
+            12 + 9 * math.sin(a),
+          ]);
         }
       case HxIcon.video:
-        path.addRRect(RRect.fromLTRBR(3.5, 5.5, 20.5, 17.5, const Radius.circular(2.5)));
+        path.addRRect(
+          RRect.fromLTRBR(3.5, 5.5, 20.5, 17.5, const Radius.circular(2.5)),
+        );
         final t = Path()
           ..moveTo(10.5, 9.2)
           ..lineTo(10.5, 14.2)
@@ -173,13 +250,14 @@ class _IconPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_IconPainter old) => old.icon != icon || old.color != color || old.stroke != stroke;
+  bool shouldRepaint(_IconPainter old) =>
+      old.icon != icon || old.color != color || old.stroke != stroke;
 }
 
 HxIcon kindIcon(String kind) => switch (kind) {
-      'lecture' => HxIcon.play,
-      'pset' => HxIcon.pencil,
-      'practice' => HxIcon.terminal,
-      'project' => HxIcon.flag,
-      _ => HxIcon.book,
-    };
+  'lecture' => HxIcon.play,
+  'pset' || 'assignment' => HxIcon.pencil,
+  'practice' || 'lab' => HxIcon.terminal,
+  'project' => HxIcon.flag,
+  _ => HxIcon.book,
+};

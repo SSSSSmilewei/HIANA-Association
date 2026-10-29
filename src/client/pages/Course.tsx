@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { ACCESS_LABEL, UNIT_KIND_LABEL, nextUnit, periodsToHours, progress, weeksToFinish } from "../../shared/courses";
-import { api, mutate, useApi } from "../api";
-import { DIFFICULTY, courseCode, refreshLearning } from "../courseMeta";
+import { useMemo, useState } from "react";
+import { type CourseMeta, type MetaItem, nextItem, periodsToHours, progress, weeksToFinish } from "../../shared/courses";
+import { ITEM_KIND_LABEL, LINK_KINDS, LINK_KIND_LABEL } from "../../shared/light";
+import type { Link as PkgLink } from "../../shared/package";
+import { Prose } from "../components/Prose";
+import { type CourseState, useCourse } from "../courseData";
 import { Icon } from "../icons";
-import { Link } from "../router";
-import type { CourseDetail } from "../types";
+import { downloadJson, exportPackage, forgetPackage, itemHref, removeLocal } from "../library";
+import { Link, navigate, useQuery } from "../router";
+import { useMe } from "../session";
+import { api } from "../api";
+import { refreshLearning } from "../courseMeta";
 import { Empty, ErrorBox, Ring, Seg, Skeleton, useConfirm, useTitle, useToast } from "../ui";
+import { Stars } from "./Courses";
 
 const PACE_KEY = "hiana-pace";
 function readPace(slug: string): number {
@@ -26,272 +32,448 @@ function savePace(slug: string, v: number) {
   }
 }
 
-const AV_COLORS = ["#B8460B", "#6B5A8E", "#3E6E8C", "#5E7A3A", "#8C3E5E"];
+type Tab = "intro" | "content";
 
 export function CoursePage({ slug }: { slug: string }) {
-  const key = `/api/courses/${slug}`;
-  const { data, error, reload } = useApi<CourseDetail>(key);
-  const toast = useToast();
-  const confirm = useConfirm();
+  const { local, meta, pkg, state, error, reload, toggle, setStatus } = useCourse(slug);
+  const q = useQuery("tab");
   const [pace, setPace] = useState(() => readPace(slug));
-  const [all, setAll] = useState(false);
-  useTitle(data?.course.title ?? "课程");
+  useTitle(meta?.title ?? "课程");
 
-  if (error && !data)
+  if (error && !meta)
     return (
       <div className="page">
         <BackLink />
-        {error.status === 404 ? <Empty title="没有这门课">可能链接写错了。</Empty> : <ErrorBox error={error} onRetry={reload} />}
+        {(error as { status?: number }).status === 404 || /没有/.test(error.message) ? <Empty title="没有这门课" /> : <ErrorBox error={error} onRetry={reload} />}
       </div>
     );
-  if (!data)
+  if (!meta || !state)
     return (
       <div className="page" aria-busy="true">
         <BackLink />
-        <Skeleton h={18} w={220} />
-        <Skeleton h={44} w={420} />
+        <Skeleton h={36} w={420} />
         <Skeleton h={120} />
-        <Skeleton h={420} r={24} />
+        <Skeleton h={420} />
       </div>
     );
 
-  const c = data.course;
-  const doneSet = new Set(Object.keys(data.done));
-  const p = progress(c, doneSet);
-  const next = nextUnit(c, doneSet);
+  const items = meta.modules.flatMap((m) => m.items);
+  const hosted = items.length > 0;
+  const tab: Tab = q === "intro" || !hosted ? "intro" : q === "content" ? "content" : state.enrollment || Object.keys(state.done).length ? "content" : "intro";
+  const setTab = (t: Tab) => navigate(`/courses/${slug}?tab=${t}`, { replace: true });
+
+  const doneSet = new Set(Object.keys(state.done));
+  const p = progress(meta, doneSet);
+  const next = nextItem(meta, doneSet);
   const weeks = weeksToFinish(p.totalPeriods - p.donePeriods, pace);
-  const st = data.enrollment?.status;
-  const shown = all || c.units.length <= 12 ? c.units : c.units.slice(0, 10);
-
-  const toggle = async (unitId: string, done: boolean) => {
-    // 乐观更新：先在本地打勾，失败再撤回
-    mutate<CourseDetail>(key, (old) => {
-      if (!old) return old;
-      const d = { ...old.done };
-      if (done) d[unitId] = Date.now();
-      else delete d[unitId];
-      return { ...old, done: d, enrollment: old.enrollment ?? { status: "active", startedAt: Date.now() } };
-    });
-    try {
-      const r = await api<{ next: { title: string } | null; progress: { doneUnits: number; units: number } }>(`${key}/units/${unitId}`, { method: "PUT", body: { done } });
-      if (done && !r.next) toast(`${c.title} 全部学完了`);
-      refreshLearning();
-    } catch (e) {
-      toast((e as Error).message, "error");
-      void reload();
-    }
-  };
-
-  const setStatus = async (status: "active" | "paused") => {
-    if (status === "paused" && !(await confirm({ title: "暂停这门课？", body: "暂停后首页不再显示它的下一步，进度都会保留，随时可以继续。", ok: "暂停" }))) return;
-    try {
-      await api(`${key}/enrollment`, { method: "PUT", body: { status } });
-      toast(status === "active" ? (st === "paused" ? "继续学这门课" : "选上了") : "已暂停");
-      refreshLearning();
-    } catch (e) {
-      toast((e as Error).message, "error");
-    }
-  };
 
   return (
     <div className="page">
       <BackLink />
       <div className="split">
-        <header className="split-main stack" style={{ gap: 12 }}>
-          <span className="course-code">
-            {courseCode(c)} · {c.license.split("；")[0]}
+        <header className="split-main course-head">
+          <span className="course-kicker">
+            {[meta.category, meta.provider].filter(Boolean).join(" / ")}
+            {local && <span className="tag tag-muted">本机</span>}
+            {meta.origin === "published" && <span className="tag tag-muted">发布的课程包</span>}
           </span>
           <h1 className="h1" style={{ viewTransitionName: "course-title" }}>
-            {c.title}
+            {meta.title}
           </h1>
-          {c.titleEn && (
-            <p className="small sub">
-              {c.titleEn} · {c.university}
-            </p>
-          )}
-          <p className="pretty" style={{ fontSize: 16, lineHeight: "27px", marginTop: 4 }}>
-            {c.summary}
-          </p>
-          {c.why && (
-            <div className="why-box" style={{ marginTop: 6 }}>
-              <Icon name="star" style={{ color: "var(--accent-text)", flexShrink: 0, marginTop: 2 }} />
-              <span className="stack" style={{ gap: 2 }}>
-                <span className="small" style={{ fontWeight: 600, color: "var(--accent-text)" }}>
-                  为什么学
-                </span>
-                <span style={{ fontSize: 15, lineHeight: "24px" }}>{c.why}</span>
-              </span>
-            </div>
-          )}
-          <div className="grid-cards" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))", gap: 12, marginTop: 4 }}>
-            <InfoTile icon="video" title="视频" text={c.access.video} />
-            <InfoTile icon="code" title="作业" text={c.access.homework} />
-          </div>
-          <div className="row wrap" style={{ gap: 6 }}>
-            <span className="tag">{DIFFICULTY[c.difficulty]}</span>
-            <span className="tag">{ACCESS_LABEL[c.access.level]}</span>
-            <span className="tag">先修：{c.prerequisites}</span>
-            <span className="tag">语言：{c.language}</span>
-          </div>
+          {meta.titleEn && meta.titleEn !== meta.title && <p className="course-en">{meta.titleEn}</p>}
+          {meta.summary && <p className="lead pretty">{meta.summary}</p>}
+          <Facts c={meta} totalPeriods={p.totalPeriods} />
         </header>
 
-        <section className="split-side card stack" aria-label="我的进度" style={{ gap: 18, padding: 22, borderRadius: 24 }}>
-          <div className="row" style={{ gap: 18 }}>
-            <Ring ratio={p.ratio} label={`已完成 ${Math.round(p.ratio * 100)}%`}>
-              <text x="48" y="54" textAnchor="middle" className="ring-text">
+        <section className="split-side card stack" aria-label="我的进度" style={{ gap: 16 }}>
+          <ProgressPanel slug={slug} meta={meta} state={state} local={local} pace={pace} setPace={(v) => { setPace(v); savePace(slug, v); }} weeks={weeks} next={next} setStatus={setStatus} />
+        </section>
+      </div>
+
+      {hosted && (
+        <div className="tabs" role="tablist" aria-label="课程">
+          <button type="button" role="tab" aria-selected={tab === "intro"} onClick={() => setTab("intro")}>
+            介绍与资源
+          </button>
+          <button type="button" role="tab" aria-selected={tab === "content"} onClick={() => setTab("content")}>
+            课程内容 <span className="num tab-count">{items.length}</span>
+          </button>
+        </div>
+      )}
+
+      {tab === "intro" ? (
+        <Intro pkg={pkg} meta={meta} />
+      ) : (
+        <Contents slug={slug} meta={meta} state={state} next={next} toggle={toggle} />
+      )}
+
+      <CourseFoot slug={slug} meta={meta} local={local} />
+    </div>
+  );
+}
+
+function Facts({ c, totalPeriods }: { c: CourseMeta; totalPeriods: number }) {
+  const rows: [string, React.ReactNode][] = [];
+  if (c.prerequisites) rows.push(["先修", c.prerequisites]);
+  if (c.language) rows.push(["语言", c.language]);
+  if (totalPeriods) rows.push(["学时", `${totalPeriods} 课时，约 ${periodsToHours(totalPeriods)} 小时`]);
+  else if (c.hours) rows.push(["学时", c.hours]);
+  if (c.difficulty > 0) rows.push(["难度", <Stars key="s" n={c.difficulty} />]);
+  if (!rows.length) return null;
+  return (
+    <dl className="facts">
+      {rows.map(([k, v]) => (
+        <div key={k}>
+          <dt>{k}</dt>
+          <dd>{v}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function ProgressPanel({
+  slug,
+  meta,
+  state,
+  local,
+  pace,
+  setPace,
+  weeks,
+  next,
+  setStatus,
+}: {
+  slug: string;
+  meta: CourseMeta;
+  state: CourseState;
+  local: boolean;
+  pace: number;
+  setPace: (v: number) => void;
+  weeks: number | null;
+  next: MetaItem | null;
+  setStatus: ReturnType<typeof useCourse>["setStatus"];
+}) {
+  const hosted = meta.modules.some((m) => m.items.length);
+  const p = progress(meta, new Set(Object.keys(state.done)));
+  const st = state.enrollment?.status;
+  const enrolled = st === "active" || st === "paused" || st === "done";
+  return (
+    <>
+      {hosted ? (
+        <>
+          <div className="row" style={{ gap: 16 }}>
+            <Ring ratio={p.ratio} size={80} stroke={8} label={`已完成 ${Math.round(p.ratio * 100)}%`}>
+              <text x="40" y="46" textAnchor="middle" className="ring-text">
                 {Math.round(p.ratio * 100)}%
               </text>
             </Ring>
-            <span className="stack" style={{ gap: 4 }}>
-              <span style={{ fontSize: 15, lineHeight: "22px", fontWeight: 600 }}>
-                已学 {p.doneUnits} / {p.units} 单元
+            <span className="stack" style={{ gap: 2 }}>
+              <span className="stat-big num">
+                {p.doneItems} / {p.items}
               </span>
               <span className="small sub num">
-                {p.donePeriods} / {p.totalPeriods} 课时 · 约 {periodsToHours(p.totalPeriods)} 小时
+                已学 {p.donePeriods} / {p.totalPeriods} 课时
               </span>
             </span>
           </div>
-          {st !== "done" && (
+          {next && (
+            <Link to={itemHref(slug, next)} className="btn btn-primary btn-lg next-btn" title={next.title}>
+              <span>{p.doneItems ? "继续学" : "开始学"}</span>
+              <span className="ellipsis next-btn-title">{next.title}</span>
+            </Link>
+          )}
+          {st !== "done" && p.totalPeriods > 0 && (
             <div className="stack" style={{ gap: 8 }}>
-              <span className="small sub">每周能学几课时</span>
-              <Seg
-                label="每周能学几课时"
-                flat
-                value={pace}
-                onChange={(v) => {
-                  setPace(v);
-                  savePace(slug, v);
-                }}
-                options={[4, 6, 8, 10].map((v) => ({ value: v, label: <span className="num">{v}</span> }))}
-              />
-              {weeks !== null && <span style={{ fontSize: 14, lineHeight: "20px" }}>照这个速度，还要 {weeks} 周学完</span>}
+              <span className="small sub">每周课时</span>
+              <Seg label="每周课时" flat value={pace} onChange={setPace} options={[4, 6, 8, 10].map((v) => ({ value: v, label: <span className="num">{v}</span> }))} />
+              {weeks !== null && <span className="small num">按这个节奏还要 {weeks} 周</span>}
             </div>
           )}
-          {data.peers.length > 0 && (
-            <div className="row" style={{ paddingTop: 16, borderTop: "1px solid var(--line)" }}>
-              <span className="avatars" aria-hidden="true">
-                {data.peers.slice(0, 3).map((n, i) => (
-                  <span key={n + i} style={{ background: AV_COLORS[i % AV_COLORS.length] }}>
-                    {n.slice(0, 1)}
-                  </span>
-                ))}
-              </span>
-              <span className="small sub">
-                {data.peers.slice(0, 2).join("、")}
-                {data.peers.length > 2 ? ` 等 ${data.peers.length} 人` : ""}也在学
-              </span>
-            </div>
-          )}
-          {!st || st === "dropped" ? (
-            <button type="button" className="btn btn-primary btn-lg" onClick={() => setStatus("active")}>
-              选这门课
-            </button>
-          ) : st === "paused" ? (
-            <button type="button" className="btn btn-primary btn-lg" onClick={() => setStatus("active")}>
-              继续学
-            </button>
-          ) : st === "active" ? (
-            <button type="button" className="btn btn-quiet" onClick={() => setStatus("paused")}>
-              先暂停这门课
-            </button>
-          ) : (
+        </>
+      ) : (
+        <>
+          <p className="small sub">这门课在原网站学习，这里记录进度。</p>
+          {st === "done" && (
             <span className="tag tag-ok" style={{ alignSelf: "flex-start" }}>
               <Icon name="check" size={14} stroke={2.2} />
               学完了
             </span>
           )}
-        </section>
-      </div>
-
-      <section className="section" aria-labelledby="units-h">
-        <div className="section-head">
-          <h2 id="units-h" className="h2">
-            单元
-          </h2>
-          <span className="small sub">点圆圈标记完成，会记进热力图的“站内学习”</span>
-        </div>
-        <ol className="card card-flush unit-list" style={{ borderRadius: 24 }}>
-          {shown.map((u) => {
-            const done = doneSet.has(u.id);
-            const isNext = next?.id === u.id;
-            return (
-              <li key={u.id} className={`unit${done ? " is-done" : ""}${isNext ? " is-next" : ""}`}>
-                <button
-                  type="button"
-                  className={`check-btn${isNext ? " next" : ""}`}
-                  aria-pressed={done}
-                  aria-label={`${done ? "取消完成" : "标记完成"}：${u.title}`}
-                  onClick={() => toggle(u.id, !done)}
-                >
-                  {done && <Icon name="check" size={18} stroke={2.4} />}
+        </>
+      )}
+      {!local && <Peers names={state.peers} />}
+      {local ? (
+        <p className="small sub">本机导入的课，进度只存在这台设备上。</p>
+      ) : (
+        <div className="row wrap" style={{ gap: 8 }}>
+          {!enrolled ? (
+            <button type="button" className={`btn ${hosted ? "btn-ghost" : "btn-primary"}`} onClick={() => setStatus("active")}>
+              加入我的课程
+            </button>
+          ) : st === "paused" ? (
+            <button type="button" className="btn btn-primary" onClick={() => setStatus("active", st)}>
+              继续学
+            </button>
+          ) : (
+            <>
+              {!hosted && st === "active" && (
+                <button type="button" className="btn btn-primary" onClick={() => setStatus("done")}>
+                  <Icon name="check" size={16} stroke={2.2} />
+                  标记学完
                 </button>
-                <span className="unit-body">
-                  <span className="row wrap" style={{ gap: 8 }}>
-                    <span className="unit-title">{u.title}</span>
-                    {isNext && <span className="tag tag-solid">下一步</span>}
-                  </span>
-                  <span className="small sub">
-                    {UNIT_KIND_LABEL[u.kind]} · {u.periods} 课时{u.note ? ` · ${u.note}` : ""}
-                  </span>
-                </span>
-                <span className="row wrap" style={{ gap: 6 }}>
-                  {u.links.map((l) => (
-                    <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="ext-link">
-                      {l.label}
+              )}
+              {st === "active" && hosted && (
+                <button type="button" className="btn btn-quiet" onClick={() => setStatus("paused")}>
+                  暂停
+                </button>
+              )}
+              <button type="button" className="btn btn-quiet" onClick={() => setStatus("dropped")}>
+                移出
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
+
+/** 介绍与资源：中文介绍（爱好者写的）→ 官方介绍（翻译）→ 按类型分组的链接 */
+function Intro({ pkg, meta }: { pkg: ReturnType<typeof useCourse>["pkg"]; meta: CourseMeta }) {
+  const groups = useMemo(() => {
+    const by = new Map<string, PkgLink[]>();
+    for (const l of meta.links) {
+      const k = (LINK_KINDS as readonly string[]).includes(l.kind) ? l.kind : "other";
+      by.set(k, [...(by.get(k) ?? []), l as PkgLink]);
+    }
+    return LINK_KINDS.filter((k) => by.has(k)).map((k) => ({ kind: k, links: by.get(k) ?? [] }));
+  }, [meta.links]);
+
+  return (
+    <div className="intro-grid">
+      <div className="stack intro-main" style={{ gap: 32 }}>
+        {!pkg ? (
+          <div className="stack" aria-busy="true">
+            <Skeleton h={22} w="40%" />
+            <Skeleton h={16} />
+            <Skeleton h={16} />
+            <Skeleton h={16} w="70%" />
+          </div>
+        ) : (
+          <>
+            {pkg.intro.community && (
+              <section aria-labelledby="intro-community">
+                <SectionTitle id="intro-community" title="课程介绍" source={pkg.intro.communitySource} />
+                <Prose source={pkg.intro.community} />
+              </section>
+            )}
+            {pkg.intro.official && (
+              <section aria-labelledby="intro-official">
+                <SectionTitle id="intro-official" title="官方介绍" note="中文翻译" source={pkg.intro.officialSource} />
+                <Prose source={pkg.intro.official} />
+              </section>
+            )}
+            {!pkg.intro.community && !pkg.intro.official && <p className="sub">这门课还没有介绍。</p>}
+          </>
+        )}
+      </div>
+      {groups.length > 0 && (
+        <aside className="intro-side" aria-labelledby="links-h">
+          <h2 id="links-h" className="h3">
+            课程资源
+          </h2>
+          {groups.map((g) => (
+            <div key={g.kind} className="link-group">
+              <span className="link-group-label">{LINK_KIND_LABEL[g.kind]}</span>
+              <ul>
+                {g.links.map((l) => (
+                  <li key={l.url + l.label}>
+                    <a href={l.url} target="_blank" rel="noreferrer" className="res-link">
+                      <span className="ellipsis">{l.label}</span>
                       <Icon name="external" size={12} stroke={2.2} />
                     </a>
-                  ))}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-        {c.units.length > 12 && (
-          <button type="button" className="btn btn-ghost" style={{ alignSelf: "center", borderRadius: 22 }} onClick={() => setAll(!all)}>
-            {all ? "收起" : `展开剩下的 ${c.units.length - 10} 个单元`}
-          </button>
-        )}
-      </section>
-
-      {c.resources.length > 0 && (
-        <section className="section" aria-labelledby="res-h">
-          <h2 id="res-h" className="h3">
-            资料
-          </h2>
-          <div className="row wrap" style={{ gap: 8 }}>
-            {c.resources.map((l) => (
-              <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="ext-link">
-                {l.label}
-                <Icon name="external" size={12} stroke={2.2} />
-              </a>
-            ))}
-          </div>
-          <p className="xsmall sub">课程内容版权：{c.license}</p>
-        </section>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </aside>
       )}
     </div>
   );
 }
 
-function BackLink() {
+function SectionTitle({ id, title, note, source }: { id: string; title: string; note?: string; source?: PkgLink }) {
   return (
-    <Link to="/courses" className="row sub" style={{ alignSelf: "flex-start", minHeight: 44, gap: 6, fontSize: 14 }}>
-      <Icon name="arrowLeft" size={16} stroke={2} />
-      全部课程
-    </Link>
+    <div className="intro-title">
+      <h2 id={id} className="h2">
+        {title}
+      </h2>
+      {(note || source) && (
+        <span className="small sub">
+          {note}
+          {note && source && "，"}
+          {source && (
+            <>
+              来自{" "}
+              <a href={source.url} target="_blank" rel="noreferrer">
+                {source.label}
+              </a>
+            </>
+          )}
+        </span>
+      )}
+    </div>
   );
 }
 
-function InfoTile({ icon, title, text }: { icon: "video" | "code"; title: string; text: string }) {
+/** 课程内容：模块 → 条目。可以按类型筛选（讲义 / 作业 / 实验……） */
+function Contents({
+  slug,
+  meta,
+  state,
+  next,
+  toggle,
+}: { slug: string; meta: CourseMeta; state: CourseState; next: MetaItem | null; toggle: (id: string, done: boolean) => void }) {
+  const kinds = useMemo(() => [...new Set(meta.modules.flatMap((m) => m.items.map((it) => it.kind)))], [meta]);
+  const [kind, setKind] = useState<string>("all");
+  const doneSet = new Set(Object.keys(state.done));
+  const modules = meta.modules.map((m) => ({ ...m, items: m.items.filter((it) => kind === "all" || it.kind === kind) })).filter((m) => m.items.length);
+  const single = meta.modules.length === 1;
+
   return (
-    <div className="card row" style={{ padding: "14px 16px", borderRadius: 16, alignItems: "flex-start", gap: 12 }}>
-      <Icon name={icon} style={{ color: "var(--sub)", flexShrink: 0, marginTop: 2 }} />
-      <span className="stack" style={{ gap: 2 }}>
-        <span className="small" style={{ fontWeight: 600 }}>
-          {title}
-        </span>
-        <span className="small sub">{text}</span>
-      </span>
+    <div className="stack" style={{ gap: 20 }}>
+      {kinds.length > 1 && (
+        <div className="row wrap" style={{ gap: 8 }} role="group" aria-label="按类型筛选">
+          <button type="button" className="chip" aria-pressed={kind === "all"} onClick={() => setKind("all")}>
+            全部
+          </button>
+          {kinds.map((k) => (
+            <button key={k} type="button" className="chip" aria-pressed={kind === k} onClick={() => setKind(k)}>
+              {ITEM_KIND_LABEL[k as keyof typeof ITEM_KIND_LABEL] ?? k}
+            </button>
+          ))}
+        </div>
+      )}
+      {modules.map((m) => {
+        const doneN = m.items.filter((it) => doneSet.has(it.id)).length;
+        return (
+          <section key={m.id} className="module" aria-label={m.title}>
+            {!single && (
+              <header className="module-head">
+                <h3 className="h3">{m.title}</h3>
+                <span className="small sub num">
+                  {doneN} / {m.items.length}
+                </span>
+              </header>
+            )}
+            <ol className="card card-flush unit-list">
+              {m.items.map((it) => {
+                const done = doneSet.has(it.id);
+                const isNext = next?.id === it.id;
+                const solved = state.solved[it.id]?.length ?? 0;
+                return (
+                  <li key={it.id} className={`unit${done ? " is-done" : ""}${isNext ? " is-next" : ""}`}>
+                    <button
+                      type="button"
+                      className={`check-btn${isNext ? " next" : ""}`}
+                      aria-pressed={done}
+                      aria-label={`${done ? "取消完成" : "标记完成"}：${it.title}`}
+                      onClick={() => toggle(it.id, !done)}
+                    >
+                      {done && <Icon name="check" size={16} stroke={2.4} />}
+                    </button>
+                    <span className="unit-body">
+                      <Link to={itemHref(slug, it)} className="unit-title">
+                        {it.title}
+                      </Link>
+                      <span className="unit-meta small sub">
+                        <span className={`kind kind-${it.kind}`}>{ITEM_KIND_LABEL[it.kind as keyof typeof ITEM_KIND_LABEL] ?? it.kind}</span>
+                        <span className="num">{it.periods} 课时</span>
+                        {it.practice > 0 && (
+                          <span className="num">
+                            练手 {solved} / {it.practice}
+                          </span>
+                        )}
+                      </span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        );
+      })}
     </div>
+  );
+}
+
+function CourseFoot({ slug, meta, local }: { slug: string; meta: CourseMeta; local: boolean }) {
+  const toast = useToast();
+  const confirm = useConfirm();
+  const { me } = useMe();
+  const exp = async () => {
+    try {
+      const pkg = await exportPackage(slug);
+      downloadJson(`${pkg.slug}.hiana-course.json`, pkg);
+    } catch (e) {
+      toast((e as Error).message, "error");
+    }
+  };
+  const remove = async () => {
+    if (local) {
+      if (!(await confirm({ title: "从这台设备删除这门课？", body: "进度也会一起删除。", ok: "删除" }))) return;
+      await removeLocal(slug.replace(/^local-/, ""));
+      forgetPackage(slug);
+      navigate("/courses");
+      return;
+    }
+    if (!(await confirm({ title: "撤下这个课程包？", body: "所有人都看不到这门课了，学员的进度记录保留。", ok: "撤下" }))) return;
+    try {
+      await api(`/api/admin/packages/${slug}`, { method: "DELETE" });
+      forgetPackage(slug);
+      refreshLearning();
+      navigate("/courses");
+    } catch (e) {
+      toast((e as Error).message, "error");
+    }
+  };
+  return (
+    <footer className="course-page-foot">
+      {meta.license && <p className="small sub">{meta.license}</p>}
+      <div className="row wrap" style={{ gap: 8 }}>
+        <button type="button" className="btn btn-quiet btn-sm" onClick={exp}>
+          <Icon name="download" size={16} />
+          导出课程包
+        </button>
+        <Link to="/courses/format" className="btn btn-quiet btn-sm">
+          课程包格式
+        </Link>
+        {(local || (meta.origin === "published" && me.isAdmin)) && (
+          <button type="button" className="btn btn-quiet btn-sm" onClick={remove}>
+            {local ? "从本机删除" : "撤下"}
+          </button>
+        )}
+      </div>
+    </footer>
+  );
+}
+
+function Peers({ names }: { names: string[] }) {
+  if (names.length === 0) return null;
+  return (
+    <span className="small sub">
+      {names.slice(0, 3).join("、")}
+      {names.length > 3 ? ` 等 ${names.length} 人` : ""}也在学
+    </span>
+  );
+}
+
+export function BackLink() {
+  return (
+    <Link to="/courses" className="back-link">
+      <Icon name="arrowLeft" size={16} stroke={2} />
+      课程
+    </Link>
   );
 }

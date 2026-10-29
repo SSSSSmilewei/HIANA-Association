@@ -1,0 +1,32 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cmu11-785",
+ "title": "CMU 11-785: Introduction to Deep Learning",
+ "category": "深度学习",
+ "provider": "CMU",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "线性代数、概率论、Python 编程、机器学习基础",
+ "difficulty": 5,
+ "hours": "120 小时",
+ "summary": "CMU 11-785 是一门非常“硬核”的深度学习核心课，整体风格扎实、节奏快、几乎没有“水内容”。课程从神经网络基础出发，逐步覆盖 CNN、RNN、Attention/Transformer、优化与泛化等核心主题，适合想把理论与实践一起打牢的同学。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nCMU 11-785 是一门非常“硬核”的深度学习核心课，整体风格扎实、节奏快、几乎没有“水内容”。课程从神经网络基础出发，逐步覆盖 CNN、RNN、Attention/Transformer、优化与泛化等核心主题，适合想把理论与实践一起打牢的同学。\n\n这门课的学习体验更接近“研究生强度训练”：作业通常不只是套模板跑通，而是要求你理解模型行为、训练细节和实验设计。若你希望建立长期可迁移的深度学习能力（而非只会调几个现成 API），这门课的投入产出比很高。\n\n## 课程资源\n\n- 课程网站：<https://deeplearning.cs.cmu.edu/S26/index.html>\n- 课程视频：课程网站提供 Lecture 录像（不同学期页面会更新）\n- 课程教材：以 Lecture Notes / Slides + 论文阅读为主\n- 课程作业：课程网站发布，通常包含多个编程作业与课程项目\n\n## 资源汇总\n\n暂未提供公开的个人课程笔记与作业仓库。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/CMU11-785/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://deeplearning.cs.cmu.edu/S26/index.html"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Introduction to Deep Learning"
+}

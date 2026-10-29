@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "convex",
+ "title": "Stanford EE364A: Convex Optimization",
+ "category": "数学进阶",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "Python，微积分，线性代数，概率论，数值分析",
+ "difficulty": 5,
+ "hours": "150 小时",
+ "summary": "Stephen Boyd 教授是凸优化领域的大牛，其编写的 Convex Optimization 这本教材被众多名校采用。另外其研究团队还专门开发了一个用于求解常见凸优化问题的编程框架，支持 Python, Julia 等主流编程语言……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n[Stephen Boyd](http://web.stanford.edu/~boyd) 教授是凸优化领域的大牛，其编写的 <strong>Convex Optimization</strong> 这本教材被众多名校采用。另外其研究团队还专门开发了一个用于求解常见凸优化问题的编程框架，支持 Python, Julia 等主流编程语言，其课程作业也是采用这个编程框架去解决实际生活当中的凸优化问题。\n\n在实际运用当中，你会深刻体会到对于同一个问题，建模过程中一个细小的改变，其方程的求解难度会有天壤之别，如何让你建模的方程是“凸”的，是一门艺术。\n\n## 课程资源\n\n- 课程网站：<http://stanford.edu/class/ee364a/index.html>\n- 课程视频：<https://www.bilibili.com/video/BV1aD4y1Q7aW>\n- 课程教材：[Convex Optimization](https://stanford.edu/~boyd/cvxbook/)\n- 课程作业：9 个 Python 编程作业\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/Standford_CVX101 - GitHub](https://github.com/PKUFlyingPig/Standford_CVX101) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E5%AD%A6%E8%BF%9B%E9%98%B6/convex/"
+  },
+  "official": "本课程重点关注于识别和求解应用中出现的凸优化问题。课程涵盖凸集、凸函数和凸优化问题的基础理论，包括凸分析的基本概念。学生将学习最小二乘法、线性规划、二次规划、半定规划、极小极大问题和极值体积问题等多种优化方法。课程应用范围广泛，涉及信号处理、统计学、机器学习、控制论、机械工程、电路设计和金融等多个领域。",
+  "officialSource": {
+   "kind": "website",
+   "label": "stanford.edu",
+   "url": "http://stanford.edu/class/ee364a/index.html"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://stanford.edu/class/ee364a/index.html"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.bilibili.com/video/BV1aD4y1Q7aW"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材 · Convex Optimization",
+   "url": "https://stanford.edu/~boyd/cvxbook/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Convex Optimization I"
+}

@@ -1,0 +1,58 @@
+{
+ "format": "hiana-course@1",
+ "slug": "6-042j",
+ "title": "MIT 6.042J: Mathematics for Computer Science",
+ "category": "数学进阶",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "Python preferred",
+ "prerequisites": "Calculus, Linear Algebra",
+ "difficulty": 3,
+ "hours": "50-70 小时",
+ "summary": "MIT 的离散数学以及概率综合课程，导师是大名鼎鼎的 Tom Leighton ( Akamai 的联合创始人之一)。学完之后对于后续的算法学习大有裨益。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nMIT 的离散数学以及概率综合课程，导师是大名鼎鼎的 <strong>Tom Leighton</strong> ( Akamai 的联合创始人之一)。学完之后对于后续的算法学习大有裨益。\n\n## 课程资源\n\n- 课程网站：[spring2015](https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/), [fall2010](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-042j-mathematics-for-computer-science-fall-2010/), [fall2005](https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2005/)\n- 课程视频：[spring2015](https://www.bilibili.com/video/BV1n64y1i777/?spm_id_from=333.337.search-card.all.click&vd_source=a4d76d1247665a7e7bec15d15fd12349), [fall2010](https://www.bilibili.com/video/BV1L741147VX/?spm_id_from=333.337.search-card.all.click&vd_source=a4d76d1247665a7e7bec15d15fd12349)\n- 课程作业：参考课程网站\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E5%AD%A6%E8%BF%9B%E9%98%B6/6.042J/"
+  },
+  "official": "本课程提供了一门面向计算机科学和工程学科的离散数学交互式入门课程。课程内容大致分为三个部分：首先，学生将学习数学的基础概念，包括\"定义、证明、集合、函数、关系\"等核心内容。其次，课程涵盖离散结构主题，如图论、状态机、模运算和计数方法。最后，学生将接触离散概率论的相关知识。",
+  "officialSource": {
+   "kind": "website",
+   "label": "ocw.mit.edu",
+   "url": "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · spring2015",
+   "url": "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · fall2010",
+   "url": "https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-042j-mathematics-for-computer-science-fall-2010/"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · fall2005",
+   "url": "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2005/"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · spring2015",
+   "url": "https://www.bilibili.com/video/BV1n64y1i777/?spm_id_from=333.337.search-card.all.click&vd_source=a4d76d1247665a7e7bec15d15fd12349"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · fall2010",
+   "url": "https://www.bilibili.com/video/BV1L741147VX/?spm_id_from=333.337.search-card.all.click&vd_source=a4d76d1247665a7e7bec15d15fd12349"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Mathematics for Computer Science"
+}

@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../data/models.dart';
 import '../data/providers.dart';
+import '../features/auth/guest.dart';
 import '../features/checkin/checkin_page.dart';
 import '../features/courses/courses_page.dart';
 import '../features/home/home_page.dart';
@@ -21,13 +22,15 @@ class ShellTabs extends InheritedWidget {
   const ShellTabs({super.key, required this.go, required super.child});
   final void Function(int index) go;
 
-  static void Function(int index)? of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<ShellTabs>()?.go;
+  static void Function(int index)? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ShellTabs>()?.go;
 
   @override
   bool updateShouldNotify(ShellTabs old) => false;
 }
 
-/// 登录后的主界面：首页、课程、签到、我的四个标签，底部是浮动的玻璃标签栏。
+/// 主界面：首页、课程、签到、我的四个标签，底部是浮动的玻璃标签栏。
+/// 游客也进这里：首页、课程能看，签到显示登录提示，“我的”只有登录入口和外观。
 /// 标签页放在横向分页器里，左右滑动和点标签栏都能切换。
 class HomeShell extends ConsumerStatefulWidget {
   const HomeShell({super.key});
@@ -41,7 +44,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   int _index = 0;
   AppVersion? _forceUpdate;
 
-  static const _tabs = [('首页', HxIcon.home), ('课程', HxIcon.book), ('签到', HxIcon.camera), ('我的', HxIcon.user)];
+  static const _tabs = [
+    ('首页', HxIcon.home),
+    ('课程', HxIcon.book),
+    ('签到', HxIcon.camera),
+    ('我的', HxIcon.user),
+  ];
   static const _barHeight = 64.0;
 
   @override
@@ -61,7 +69,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     try {
       final info = await PackageInfo.fromPlatform();
       final v = await ref.read(apiProvider).appVersion();
-      if (compareVersion(info.version, v.min) < 0 && mounted) setState(() => _forceUpdate = v);
+      if (compareVersion(info.version, v.min) < 0 && mounted) {
+        setState(() => _forceUpdate = v);
+      }
     } catch (_) {
       // 检查失败不影响使用
     }
@@ -71,15 +81,26 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     if (i == _index) return;
     HapticFeedback.selectionClick();
     setState(() => _index = i);
-    _pager.animateToPage(i, duration: const Duration(milliseconds: 360), curve: HxMotion.ease);
+    _pager.animateToPage(
+      i,
+      duration: const Duration(milliseconds: 360),
+      curve: HxMotion.ease,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final update = _forceUpdate;
     final bottom = MediaQuery.paddingOf(context).bottom;
-    final att = ref.watch(attendanceProvider).valueOrNull;
-    final live = att != null && att.evening.open && att.evening.record == null && !att.isIn;
+    final guest = ref.watch(isGuestProvider);
+    final campus = ref.watch(isCampusProvider);
+    // 签到状态只有校内账号能看；游客和校外账号不去请求
+    final att = campus ? ref.watch(attendanceProvider).valueOrNull : null;
+    final live =
+        att != null &&
+        att.evening.open &&
+        att.evening.record == null &&
+        !att.isIn;
     return MiuixScaffold(
       content: (padding) => ShellTabs(
         go: _go,
@@ -91,7 +112,20 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                 child: PageView(
                   controller: _pager,
                   onPageChanged: (i) => setState(() => _index = i),
-                  children: const [HomePage(), CoursesPage(), CheckinPage(), ProfilePage()],
+                  children: [
+                    const HomePage(),
+                    const CoursesPage(),
+                    guest
+                        ? const GuestPrompt(title: '签到', body: '需要先登录')
+                        : campus
+                        ? const CheckinPage()
+                        : const GuestPrompt(
+                            title: '签到',
+                            body: '校外账号不用签到',
+                            showLogin: false,
+                          ),
+                    const ProfilePage(),
+                  ],
                 ),
               ),
             ),
@@ -100,7 +134,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               right: 16,
               bottom: bottom + 14,
               height: _barHeight,
-              child: _GlassTabBar(index: _index, tabs: _tabs, onTap: _go, dotOn: live ? 2 : -1),
+              child: _GlassTabBar(
+                index: _index,
+                tabs: _tabs,
+                onTap: _go,
+                dotOn: live ? 2 : -1,
+              ),
             ),
             MiuixOverlayDialog(
               show: update != null,
@@ -115,7 +154,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                     colors: MiuixButtonDefaults.buttonColorsPrimary(context),
                     onPressed: () {
                       final url = update?.apkUrl;
-                      if (url != null) launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                      if (url != null) {
+                        launchUrl(
+                          Uri.parse(url),
+                          mode: LaunchMode.externalApplication,
+                        );
+                      }
                     },
                   ),
                 ),
@@ -130,7 +174,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
 /// 浮动玻璃标签栏：选中的胶囊用弹簧滑过去。
 class _GlassTabBar extends StatelessWidget {
-  const _GlassTabBar({required this.index, required this.tabs, required this.onTap, required this.dotOn});
+  const _GlassTabBar({
+    required this.index,
+    required this.tabs,
+    required this.onTap,
+    required this.dotOn,
+  });
   final int index;
   final List<(String, HxIcon)> tabs;
   final ValueChanged<int> onTap;
@@ -157,7 +206,15 @@ class _GlassTabBar extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: h.pill,
                     borderRadius: BorderRadius.circular(27),
-                    boxShadow: h.dark ? null : [BoxShadow(color: h.glassShadow, blurRadius: 12, offset: const Offset(0, 4))],
+                    boxShadow: h.dark
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: h.glassShadow,
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                   ),
                 ),
               ),
@@ -182,9 +239,17 @@ class _GlassTabBar extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     TweenAnimationBuilder<Color?>(
-                                      tween: ColorTween(end: i == index ? h.accentText : h.navIdle),
+                                      tween: ColorTween(
+                                        end: i == index
+                                            ? h.accentText
+                                            : h.navIdle,
+                                      ),
                                       duration: HxMotion.mid,
-                                      builder: (context, c, _) => HxIconView(tabs[i].$2, size: 23, color: c),
+                                      builder: (context, c, _) => HxIconView(
+                                        tabs[i].$2,
+                                        size: 23,
+                                        color: c,
+                                      ),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
@@ -192,13 +257,22 @@ class _GlassTabBar extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 11,
                                         height: 1.2,
-                                        fontWeight: i == index ? FontWeight.w700 : FontWeight.w500,
-                                        color: i == index ? h.accentText : h.navIdle,
+                                        fontWeight: i == index
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: i == index
+                                            ? h.accentText
+                                            : h.navIdle,
                                       ),
                                     ),
                                   ],
                                 ),
-                                if (i == dotOn) Positioned(top: 10, right: w / 2 - 18, child: LiveDot(color: h.now)),
+                                if (i == dotOn)
+                                  Positioned(
+                                    top: 10,
+                                    right: w / 2 - 18,
+                                    child: LiveDot(color: h.now),
+                                  ),
                               ],
                             ),
                           ),

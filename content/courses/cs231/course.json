@@ -1,0 +1,53 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs231",
+ "title": "CS231n: CNN for Visual Recognition",
+ "category": "深度学习",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "机器学习基础",
+ "difficulty": 4,
+ "hours": "80 小时",
+ "summary": "Stanford 的 CV 入门课，由计算机领域的巨佬李飞飞院士领衔教授（CV 领域划时代的著名数据集 ImageNet 的研究团队），但其内容相对基础且友好，如果上过 CS230 的话可以直接上手 Project 作为练习。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nStanford 的 CV 入门课，由计算机领域的巨佬李飞飞院士领衔教授（CV 领域划时代的著名数据集 ImageNet 的研究团队），但其内容相对基础且友好，如果上过 CS230 的话可以直接上手 Project 作为练习。\n\n## 课程资源\n\n- 课程网站：<http://cs231n.stanford.edu/>\n- 课程视频：[spring 2017 Bilibili](https://www.bilibili.com/video/BV1nJ411z7fe), [spring 2025 YouTube (最新)](https://www.youtube.com/playlist?list=PLoROMvodv4rOmsNzYBMe0gJY2XS8AQg16)\n- 课程教材：无\n- 课程作业：<http://cs231n.stanford.edu/schedule.html>，3个编程作业\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/CS231/"
+  },
+  "official": "深度学习课程重点关注学习端到端视觉识别模型，特别是图像分类。课程内容包括视觉识别基础（图像分类、定位和检测任务）、神经网络实现、实际应用（搜索、医学、自动驾驶等）、训练和微调多百万参数网络的高级技术以及实际应用。10周课程强调对最先进架构的理论理解和部署深度学习系统解决实际计算机视觉问题的实践工程技能。",
+  "officialSource": {
+   "kind": "website",
+   "label": "cs231n.stanford.edu",
+   "url": "http://cs231n.stanford.edu/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://cs231n.stanford.edu/"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · spring 2017 Bilibili",
+   "url": "https://www.bilibili.com/video/BV1nJ411z7fe"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · spring 2025 YouTube (最新)",
+   "url": "https://www.youtube.com/playlist?list=PLoROMvodv4rOmsNzYBMe0gJY2XS8AQg16"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "http://cs231n.stanford.edu/schedule.html"
+  }
+ ],
+ "modules": [],
+ "titleEn": "CNN for Visual Recognition"
+}

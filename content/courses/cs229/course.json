@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs229",
+ "title": "CS229: Machine Learning",
+ "category": "机器学习",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "无",
+ "prerequisites": "高数，概率论，Python，需要较深厚的数学功底",
+ "difficulty": 4,
+ "hours": "100 小时",
+ "summary": "同样是吴恩达讲授，但是这是一门研究生课程，所以更偏重数学理论，不满足于调包而想深入理解算法本质，或者有志于从事机器学习理论研究的同学可以学习这门课程。课程网站上提供了所有的课程 notes，写得非常专业且理论，需要一定的数学功底。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n同样是吴恩达讲授，但是这是一门研究生课程，所以更偏重数学理论，不满足于调包而想深入理解算法本质，或者有志于从事机器学习理论研究的同学可以学习这门课程。课程网站上提供了所有的课程 notes，写得非常专业且理论，需要一定的数学功底。\n\n## 课程资源\n\n- 课程网站：<http://cs229.stanford.edu>\n- 课程视频：<https://www.bilibili.com/video/BV1JE411w7Ub>\n- 课程教材：无，课程 notes 写得非常好\n- 课程作业：不对公众开放\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/CS229 - GitHub](https://github.com/PKUFlyingPig/CS229) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/CS229/"
+  },
+  "official": "本课程提供机器学习和统计模式识别的广泛介绍。课程涵盖有监督学习（生成方法、参数和非参数方法、神经网络）、无监督学习（聚类和降维技术）、学习理论（偏差-方差权衡等概念）和强化学习（自适应控制系统）。课程强调机器人、数据挖掘、自动驾驶、生物信息学、语音识别和文本/网络数据处理等领域的实际应用。",
+  "officialSource": {
+   "kind": "website",
+   "label": "cs229.stanford.edu",
+   "url": "http://cs229.stanford.edu"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://cs229.stanford.edu"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.bilibili.com/video/BV1JE411w7Ub"
+  }
+ ],
+ "modules": [],
+ "titleEn": "CS229: Machine Learning"
+}

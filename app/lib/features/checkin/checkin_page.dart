@@ -76,17 +76,30 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
       final photo = await _shoot();
       if (photo == null) return; // 没拍就返回了
       final api = ref.read(apiProvider);
-      final at = out ? await api.signOut(photo: photo) : await api.signIn(kind: scene, photo: photo, code: needCode ? _code.text.trim() : null);
+      final at = out
+          ? await api.signOut(photo: photo)
+          : await api.signIn(
+              kind: scene,
+              photo: photo,
+              code: needCode ? _code.text.trim() : null,
+            );
       _code.clear();
       HapticFeedback.mediumImpact();
       ref.invalidate(attendanceProvider);
       ref.invalidate(heatmapProvider);
       if (!mounted) return;
-      await Navigator.of(context).push(DonePage.route(title: out ? '签退成功' : '签到成功', sub: '${hhmm(at)} · ${kindLabel(scene)}'));
+      await Navigator.of(context).push(
+        DonePage.route(
+          title: out ? '签退成功' : '签到成功',
+          sub: '${hhmm(at)} · ${kindLabel(scene)}',
+        ),
+      );
     } on ApiException catch (e) {
       if (mounted) showHxToast(context, e.message, error: true);
     } on PlatformException catch (_) {
-      if (mounted) showHxToast(context, '打不开相机。去系统设置里允许“HIANA 学习”使用相机', error: true);
+      if (mounted) {
+        showHxToast(context, '打不开相机。去系统设置里允许“海纳协会”使用相机', error: true);
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -100,7 +113,9 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (go == 'out' && p is PhaseIn) _run(s, out: true);
-      if (go == 'evening' && p is PhaseOpen && !s.evening.requireCode) _run(s, out: false);
+      if (go == 'evening' && p is PhaseOpen && !s.evening.requireCode) {
+        _run(s, out: false);
+      }
       if (go == 'venue' && p is! PhaseIn) _run(s, out: false);
     });
   }
@@ -112,17 +127,34 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
     return HianaPage(
       title: '签到',
       showBack: widget.standalone,
-      onRefresh: () => ref.refresh(attendanceProvider.future).then((_) {}, onError: (_) {}),
+      onRefresh: () =>
+          ref.refresh(attendanceProvider.future).then((_) {}, onError: (_) {}),
       children: att.when(
-        loading: () => [const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Skeleton(height: 420, radius: 28))],
-        error: (e, _) => [Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: ErrorCard(error: e, onRetry: () => ref.invalidate(attendanceProvider)))],
+        loading: () => [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Skeleton(height: 420, radius: 28),
+          ),
+        ],
+        error: (e, _) => [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: ErrorCard(
+              error: e,
+              onRetry: () => ref.invalidate(attendanceProvider),
+            ),
+          ),
+        ],
         data: (s) {
           _maybeAutoOpen(s);
           final p = phaseOf(s, DateTime.now().millisecondsSinceEpoch);
           return [
             Padding(
               padding: const EdgeInsets.fromLTRB(28, 0, 28, 12),
-              child: Text('${longDay(s.today)} · ${s.evening.isDay ? '晚自习日' : '没有晚自习'}', style: TextStyle(fontSize: 14, color: h.sub)),
+              child: Text(
+                '${longDay(s.today)} · ${s.evening.isDay ? '晚自习日' : '没有晚自习'}',
+                style: TextStyle(fontSize: 14, color: h.sub),
+              ),
             ),
             if (p is! PhaseIn)
               Padding(
@@ -138,19 +170,37 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
               child: HxCard(
                 radius: 28,
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
-                child: _MainPanel(s: s, p: p, kind: _kind, busy: _busy, code: _code, run: (out) => _run(s, out: out), toVenue: () => setState(() => _kind = 'venue')),
+                child: _MainPanel(
+                  s: s,
+                  p: p,
+                  kind: _kind,
+                  busy: _busy,
+                  code: _code,
+                  run: (out) => _run(s, out: out),
+                  toVenue: () => setState(() => _kind = 'venue'),
+                ),
               ),
             ),
-            SectionHead('我的记录', trailing: Text('晚自习 ${s.eveningTotal} 次 · 场地 ${s.venueTotal} 次', style: TextStyle(fontSize: 12, color: h.sub))),
+            SectionHead(
+              '我的记录',
+              trailing: Text(
+                '晚自习 ${s.eveningTotal} 次 · 场地 ${s.venueTotal} 次',
+                style: TextStyle(fontSize: 12, color: h.sub),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: s.recent.isEmpty
                   ? const EmptyCard(title: '还没有记录', body: '第一次签到之后，这里会列出最近的记录。')
                   : HxCard(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       child: Column(
                         children: [
-                          for (var i = 0; i < s.recent.length; i++) _RecordRow(r: s.recent[i], first: i == 0),
+                          for (var i = 0; i < s.recent.length; i++)
+                            _RecordRow(r: s.recent[i], first: i == 0),
                         ],
                       ),
                     ),
@@ -158,7 +208,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(28, 14, 28, 0),
               child: Text(
-                '到了拍一张、走前拍一张，拍桌面或屏幕就行，不用拍脸。晚自习是每${daysText(s.evening.days)} ${s.evening.windowStart}–${s.evening.windowEnd}，提前 15 分钟可以签，到点自动结束。大创场地随时可以签，当天 23:59 自动结束。',
+                '晚自习：每${daysText(s.evening.days)} ${s.evening.windowStart}–${s.evening.windowEnd} · 大创场地：随时，23:59 结束',
                 style: TextStyle(fontSize: 13, height: 1.6, color: h.sub),
               ),
             ),
@@ -170,7 +220,15 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
 }
 
 class _MainPanel extends StatelessWidget {
-  const _MainPanel({required this.s, required this.p, required this.kind, required this.busy, required this.code, required this.run, required this.toVenue});
+  const _MainPanel({
+    required this.s,
+    required this.p,
+    required this.kind,
+    required this.busy,
+    required this.code,
+    required this.run,
+    required this.toVenue,
+  });
   final AttendanceState s;
   final Phase p;
   final String kind;
@@ -189,98 +247,216 @@ class _MainPanel extends StatelessWidget {
     final dayFrom = cnTime(s.today, '08:00');
     final dayTo = venueEnd(s.today);
 
-    Widget status(Widget tag, String note) => Row(children: [tag, const Spacer(), Text(note, style: TextStyle(fontSize: 12, color: h.sub))]);
+    Widget status(Widget tag, String note) => Row(
+      children: [
+        tag,
+        const Spacer(),
+        Text(note, style: TextStyle(fontSize: 12, color: h.sub)),
+      ],
+    );
     Widget big(String n, String unit) => Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text(n, style: TextStyle(fontSize: 56, height: 1.1, fontWeight: FontWeight.w700, color: h.ink, letterSpacing: -2, fontFeatures: kTabular)),
-            if (unit.isNotEmpty) ...[const SizedBox(width: 4), Text(unit, style: TextStyle(fontSize: 15, color: h.sub))],
-          ],
-        );
-    Widget small(String t) => Text(t, style: TextStyle(fontSize: 13, color: h.sub, fontFeatures: kTabular));
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Text(
+          n,
+          style: TextStyle(
+            fontSize: 56,
+            height: 1.1,
+            fontWeight: FontWeight.w700,
+            color: h.ink,
+            letterSpacing: -2,
+            fontFeatures: kTabular,
+          ),
+        ),
+        if (unit.isNotEmpty) ...[
+          const SizedBox(width: 4),
+          Text(unit, style: TextStyle(fontSize: 15, color: h.sub)),
+        ],
+      ],
+    );
+    Widget small(String t) => Text(
+      t,
+      style: TextStyle(fontSize: 13, color: h.sub, fontFeatures: kTabular),
+    );
     Widget note(String t) => Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: Text(t, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, height: 1.5, color: h.sub)),
-        );
+      padding: const EdgeInsets.only(top: 12),
+      child: Text(
+        t,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 13, height: 1.5, color: h.sub),
+      ),
+    );
 
     final List<Widget> children;
     if (p is PhaseIn) {
       final isEv = p.scene == 'evening';
       children = [
-        status(HxTag('${kindLabel(p.scene)} · 学习中', bg: h.tint, fg: h.accentText, dot: h.accent, bold: true), isEv && ev.requireCode ? '现场口令已开启' : '只需拍照'),
+        status(
+          HxTag(
+            '${kindLabel(p.scene)} · 学习中',
+            bg: h.tint,
+            fg: h.accentText,
+            dot: h.accent,
+            bold: true,
+          ),
+          isEv && ev.requireCode ? '现场口令已开启' : '只需拍照',
+        ),
         _Dial(
           from: isEv ? evFrom : dayFrom,
           to: isEv ? ev.endsAt : dayTo,
           start: p.inAt,
           now: now,
           labels: isEv ? (ev.windowStart, ev.windowEnd) : ('08:00', '24:00'),
-          center: [small('已学习'), big(p.minutes < 60 ? '${p.minutes}' : (p.minutes / 60).toStringAsFixed(1), p.minutes < 60 ? '分钟' : '小时'), small('${hhmm(p.inAt)} 签到 · ${hhmm(p.endsAt)} 结束')],
+          center: [
+            small('已学习'),
+            big(
+              p.minutes < 60
+                  ? '${p.minutes}'
+                  : (p.minutes / 60).toStringAsFixed(1),
+              p.minutes < 60 ? '分钟' : '小时',
+            ),
+            small('${hhmm(p.inAt)} 签到 · ${hhmm(p.endsAt)} 结束'),
+          ],
         ),
-        HxButton('拍照签退', icon: HxIcon.camera, height: 56, expand: true, busy: busy, onTap: () => run(true)),
-        note('离开前拍一张。忘了也没关系，到点会自动结束，记作“未签退”。'),
+        HxButton(
+          '拍照签退',
+          icon: HxIcon.camera,
+          height: 56,
+          expand: true,
+          busy: busy,
+          onTap: () => run(true),
+        ),
+        note('到点自动结束'),
       ];
     } else if (kind == 'venue') {
       children = [
         status(const HxTag('大创场地'), '随时可以签'),
-        _Dial(from: dayFrom, to: dayTo, start: null, now: now, labels: ('08:00', '24:00'), center: [small('现在'), big(hhmm(now), ''), small('23:59 自动结束')]),
-        HxButton('拍照签到', icon: HxIcon.camera, height: 56, expand: true, busy: busy, onTap: () => run(false)),
+        _Dial(
+          from: dayFrom,
+          to: dayTo,
+          start: null,
+          now: now,
+          labels: ('08:00', '24:00'),
+          center: [small('现在'), big(hhmm(now), ''), small('23:59 自动结束')],
+        ),
+        HxButton(
+          '拍照签到',
+          icon: HxIcon.camera,
+          height: 56,
+          expand: true,
+          busy: busy,
+          onTap: () => run(false),
+        ),
         note('进场拍一张，离开再拍一张签退。'),
       ];
     } else if (p is PhaseOpen) {
       children = [
-        status(HxTag('晚自习进行中', bg: h.tint, fg: h.accentText, dot: h.now, bold: true), ev.requireCode ? '要输现场口令' : '只需拍照'),
+        status(
+          HxTag('晚自习进行中', bg: h.tint, fg: h.accentText, dot: h.now, bold: true),
+          ev.requireCode ? '要输现场口令' : '只需拍照',
+        ),
         _Dial(
           from: evFrom,
           to: ev.endsAt,
           start: null,
           now: now,
           labels: (ev.windowStart, ev.windowEnd),
-          center: [small('还剩'), big('${p.remaining}', '分钟'), small('${ev.windowStart} – ${ev.windowEnd}')],
+          center: [
+            small('还剩'),
+            big('${p.remaining}', '分钟'),
+            small('${ev.windowStart} – ${ev.windowEnd}'),
+          ],
         ),
         if (ev.requireCode) ...[
           MaterialSurfaceField(controller: code),
           const SizedBox(height: 12),
         ],
-        HxButton('拍照签到', icon: HxIcon.camera, height: 56, expand: true, busy: busy, onTap: () => run(false)),
-        note(ev.requireCode ? '先输入屏幕上今天的 4 位数，再拍一张现场照片。' : '到教室后拍一张现场照片。'),
+        HxButton(
+          '拍照签到',
+          icon: HxIcon.camera,
+          height: 56,
+          expand: true,
+          busy: busy,
+          onTap: () => run(false),
+        ),
+        note(ev.requireCode ? '先输入屏幕上的 4 位数' : '到教室后拍一张现场照片。'),
       ];
     } else if (p is PhaseDone) {
       final end = p.outAt ?? ev.endsAt;
       children = [
-        status(HxTag('今晚签到了', bg: h.okBg, fg: h.okInk), p.auto ? '这次没签退' : '已签退'),
+        status(
+          HxTag('今晚签到了', bg: h.okBg, fg: h.okInk),
+          p.auto ? '这次没签退' : '已签退',
+        ),
         _Dial(
           from: evFrom,
           to: ev.endsAt,
           start: p.inAt,
           now: end,
           labels: (ev.windowStart, ev.windowEnd),
-          center: [small('今晚学了'), big('${math.max(0, ((end - p.inAt) / 60000).round())}', '分钟'), small('${hhmm(p.inAt)} – ${p.outAt == null ? ev.windowEnd : hhmm(p.outAt!)}')],
+          center: [
+            small('今晚学了'),
+            big('${math.max(0, ((end - p.inAt) / 60000).round())}', '分钟'),
+            small(
+              '${hhmm(p.inAt)} – ${p.outAt == null ? ev.windowEnd : hhmm(p.outAt!)}',
+            ),
+          ],
         ),
         HxButton('去大创场地继续学', kind: HxButtonKind.ghost, onTap: toVenue),
       ];
     } else if (p is PhaseLater) {
       children = [
         status(const HxTag('今晚有晚自习'), '${hhmm(p.opensAt)} 起可以签'),
-        _Dial(from: evFrom, to: ev.endsAt, start: null, now: now, labels: (ev.windowStart, ev.windowEnd), center: [small('今晚'), big(ev.windowStart, ''), small('${hhmm(p.opensAt)} 起可以签到')]),
-        HxButton('还没到签到时间', height: 56, expand: true, enabled: false, onTap: () {}),
+        _Dial(
+          from: evFrom,
+          to: ev.endsAt,
+          start: null,
+          now: now,
+          labels: (ev.windowStart, ev.windowEnd),
+          center: [
+            small('今晚'),
+            big(ev.windowStart, ''),
+            small('${hhmm(p.opensAt)} 起可以签到'),
+          ],
+        ),
+        HxButton(
+          '还没到签到时间',
+          height: 56,
+          expand: true,
+          enabled: false,
+          onTap: () {},
+        ),
         const SizedBox(height: 10),
         HxButton('现在在大创场地？签场地', kind: HxButtonKind.quiet, onTap: toVenue),
       ];
     } else {
       final next = (p as PhaseNone).next;
       children = [
-        status(const HxTag('今天没有晚自习'), next == null ? '' : '下次：$next ${ev.windowStart}'),
+        status(
+          const HxTag('今天没有晚自习'),
+          next == null ? '' : '下次：$next ${ev.windowStart}',
+        ),
         const SizedBox(height: 24),
-        Text('今天没有晚自习', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: h.ink)),
-        note('晚自习是每${daysText(ev.days)} ${ev.windowStart}–${ev.windowEnd}。在大创场地学习的话，可以签场地。'),
+        Text(
+          '今天没有晚自习',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: h.ink,
+          ),
+        ),
+        note('晚自习：每${daysText(ev.days)} ${ev.windowStart}–${ev.windowEnd}'),
         const SizedBox(height: 16),
         HxButton('去大创场地签到', icon: HxIcon.camera, onTap: toVenue),
         const SizedBox(height: 12),
       ];
     }
-    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: children);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: children,
+    );
   }
 }
 
@@ -291,18 +467,25 @@ class MaterialSurfaceField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MiuixTextField(
-        controller: controller,
-        label: '屏幕上今天的 4 位口令',
-        useLabelAsPlaceholder: true,
-        singleLine: true,
-        keyboardType: TextInputType.number,
-        textInputAction: TextInputAction.done,
-      );
+    controller: controller,
+    label: '屏幕上今天的 4 位口令',
+    useLabelAsPlaceholder: true,
+    singleLine: true,
+    keyboardType: TextInputType.number,
+    textInputAction: TextInputAction.done,
+  );
 }
 
 /// 表盘：270° 的弧，左下是开始、右下是结束；橙色弧是这次学了多久，红点是现在。
 class _Dial extends StatefulWidget {
-  const _Dial({required this.from, required this.to, required this.start, required this.now, required this.labels, required this.center});
+  const _Dial({
+    required this.from,
+    required this.to,
+    required this.start,
+    required this.now,
+    required this.labels,
+    required this.center,
+  });
   final int from;
   final int to;
   final int? start;
@@ -315,7 +498,10 @@ class _Dial extends StatefulWidget {
 }
 
 class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
-  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..forward();
+  late final _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  )..forward();
 
   @override
   void dispose() {
@@ -334,10 +520,21 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
         child: AnimatedBuilder(
           animation: _c,
           builder: (context, child) => CustomPaint(
-            painter: _DialPainter(widget, h, MediaQuery.disableAnimationsOf(context) ? 1 : HxMotion.ease.transform(_c.value)),
+            painter: _DialPainter(
+              widget,
+              h,
+              MediaQuery.disableAnimationsOf(context)
+                  ? 1
+                  : HxMotion.ease.transform(_c.value),
+            ),
             child: child,
           ),
-          child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: widget.center)),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: widget.center,
+            ),
+          ),
         ),
       ),
     );
@@ -378,7 +575,11 @@ class _DialPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..color = h.lineStrong;
     for (var i = 0; i <= 10; i++) {
-      canvas.drawLine(_pt(c, r - 18, i / 10), _pt(c, r - (i % 5 == 0 ? 28 : 24), i / 10), tick);
+      canvas.drawLine(
+        _pt(c, r - 18, i / 10),
+        _pt(c, r - (i % 5 == 0 ? 28 : 24), i / 10),
+        tick,
+      );
     }
     final fNow = _f(d.now);
     if (d.start != null) {
@@ -414,7 +615,14 @@ class _DialPainter extends CustomPainter {
     }
     void label(String text, double f, double dx) {
       final tp = TextPainter(
-        text: TextSpan(text: text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: h.sub)),
+        text: TextSpan(
+          text: text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: h.sub,
+          ),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       final p = _pt(c, r, f);
@@ -426,7 +634,8 @@ class _DialPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_DialPainter old) => old.t != t || old.d.now != d.now || old.d.start != d.start || old.h != h;
+  bool shouldRepaint(_DialPainter old) =>
+      old.t != t || old.d.now != d.now || old.d.start != d.start || old.h != h;
 }
 
 class _RecordRow extends StatelessWidget {
@@ -444,7 +653,9 @@ class _RecordRow extends StatelessWidget {
     };
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 11),
-      decoration: BoxDecoration(border: first ? null : Border(top: BorderSide(color: h.line))),
+      decoration: BoxDecoration(
+        border: first ? null : Border(top: BorderSide(color: h.line)),
+      ),
       child: Row(
         children: [
           SizedBox(
@@ -452,8 +663,19 @@ class _RecordRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(shortDay(r.day), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: h.ink, fontFeatures: kTabular)),
-                Text(weekdayOf(r.day), style: TextStyle(fontSize: 12, color: h.sub)),
+                Text(
+                  shortDay(r.day),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: h.ink,
+                    fontFeatures: kTabular,
+                  ),
+                ),
+                Text(
+                  weekdayOf(r.day),
+                  style: TextStyle(fontSize: 12, color: h.sub),
+                ),
               ],
             ),
           ),
@@ -461,8 +683,18 @@ class _RecordRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(kindLabel(r.kind), style: TextStyle(fontSize: 14, color: h.ink)),
-                Text('${hhmm(r.inAt)} – ${r.outAt == null ? '进行中' : hhmm(r.outAt!)}', style: TextStyle(fontSize: 12, color: h.sub, fontFeatures: kTabular)),
+                Text(
+                  kindLabel(r.kind),
+                  style: TextStyle(fontSize: 14, color: h.ink),
+                ),
+                Text(
+                  '${hhmm(r.inAt)} – ${r.outAt == null ? '进行中' : hhmm(r.outAt!)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: h.sub,
+                    fontFeatures: kTabular,
+                  ),
+                ),
               ],
             ),
           ),

@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "15462",
+ "title": "CMU 15-462 : COMPUTER GRAPHICS",
+ "category": "计算机图形学",
+ "provider": "CMU",
+ "instructors": [],
+ "language": "C/C++",
+ "prerequisites": "基础的向量微积分和线性代数 , 基础的 C/C++ 编程能力。",
+ "difficulty": 4,
+ "hours": "100 小时",
+ "summary": "课程简介",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "# CMU 15-462 : COMPUTER GRAPHICS\r\n\r\n## 课程简介\r\n\r\n- 所属大学：CMU\r\n- 先修要求：基础的向量微积分和线性代数 , 基础的 C/C++ 编程能力。\r\n- 编程语言：C/C++\r\n- 课程难度：🌟🌟🌟🌟\r\n- 预计学时：100 小时\r\n\r\n本课程全面介绍了计算机图形学。它侧重于基本概念和技术，以及它们与图形中多个问题领域（渲染、动画、几何、成像）的交叉关系。主题包括：采样、混叠、插值、光栅化、几何变换、参数化、可见性、合成、过滤、卷积、曲线和曲面、几何数据结构、细分、网格划分、空间层次结构、光线追踪、辐射测量、反射率、光场、几何光学，蒙特卡洛渲染，重要性采样，相机模型，高性能光线追踪，微分方程，时间积分，数值微分，基于物理的动画，优化，数值线性代数，逆运动学，傅立叶方法，数据拟合.\r\n\r\n## 课程资源\r\n\r\n- 课程网站：[http://15462.courses.cs.cmu.edu/fall2022/](http://15462.courses.cs.cmu.edu/fall2022/)\r\n- 课程视频：\r\n    - [Youtube](https://www.youtube.com/watch?v=W6yEALqsD7k&list=PL9_jI1bdZmz2emSh0UQ5iOdT2xRHFHL7E&index=1)\r\n    - [bilibili](https://www.bilibili.com/video/BV1QZ4y1K7ga)\r\n- 课程教材：15-462 没有唯一的课本, 提供了各种书籍供你参考. 如下:\r\n    - [Fundamentals of Computer Graphics. A K Peters, 2009](http://www.amazon.com/Fundamentals-Computer-Graphics-Peter-Shirley/dp/1568814690)\r\n    - [Computer Graphics: Principles and Practice](http://www.amazon.com/Computer-Graphics-Principles-Practice-3rd/dp/0321399528/ref=sr_1_2?s=books&ie=UTF8&qid=1440872554&sr=1-2&keywords=foundations+of+3d+computer+graphics)\r\n    - [Physically Based Rendering: From Theory to Implementation](http://www.amazon.com/gp/product/0123750792?ie=UTF8&tag=pharr-20&linkCode=as2&camp=1789&creative=390957&creativeASIN=0123750792)\r\n- 课程作业：参见课程主页\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/15462/"
+  },
+  "official": "本课程全面介绍了计算机图形学。它侧重于基本概念和技术，以及它们与渲染、动画、几何、成像等多个图形问题领域的交叉关系。主题包括采样、混叠、插值、光栅化、几何变换、参数化、可见性、合成、滤波、卷积、曲线和曲面、几何数据结构、细分、网格划分、空间层次结构、光线追踪、辐射测量、反射率、光场、几何光学、蒙特卡洛渲染、重要性采样、相机模型、高性能光线追踪、微分方程、时间积分、数值微分、基于物理的动画、优化、数值线性代数、反向运动学、傅里叶方法和数据拟合。"
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "http://15462.courses.cs.cmu.edu/fall2022/"
+  },
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "http://15462.courses.cs.cmu.edu/fall2022/](http://15462.courses.cs.cmu.edu/fall2022/)"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Computer Graphics"
+}

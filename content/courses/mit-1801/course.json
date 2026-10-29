@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "mit-1801",
+ "title": "MIT Calculus Course",
+ "category": "数学基础",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "无",
+ "prerequisites": "英语",
+ "difficulty": 2,
+ "hours": "因人而异",
+ "summary": "MIT 的微积分课由 MIT18.01: Single Variable Calculus 和 MIT18.02: Multivariable Calculus 两门课组成。对自己数学基础比较自信的同学可以只看课程 notes，写得非常浅显生动并且抓住本质……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nMIT 的微积分课由 MIT18.01: Single Variable Calculus 和 MIT18.02: Multivariable Calculus 两门课组成。对自己数学基础比较自信的同学可以只看课程 notes，写得非常浅显生动并且抓住本质，让你不再疲于做题而是能够真正窥见微积分的本质魅力。\n\n配合油管数学网红 <strong>3Blue1Brown</strong> 的[微积分的本质](https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr)系列视频食用更佳。\n\n## 课程资源\n\n- 课程网站：[18.01](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/), [18.02](https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010/)\n- 课程视频：参见课程网站\n- 课程教材：参见课程 notes\n- 课程作业：书面作业及答案参见课程网站\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/MITmaths/"
+  },
+  "official": "本课程介绍单变量微积分的基础知识，涵盖微分和积分的计算与应用。课程强调微积分在物理、工程和经济学等多个科学领域中的重要作用。课程包含讲座视频、习题讲解、实例演示、习题集、考试和交互式Java应用程序。",
+  "officialSource": {
+   "kind": "website",
+   "label": "ocw.mit.edu",
+   "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · 18.01",
+   "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · 18.02",
+   "url": "https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Single Variable Calculus"
+}

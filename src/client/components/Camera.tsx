@@ -274,7 +274,7 @@ export function DoneOverlay({ title, sub, week, onClose }: { title: string; sub:
         </div>
         <div className="card row rise" style={{ width: "100%", gap: 14, padding: 16, "--i": 14 } as React.CSSProperties}>
           <span className="grow stack" style={{ gap: 8 }}>
-            <span style={{ fontSize: 14, lineHeight: "20px", fontWeight: 500 }}>这周的签到</span>
+            <span style={{ fontSize: "var(--fs-sm)", lineHeight: "22px", fontWeight: 500 }}>这周的签到</span>
             <span className="done-week" aria-hidden="true">
               {week.map((lv, i) => (
                 <i key={i} className={`${lv === null ? "l0" : `l${lv}`}${i === week.length - 1 ? " today" : ""}`} />

@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cmu10-708",
+ "title": "CMU 10-708: Probabilistic Graphical Models",
+ "category": "机器学习进阶",
+ "provider": "CMU",
+ "instructors": [],
+ "language": "",
+ "prerequisites": "Machine Learning, Deep Learning, Reinforcement Learning",
+ "difficulty": 5,
+ "hours": "",
+ "summary": "这门课程是 CMU 的图模型基础 + 进阶课，授课老师为 Eric P. Xing，涵盖了图模型基础，与神经网络的结合，在强化学习中的应用，以及非参数方法，相当硬核。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n- 课程网站：<https://sailinglab.github.io/pgm-spring-2019/>\n- 课程网站包含了所有的资源：slides, notes, video, homework, and project\n\n这门课程是 CMU 的图模型基础 + 进阶课，授课老师为 Eric P. Xing，涵盖了图模型基础，与神经网络的结合，在强化学习中的应用，以及非参数方法，相当硬核。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%BF%9B%E9%98%B6/CMU10-708/"
+  },
+  "official": "这是卡内基梅隆大学的研究生级别课程，涵盖概率图模型作为解决复杂问题的统一框架。课程地址\"从局部信息中搜索连贯的全局结论\"这一问题，展示概率图模型框架如何在具有大量属性和海量数据集的问题中实现高效推断、决策制定和学习。课程强调这些模型在人工智能、统计和计算机系统、计算机视觉、自然语言处理和计算生物学等领域的广泛应用。",
+  "officialSource": {
+   "kind": "website",
+   "label": "sailinglab.github.io",
+   "url": "https://sailinglab.github.io/pgm-spring-2019/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "https://sailinglab.github.io/pgm-spring-2019/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "CMU 10-708: Probabilistic Graphical Models"
+}

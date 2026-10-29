@@ -10,6 +10,7 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/hx_icons.dart';
 import '../../widgets/ui.dart';
+import '../auth/guest.dart';
 
 /// 公告与比赛：会长和老师发布的通知；比赛卡有截止倒计时，可以登记、组队。
 class NoticesPage extends ConsumerStatefulWidget {
@@ -38,7 +39,13 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     if (n == null) return;
     setState(() => _busy = true);
     try {
-      await ref.read(apiProvider).joinCompetition(n.id, team: _team.text.trim(), contact: _contact.text.trim());
+      await ref
+          .read(apiProvider)
+          .joinCompetition(
+            n.id,
+            team: _team.text.trim(),
+            contact: _contact.text.trim(),
+          );
       if (!mounted) return;
       setState(() => _joining = null);
       showHxToast(context, n.joined ? '登记已更新' : '登记好了');
@@ -71,7 +78,8 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
     return HianaPage(
       title: '公告与比赛',
       showBack: true,
-      onRefresh: () => ref.refresh(noticesProvider.future).then((_) {}, onError: (_) {}),
+      onRefresh: () =>
+          ref.refresh(noticesProvider.future).then((_) {}, onError: (_) {}),
       overlays: [
         MiuixOverlayBottomSheet(
           show: _joining != null,
@@ -82,13 +90,31 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(_joining?.title ?? '', style: TextStyle(fontSize: 14, color: h.sub)),
+                Text(
+                  _joining?.title ?? '',
+                  style: TextStyle(fontSize: 14, color: h.sub),
+                ),
                 const SizedBox(height: 12),
-                MiuixTextField(controller: _team, label: '队伍名（还没组队可以不填）', useLabelAsPlaceholder: true, singleLine: true),
+                MiuixTextField(
+                  controller: _team,
+                  label: '队伍名（还没组队可以不填）',
+                  useLabelAsPlaceholder: true,
+                  singleLine: true,
+                ),
                 const SizedBox(height: 12),
-                MiuixTextField(controller: _contact, label: 'QQ 或微信号（登记名单里大家都看得到）', useLabelAsPlaceholder: true, singleLine: true),
+                MiuixTextField(
+                  controller: _contact,
+                  label: 'QQ 或微信号（登记名单里大家都看得到）',
+                  useLabelAsPlaceholder: true,
+                  singleLine: true,
+                ),
                 const SizedBox(height: 16),
-                HxButton(_joining?.joined == true ? '保存' : '登记', expand: true, busy: _busy, onTap: _join),
+                HxButton(
+                  _joining?.joined == true ? '保存' : '登记',
+                  expand: true,
+                  busy: _busy,
+                  onTap: _join,
+                ),
               ],
             ),
           ),
@@ -102,25 +128,62 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
             padding: const EdgeInsets.only(top: 12),
             child: Row(
               children: [
-                Expanded(child: MiuixTextButton('不了', onPressed: () => setState(() => _leaving = null))),
+                Expanded(
+                  child: MiuixTextButton(
+                    '不了',
+                    onPressed: () => setState(() => _leaving = null),
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: MiuixTextButton('取消登记', colors: MiuixButtonDefaults.buttonColorsPrimary(context), onPressed: _leave)),
+                Expanded(
+                  child: MiuixTextButton(
+                    '取消登记',
+                    colors: MiuixButtonDefaults.buttonColorsPrimary(context),
+                    onPressed: _leave,
+                  ),
+                ),
               ],
             ),
           ),
         ),
       ],
       children: list.when(
-        loading: () => [const Padding(padding: EdgeInsets.all(12), child: Skeleton(height: 260, radius: 22))],
-        error: (e, _) => [Padding(padding: const EdgeInsets.all(12), child: ErrorCard(error: e, onRetry: () => ref.invalidate(noticesProvider)))],
+        loading: () => [
+          const Padding(
+            padding: EdgeInsets.all(12),
+            child: Skeleton(height: 260, radius: 22),
+          ),
+        ],
+        error: (e, _) => [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: ErrorCard(
+              error: e,
+              onRetry: () => ref.invalidate(noticesProvider),
+            ),
+          ),
+        ],
         data: (all) {
-          if (all.isEmpty) return [const Padding(padding: EdgeInsets.all(12), child: EmptyCard(title: '还没有公告', body: '会长发布的通知和比赛都会出现在这里。'))];
+          if (all.isEmpty) {
+            return [
+              const Padding(
+                padding: EdgeInsets.all(12),
+                child: EmptyCard(title: '还没有公告', body: '会长发布的通知和比赛都会出现在这里。'),
+              ),
+            ];
+          }
           final plain = all.where((n) => !n.isCompetition).toList();
           final comps = all.where((n) => n.isCompetition).toList()
             ..sort((a, b) {
-              final ea = a.deadline != null && a.deadline!.compareTo(today) < 0 ? 1 : 0;
-              final eb = b.deadline != null && b.deadline!.compareTo(today) < 0 ? 1 : 0;
-              return ea != eb ? ea - eb : (a.deadline ?? '9999').compareTo(b.deadline ?? '9999');
+              final ea = a.deadline != null && a.deadline!.compareTo(today) < 0
+                  ? 1
+                  : 0;
+              final eb = b.deadline != null && b.deadline!.compareTo(today) < 0
+                  ? 1
+                  : 0;
+              return ea != eb
+                  ? ea - eb
+                  : (a.deadline ?? '9999').compareTo(b.deadline ?? '9999');
             });
           return [
             if (comps.isNotEmpty) ...[
@@ -134,6 +197,7 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
                       n: comps[i],
                       today: today,
                       onJoin: () {
+                        if (requireLogin(context, ref)) return;
                         final mine = comps[i].entries;
                         _team.text = '';
                         _contact.text = '';
@@ -148,13 +212,22 @@ class _NoticesPageState extends ConsumerState<NoticesPage> {
                 ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(28, 0, 28, 4),
-                child: Text('这里只是协会内部登记，方便找队友。正式报名按比赛资料里的流程走。', style: TextStyle(fontSize: 12, color: h.sub)),
+                child: Text(
+                  '协会内部登记',
+                  style: TextStyle(fontSize: 12, color: h.sub),
+                ),
               ),
             ],
             if (plain.isNotEmpty) ...[
               const SectionHead('公告'),
               for (var i = 0; i < plain.length; i++)
-                Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 12), child: Rise(index: i, child: _NoticeCard(n: plain[i]))),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                  child: Rise(
+                    index: i,
+                    child: _NoticeCard(n: plain[i]),
+                  ),
+                ),
             ],
           ];
         },
@@ -176,22 +249,50 @@ class _NoticeCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (n.pinned) ...[HxIconView(HxIcon.pin, size: 16, color: h.accentText), const SizedBox(width: 6)],
-              Expanded(child: Text(n.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: h.ink))),
+              if (n.pinned) ...[
+                HxIconView(HxIcon.pin, size: 16, color: h.accentText),
+                const SizedBox(width: 6),
+              ],
+              Expanded(
+                child: Text(
+                  n.title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: h.ink,
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            [if (n.pinned) '置顶', longDay(dayOfMs(n.createdAt), weekday: false), if (n.author != null) n.author!].join(' · '),
+            [
+              if (n.pinned) '置顶',
+              longDay(dayOfMs(n.createdAt), weekday: false),
+              if (n.author != null) n.author!,
+            ].join(' · '),
             style: TextStyle(fontSize: 12, color: h.sub),
           ),
           if (n.body.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(n.body, style: TextStyle(fontSize: 14, height: 1.6, color: h.ink)),
+            Text(
+              n.body,
+              style: TextStyle(fontSize: 14, height: 1.6, color: h.ink),
+            ),
           ],
           if (n.docUrl != null) ...[
             const SizedBox(height: 10),
-            HxButton('相关链接', kind: HxButtonKind.soft, height: 38, icon: HxIcon.external, onTap: () => launchUrl(Uri.parse(n.docUrl!), mode: LaunchMode.externalApplication)),
+            HxButton(
+              '相关链接',
+              kind: HxButtonKind.soft,
+              height: 38,
+              icon: HxIcon.external,
+              onTap: () => launchUrl(
+                Uri.parse(n.docUrl!),
+                mode: LaunchMode.externalApplication,
+              ),
+            ),
           ],
         ],
       ),
@@ -200,7 +301,12 @@ class _NoticeCard extends StatelessWidget {
 }
 
 class _CompetitionCard extends StatelessWidget {
-  const _CompetitionCard({required this.n, required this.today, required this.onJoin, required this.onLeave});
+  const _CompetitionCard({
+    required this.n,
+    required this.today,
+    required this.onJoin,
+    required this.onLeave,
+  });
   final Notice n;
   final String today;
   final VoidCallback onJoin;
@@ -221,25 +327,54 @@ class _CompetitionCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: Wrap(spacing: 6, runSpacing: 6, children: [for (final t in n.tags) HxTag(t)])),
+                Expanded(
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [for (final t in n.tags) HxTag(t)],
+                  ),
+                ),
                 if (days != null)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         ended ? '—' : '$days',
-                        style: TextStyle(fontSize: 30, height: 1.1, fontWeight: FontWeight.w700, color: !ended && days <= 14 ? h.badInk : h.ink, fontFeatures: kTabular),
+                        style: TextStyle(
+                          fontSize: 30,
+                          height: 1.1,
+                          fontWeight: FontWeight.w700,
+                          color: !ended && days <= 14 ? h.badInk : h.ink,
+                          fontFeatures: kTabular,
+                        ),
                       ),
-                      Text(ended ? '已截止' : days == 0 ? '今天截止' : '天后截止', style: TextStyle(fontSize: 12, color: h.sub)),
+                      Text(
+                        ended
+                            ? '已截止'
+                            : days == 0
+                            ? '今天截止'
+                            : '天后截止',
+                        style: TextStyle(fontSize: 12, color: h.sub),
+                      ),
                     ],
                   ),
               ],
             ),
             const SizedBox(height: 6),
-            Text(n.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: h.ink)),
+            Text(
+              n.title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: h.ink,
+              ),
+            ),
             if (n.body.isNotEmpty) ...[
               const SizedBox(height: 4),
-              Text(n.body, style: TextStyle(fontSize: 13, height: 1.6, color: h.sub)),
+              Text(
+                n.body,
+                style: TextStyle(fontSize: 13, height: 1.6, color: h.sub),
+              ),
             ],
             const SizedBox(height: 10),
             Wrap(
@@ -247,17 +382,46 @@ class _CompetitionCard extends StatelessWidget {
               runSpacing: 6,
               children: [
                 if (n.docUrl != null)
-                  HxButton('比赛资料', kind: HxButtonKind.soft, height: 36, icon: HxIcon.external, onTap: () => launchUrl(Uri.parse(n.docUrl!), mode: LaunchMode.externalApplication)),
+                  HxButton(
+                    '比赛资料',
+                    kind: HxButtonKind.soft,
+                    height: 36,
+                    icon: HxIcon.external,
+                    onTap: () => launchUrl(
+                      Uri.parse(n.docUrl!),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                  ),
                 if (n.groupInfo != null) HxTag(n.groupInfo!),
-                if (n.deadline != null) HxTag('截止 ${longDay(n.deadline!, weekday: false)}'),
+                if (n.deadline != null)
+                  HxTag('截止 ${longDay(n.deadline!, weekday: false)}'),
               ],
             ),
+            // 游客看不到名单，只看到人数
+            if (n.entries.isEmpty && n.entryCount > 0) ...[
+              const SizedBox(height: 12),
+              Text(
+                '${n.entryCount} 人登记 · 登录后能看到名单',
+                style: TextStyle(fontSize: 13, color: h.sub),
+              ),
+            ],
             if (n.entries.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Text('${n.entries.length} 人登记${teams.isNotEmpty ? ' · ${teams.length} 支队' : ''}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: h.ink)),
+              Text(
+                '${n.entries.length} 人登记${teams.isNotEmpty ? ' · ${teams.length} 支队' : ''}',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: h.ink,
+                ),
+              ),
               const SizedBox(height: 4),
               Text(
-                n.entries.map((e) => e.team == null ? e.name : '${e.name}（${e.team}）').join('、'),
+                n.entries
+                    .map(
+                      (e) => e.team == null ? e.name : '${e.name}（${e.team}）',
+                    )
+                    .join('、'),
                 style: TextStyle(fontSize: 12, height: 1.5, color: h.sub),
               ),
             ],
@@ -267,9 +431,27 @@ class _CompetitionCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Expanded(child: Text(n.joined ? '你已登记' : '', style: TextStyle(fontSize: 13, color: h.sub))),
-                  if (n.joined) ...[HxButton('取消', kind: HxButtonKind.quiet, height: 42, onTap: onLeave), const SizedBox(width: 8)],
-                  HxButton(n.joined ? '修改登记' : '我要参加', kind: n.joined ? HxButtonKind.soft : HxButtonKind.primary, height: 42, onTap: onJoin),
+                  Expanded(
+                    child: Text(
+                      n.joined ? '你已登记' : '',
+                      style: TextStyle(fontSize: 13, color: h.sub),
+                    ),
+                  ),
+                  if (n.joined) ...[
+                    HxButton(
+                      '取消',
+                      kind: HxButtonKind.quiet,
+                      height: 42,
+                      onTap: onLeave,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  HxButton(
+                    n.joined ? '修改登记' : '我要参加',
+                    kind: n.joined ? HxButtonKind.soft : HxButtonKind.primary,
+                    height: 42,
+                    onTap: onJoin,
+                  ),
                 ],
               ),
             ],

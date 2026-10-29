@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "mit6-858",
+ "title": "MIT 6.858: Computer System Security",
+ "category": "计算机系统安全",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "C, Python",
+ "prerequisites": "计算机体系结构，对计算机系统有初步了解",
+ "difficulty": 5,
+ "hours": "150 小时",
+ "summary": "MIT 的计算机系统安全课程，实验环境是一个 Web Application Zoobar。学生学习攻防技术并应用于该 Web Application。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nMIT 的计算机系统安全课程，实验环境是一个 Web Application Zoobar。学生学习攻防技术并应用于该 Web Application。\n\n- Lab 1: you will explore the zoobar web application, and use buffer overflow attacks to break its security properties.\n- Lab 2: you will improve the zoobar web application by using privilege separation, so that if one component is compromised, the adversary doesn't get control over the whole web application.\n- Lab 3: you will build a program analysis tool based on symbolic execution to find bugs in Python code such as the zoobar web application.\n- Lab 4: you will improve the zoobar application against browser attacks.\n\n这个课我主要是做了 Lab 3。Lab 3 是通过混合符号执行来遍历程序的所有分支，理解了符号执行的思想后 Lab 并不难做。这个 Lab 直观展示符号执行这种技术的使用方法。\n\n这个课的 Final Project 是实现 [SecFS](https://github.com/mit-pdos/secfs-skeleton)，一个远端文件系统，面对完全不可信的服务器，提供机密性和完整性。参考论文为 [SUNDR](https://www.usenix.org/legacy/event/osdi04/tech/full_papers/li_j/li_j.pdf)。\n\n## 课程资源\n\n- 课程网站：<http://css.csail.mit.edu/6.858/2022/>\n- 课程视频：参见课程网站\n- 课程教材：无\n- 课程作业：4 个 Lab + Final Project / Lab5\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/MIT6.858/"
+  },
+  "official": "计算机安全课程，涵盖缓冲区溢出漏洞及防御、身份认证和访问控制机制、权限分离和隔离技术、网络和消息安全、硬件安全和时序攻击、密码通道和证书、移动设备安全（iOS、Android）以及新兴领域如物联网和匿名通信。课程结合理论讲座与实验课程。",
+  "officialSource": {
+   "kind": "website",
+   "label": "css.csail.mit.edu",
+   "url": "http://css.csail.mit.edu/6.858/2022/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://css.csail.mit.edu/6.858/2022/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Computer System Security"
+}

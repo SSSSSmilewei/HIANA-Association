@@ -1,0 +1,259 @@
+{
+ "format": "hiana-course@1",
+ "slug": "csdiy",
+ "title": "CSDIY 的一切",
+ "category": "CSDIY",
+ "provider": "csdiy.wiki",
+ "instructors": [],
+ "language": "",
+ "prerequisites": "",
+ "difficulty": 0,
+ "hours": "",
+ "summary": "csdiy.wiki 的前言、使用指南、CS 学习规划和必学工具：开始自学之前先读这一门。",
+ "tags": [],
+ "license": "© csdiy.wiki 贡献者，MIT 许可",
+ "intro": {
+  "community": "这是一本计算机的自学指南，也是对自己大学三年自学生涯的一个纪念。\n\n这同时也是一份献给北大信科学弟学妹们的礼物。如果这本书能对你们的信科生涯有哪怕一丝一毫的帮助，都是对我极大的鼓励和慰藉。\n\n本书目前包括了以下部分(如果你有其他好的建议，或者想加入贡献者的行列，欢迎邮件 [zhongyinmin@pku.edu.cn](mailto:zhongyinmin@pku.edu.cn) 或者在 issue 里提问)：\n\n- 本书使用指南：由于书内涵盖资源众多，我根据不同人群的空闲时间和学习目标制定了对应的使用指南。\n- 一份供参考的 CS 学习规划：我根据自己的自学经历制定的全面的、系统化的 CS 自学规划。\n- 必学工具：一些 CSer 效率工具介绍，例如 IDE, 翻墙, StackOverflow, Git, GitHub, Vim, LaTeX, GNU Make, Docker, 工作流 等等。\n- 经典书籍推荐：你是否苦于教材的晦涩难懂不知所云？别从自己身上找原因了，可能只是教材写得太烂。看过 CSAPP 这本书的同学一定会感叹好书的重要，我将列举推荐各个计算机领域的必看好书与资源链接。\n- **国内外高质量 CS 课程汇总**：我将把我上过的以及开源社区贡献的**高质量**的国内外 CS 课程分门别类进行汇总，介绍其课程内容特点并给出相应的自学建议，大部分课程都会有一个独立的仓库维护相关的资源以及作业实现供大家学习参考。",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/"
+  },
+  {
+   "kind": "repo",
+   "label": "GitHub 仓库",
+   "url": "https://github.com/PKUFlyingPig/cs-self-learning"
+  }
+ ],
+ "modules": [
+  {
+   "id": "front",
+   "title": "前言",
+   "items": [
+    {
+     "id": "preface",
+     "kind": "reading",
+     "title": "前言",
+     "periods": 1,
+     "pages": [
+      {
+       "id": "preface",
+       "title": "前言"
+      }
+     ]
+    },
+    {
+     "id": "how-to-use",
+     "kind": "reading",
+     "title": "如何使用这本书",
+     "periods": 1,
+     "pages": [
+      {
+       "id": "how-to-use",
+       "title": "如何使用这本书"
+      }
+     ]
+    },
+    {
+     "id": "cs-roadmap",
+     "kind": "reading",
+     "title": "一个仅供参考的 CS 学习规划",
+     "periods": 1,
+     "pages": [
+      {
+       "id": "cs-roadmap",
+       "title": "一个仅供参考的 CS 学习规划"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tools",
+   "title": "必学工具",
+   "items": [
+    {
+     "id": "vim",
+     "kind": "reading",
+     "title": "Vim",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "vim",
+       "title": "Vim"
+      }
+     ]
+    },
+    {
+     "id": "emacs",
+     "kind": "reading",
+     "title": "Emacs",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "emacs",
+       "title": "Emacs"
+      }
+     ]
+    },
+    {
+     "id": "git",
+     "kind": "reading",
+     "title": "Git",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "git",
+       "title": "Git"
+      }
+     ]
+    },
+    {
+     "id": "github",
+     "kind": "reading",
+     "title": "GitHub",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "github",
+       "title": "GitHub"
+      }
+     ]
+    },
+    {
+     "id": "gnu-make",
+     "kind": "reading",
+     "title": "GNU Make",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "gnu-make",
+       "title": "GNU Make"
+      }
+     ]
+    },
+    {
+     "id": "cmake",
+     "kind": "reading",
+     "title": "CMake",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "cmake",
+       "title": "CMake"
+      }
+     ]
+    },
+    {
+     "id": "latex",
+     "kind": "reading",
+     "title": "LaTeX",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "latex",
+       "title": "LaTeX"
+      }
+     ]
+    },
+    {
+     "id": "docker",
+     "kind": "reading",
+     "title": "Docker",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "docker",
+       "title": "Docker"
+      }
+     ]
+    },
+    {
+     "id": "scoop",
+     "kind": "reading",
+     "title": "Scoop",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "scoop",
+       "title": "Scoop"
+      }
+     ]
+    },
+    {
+     "id": "workflow",
+     "kind": "reading",
+     "title": "日常学习工作流",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "workflow",
+       "title": "日常学习工作流"
+      }
+     ]
+    },
+    {
+     "id": "thesis",
+     "kind": "reading",
+     "title": "毕业论文",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "thesis",
+       "title": "毕业论文"
+      }
+     ]
+    },
+    {
+     "id": "search",
+     "kind": "reading",
+     "title": "信息检索",
+     "periods": 2,
+     "pages": [
+      {
+       "id": "search",
+       "title": "信息检索"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "appendix",
+   "title": "附录",
+   "items": [
+    {
+     "id": "books",
+     "kind": "reading",
+     "title": "好书推荐",
+     "periods": 1,
+     "pages": [
+      {
+       "id": "books",
+       "title": "好书推荐"
+      }
+     ]
+    },
+    {
+     "id": "afterword",
+     "kind": "reading",
+     "title": "后记",
+     "periods": 1,
+     "pages": [
+      {
+       "id": "afterword",
+       "title": "后记"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs170",
+ "title": "CS170: Efficient Algorithms and Intractable Problems",
+ "category": "数据结构与算法",
+ "provider": "UC Berkeley",
+ "instructors": [],
+ "language": "LaTeX",
+ "prerequisites": "CS61B, CS70",
+ "difficulty": 3,
+ "hours": "60 小时",
+ "summary": "伯克利的算法设计课，更注重算法的理论基础与复杂度分析。课程内容涵盖了分治、图算法、最短路、生成树、贪心、动规、并查集、线性规划、网络流、NP 问题、随机算法、哈希算法等等。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n伯克利的算法设计课，更注重算法的理论基础与复杂度分析。课程内容涵盖了分治、图算法、最短路、生成树、贪心、动规、并查集、线性规划、网络流、NP 问题、随机算法、哈希算法等等。\n\n这门课的教材写的很好，证明浅显易懂，非常适合作为工具书查阅。另外，这门课只有书面作业，并且推荐用 LaTeX 编写，大家可以借此机会锻炼自己的 LaTeX 技巧。\n\n## 课程资源\n\n- 课程网站：<https://cs170.org/>\n- 课程视频：<https://www.bilibili.com/video/BV1BU4y1b7RK>\n- 课程教材：详见课程网站 notes\n- 课程作业：13 次书面作业，用 LaTeX 编写\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/UCB-CS170 - GitHub](https://github.com/PKUFlyingPig/UCB-CS170) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/CS170/"
+  },
+  "official": "本课程向学生介绍算法设计和计算复杂性理论。课程涵盖分治策略、图算法、贪心方法、动态规划、线性规划和网络流等基础主题，后期转向理论材料，包括 P 对 NP 问题、NP 完全性和处理计算困难问题的策略。课程以随机算法简介结尾。",
+  "officialSource": {
+   "kind": "website",
+   "label": "cs170.org",
+   "url": "https://cs170.org/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://cs170.org/"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.bilibili.com/video/BV1BU4y1b7RK"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Efficient Algorithms and Intractable Problems"
+}

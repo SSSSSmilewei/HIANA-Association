@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
 import { type SourceSeries, buildGrid, overview } from "../../shared/heatmap";
 import { api, clearCache, invalidate, longDay, relativeTime, useApi } from "../api";
+import { AppearancePickers } from "../components/Appearance";
 import { HeatGrid, Legend, Strip } from "../components/Heatmap";
 import { Icon } from "../icons";
-import { usePrefs } from "../prefs";
+
 import { Link } from "../router";
+import { useMe } from "../session";
 import type { HeatmapPayload, Me } from "../types";
-import { Dialog, ErrorBox, Seg, Skeleton, Spinner, useConfirm, useDialogClose, useTitle, useToast } from "../ui";
+import { Dialog, ErrorBox, Skeleton, Spinner, useConfirm, useDialogClose, useTitle, useToast } from "../ui";
 
 const GROUP_COLOR: Record<string, string> = { "site:attendance": "var(--l3)", "site:reflection": "var(--l2)", "site:study": "var(--l4)" };
 const colorOf = (s: SourceSeries) => GROUP_COLOR[s.source] ?? "var(--sub)";
@@ -20,7 +22,6 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
   const [binding, setBinding] = useState(false);
   const toast = useToast();
   const confirm = useConfirm();
-  const [prefs, setPrefs] = usePrefs();
 
   const series = data?.series ?? [];
   const on = series.filter((s) => !off.has(s.source) && !s.error);
@@ -56,17 +57,22 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
           <h1 className="h1" style={{ fontSize: 30, lineHeight: "38px" }}>
             {me.member?.name}
           </h1>
-          <span className="small sub">{[me.member?.className, `学号 ${me.member?.studentNo}`, me.isAdmin ? "管理员" : null].filter(Boolean).join(" · ")}</span>
+          <span className="small sub">{(me.member?.kind === "external"
+            ? ["校外账号", me.member.username, me.member.org, me.isAdmin ? "管理员" : null]
+            : [me.member?.className, `学号 ${me.member?.studentNo}`, me.isAdmin ? "管理员" : null]
+          )
+            .filter(Boolean)
+            .join(" · ")}</span>
         </span>
       </header>
 
       <section className="card stack" aria-labelledby="hm-h" style={{ gap: 16, padding: 22, borderRadius: 26 }}>
         <div className="row wrap" style={{ justifyContent: "space-between" }}>
           <span className="stack" style={{ gap: 2 }}>
-            <h2 id="hm-h" className="h3" style={{ fontSize: 18 }}>
+            <h2 id="hm-h" className="h3">
               一年的学习
             </h2>
-            <span className="small sub">{grid ? `过去一年有 ${grid.activeDays} 天在学。没有连续天数，哪天没来不会断。` : " "}</span>
+            <span className="small sub">{grid ? `过去一年 ${grid.activeDays} 天` : " "}</span>
           </span>
           <div role="group" aria-label="显示哪些记录" className="row wrap" style={{ gap: 6 }}>
             {series.map((s) => (
@@ -108,7 +114,7 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
         )}
         <div className="row wrap" style={{ justifyContent: "space-between", paddingTop: 14, borderTop: "1px solid var(--line)" }}>
           <div aria-live="polite" className="row wrap" style={{ gap: "6px 16px", alignItems: "baseline" }}>
-            <span style={{ fontSize: 15, lineHeight: "22px", fontWeight: 600 }}>{today ? `${day === today ? "今天 · " : ""}${longDay(day)}` : ""}</span>
+            <span style={{ fontSize: "var(--fs-md)", lineHeight: "22px", fontWeight: 600 }}>{today ? `${day === today ? "今天 · " : ""}${longDay(day)}` : ""}</span>
             {today &&
               (parts.length ? (
                 parts.map(({ s, n }) => (
@@ -135,9 +141,6 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
               绑定平台
             </button>
           </div>
-          <p className="small sub" style={{ marginBottom: 8 }}>
-            站外平台每天夜里同步一次，只读公开数据。
-          </p>
           {!data && <Skeleton h={160} />}
           {series.map((s) => {
             const b = data?.bindings.find((x) => x.source === s.source);
@@ -147,7 +150,7 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
                 <span className="stack grow" style={{ gap: 6, minWidth: 180 }}>
                   <span className="row" style={{ gap: 8 }}>
                     <span style={{ width: 8, height: 8, borderRadius: 4, background: colorOf(s), flexShrink: 0 }} aria-hidden="true" />
-                    <span style={{ fontSize: 14, lineHeight: "20px", fontWeight: 500 }}>{s.label}</span>
+                    <span style={{ fontSize: "var(--fs-sm)", lineHeight: "22px", fontWeight: 500 }}>{s.label}</span>
                     <span className="xsmall sub num">
                       半年 {g.total} {s.unit}
                     </span>
@@ -171,41 +174,12 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
         </section>
 
         <section className="card stack" id="settings" aria-labelledby="set-h" style={{ gap: 16 }}>
-          <h2 id="set-h" className="h3">
+          <DisplayNameForm />
+          <h2 id="set-h" className="h3" style={{ paddingTop: 14, borderTop: "1px solid var(--line)" }}>
             外观
           </h2>
-          <div className="stack" style={{ gap: 8 }}>
-            <span className="small sub">风格</span>
-            <div role="group" aria-label="风格" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
-              <SkinTile label="液态玻璃" active={prefs.skin === "glass"} onClick={() => setPrefs({ skin: "glass" })}>
-                <span style={{ position: "absolute", inset: 0, background: "#FFF1E6" }} />
-                <span style={{ position: "absolute", right: 8, top: 8, width: 14, height: 14, borderRadius: 4, background: "#F26B1D" }} />
-                <span style={{ position: "absolute", right: 26, top: 8, width: 14, height: 14, borderRadius: 4, background: "#FFAA6B" }} />
-                <span style={{ position: "absolute", left: 8, right: 30, bottom: 8, height: 22, borderRadius: 9, background: "rgba(255,255,255,0.7)", border: "1px solid #fff" }} />
-              </SkinTile>
-              <SkinTile label="经典直角" active={prefs.skin === "classic"} onClick={() => setPrefs({ skin: "classic" })}>
-                <span style={{ position: "absolute", inset: 0, background: "#fff", border: "1px solid #141416" }} />
-                <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 6, background: "#A31F34" }} />
-                <span style={{ position: "absolute", left: 16, top: 12, width: 50, height: 6, background: "#141416" }} />
-                <span style={{ position: "absolute", left: 16, top: 26, width: 72, height: 4, background: "#A9ABB2" }} />
-              </SkinTile>
-            </div>
-          </div>
-          <div className="stack" style={{ gap: 8 }}>
-            <span className="small sub">深浅</span>
-            <Seg
-              label="深浅"
-              flat
-              value={prefs.theme}
-              onChange={(t) => setPrefs({ theme: t })}
-              options={[
-                { value: "light" as const, label: "浅色" },
-                { value: "dark" as const, label: "深色" },
-                { value: "system" as const, label: "跟随系统" },
-              ]}
-            />
-            <span className="xsmall sub">只保存在这台设备上。</span>
-          </div>
+          <AppearancePickers />
+          <span className="xsmall sub">外观只保存在这台设备上。</span>
           <div className="row wrap" style={{ paddingTop: 14, borderTop: "1px solid var(--line)" }}>
             <Link to="/password" className="btn btn-ghost">
               <Icon name="key" size={18} />
@@ -223,29 +197,63 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
   );
 }
 
-function SkinTile({ label, active, onClick, children }: { label: string; active: boolean; onClick: () => void; children: React.ReactNode }) {
+/**
+ * 首页欢迎语里的称呼。只影响欢迎语：签到表、名单、公告、讨论里还是真名。
+ * 保存空字符串 = 恢复真名。
+ */
+function DisplayNameForm() {
+  const { me, setMe } = useMe();
+  const toast = useToast();
+  const real = me.member?.name ?? "";
+  const saved = me.member?.displayName ?? "";
+  const [value, setValue] = useState(saved);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const save = async (next: string) => {
+    setBusy(true);
+    setError(null);
+    try {
+      const r = await api<{ displayName: string | null }>("/api/me/display-name", { method: "PUT", body: { displayName: next } });
+      if (me.member) setMe({ ...me, member: { ...me.member, displayName: r.displayName } });
+      setValue(r.displayName ?? "");
+      toast(r.displayName ? `首页会叫你“${r.displayName}”` : "已恢复为真名");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      style={{
-        padding: 12,
-        borderRadius: "var(--r-card)",
-        border: `2px solid ${active ? "var(--accent)" : "var(--line)"}`,
-        background: active ? "var(--well)" : "transparent",
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        textAlign: "left",
+    <form
+      className="stack"
+      style={{ gap: 8 }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        void save(value.trim());
       }}
     >
-      <span aria-hidden="true" style={{ height: 54, borderRadius: 10, position: "relative", overflow: "hidden", display: "block" }}>
-        {children}
-      </span>
-      <span style={{ fontSize: 14, lineHeight: "20px", fontWeight: active ? 600 : 500 }}>{label}</span>
-    </button>
+      <h2 className="h3">首页称呼</h2>
+      <label className="field">
+        <span className="sr-only">显示名</span>
+        <input className="input" value={value} onChange={(e) => setValue(e.target.value)} maxLength={20} placeholder={real} autoComplete="nickname" />
+        <span className="hint xsmall">只用于首页欢迎语</span>
+      </label>
+      {error && (
+        <span className="error-text xsmall" role="alert">
+          {error}
+        </span>
+      )}
+      <div className="row wrap" style={{ gap: 8 }}>
+        <button type="submit" className="btn btn-soft btn-sm" disabled={busy || !value.trim() || value.trim() === saved}>
+          {busy ? <Spinner /> : "保存"}
+        </button>
+        <button type="button" className="btn btn-quiet btn-sm" disabled={busy || !saved} onClick={() => void save("")}>
+          恢复真名
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -317,13 +325,12 @@ function BindForm({ data }: { data: HeatmapPayload }) {
           <label className="field">
             {p.handleHint}
             <input className="input" value={handle} onChange={(e) => setHandle(e.target.value)} autoComplete="off" required />
-            {p.status === "unofficial" && <span className="hint xsmall">这个平台没有公开接口，用的是网页上能看到的数据，偶尔会同步失败。</span>}
           </label>
           {p.needsUserSecret && (
             <label className="field">
               令牌
               <input className="input mono" value={secret} onChange={(e) => setSecret(e.target.value)} autoComplete="off" />
-              <span className="hint xsmall">{p.needsUserSecret}。令牌加密保存，只用来读取你的记录。</span>
+              <span className="hint xsmall">{p.needsUserSecret}</span>
             </label>
           )}
         </>

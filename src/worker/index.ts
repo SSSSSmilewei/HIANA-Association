@@ -32,7 +32,6 @@ async function handleApi(req: Request, env: Env): Promise<Response> {
     return json({
       ok: true,
       settings: {
-        ADMIN_PASSWORD: has("ADMIN_PASSWORD"),
         SITE_URL: has("SITE_URL"),
         AI_API_KEY: has("AI_API_KEY"),
         GITHUB_TOKEN: has("GITHUB_TOKEN"),
@@ -44,23 +43,42 @@ async function handleApi(req: Request, env: Env): Promise<Response> {
   // 网页用 Cookie；手机 App 没有 Cookie，改用 Authorization: Bearer 头，令牌格式相同
   const token = parseCookies(req.headers.get("cookie"))[COOKIE] ?? bearerToken(req);
   let session = token && env.SESSION_SECRET ? await verifySession(env.SESSION_SECRET, token) : null;
+  // 以前的“会长”会话（没有 uid）已经取消，当作没登录
+  if (session && (session.role !== "member" || typeof session.uid !== "string")) session = null;
   let user: CurrentUser | null = null;
-  // 每次请求都读一下账号：停用后旧会话（网页和 App）立即失效；改成管理员也立即生效
-  if (session?.role === "member") {
+  // 每次请求都读一下账号：停用、重置密码后旧会话（网页和 App）立即失效；改成管理员也立即生效
+  if (session) {
     const row = await env.DB.prepare(
-      "SELECT id, student_no, name, class_name, role, password_hash IS NOT NULL AS has_pw FROM users WHERE id = ? AND status = 'active'",
+      "SELECT id, student_no, name, display_name, class_name, role, session_version, kind, username, email, org FROM users WHERE id = ? AND status = 'active'",
     )
       .bind(session.uid)
-      .first<{ id: string; student_no: string; name: string; class_name: string | null; role: string; has_pw: number }>();
-    if (!row) session = null;
+      .first<{
+        id: string;
+        student_no: string;
+        name: string;
+        display_name: string | null;
+        class_name: string | null;
+        role: string;
+        session_version: number;
+        kind: string;
+        username: string | null;
+        email: string | null;
+        org: string | null;
+      }>();
+    if (!row || row.session_version !== (session.sv ?? 0)) session = null;
     else
       user = {
         id: row.id,
+        kind: row.kind === "external" ? "external" : "campus",
         studentNo: row.student_no,
+        username: row.username,
+        email: row.email,
+        org: row.org,
         name: row.name,
+        displayName: row.display_name,
         className: row.class_name,
         role: row.role === "admin" ? "admin" : "member",
-        hasPassword: row.has_pw === 1,
+        sessionVersion: row.session_version,
       };
   }
   return dispatch(api, req, env, session, user);

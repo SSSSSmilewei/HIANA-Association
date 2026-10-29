@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "mit6-7960",
+ "title": "MIT 6.7960: Deep Learning",
+ "category": "深度学习",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "线性代数、概率统计、机器学习基础",
+ "difficulty": 4,
+ "hours": "90 小时",
+ "summary": "MIT 6.7960 的优势在于覆盖面相对更广：除了主流的 LLM/NLP 主线，也会涉及计算机视觉等任务与方法，适合希望建立“多方向通识”的学习者，而不是只押注单一赛道。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nMIT 6.7960 的优势在于覆盖面相对更广：除了主流的 LLM/NLP 主线，也会涉及计算机视觉等任务与方法，适合希望建立“多方向通识”的学习者，而不是只押注单一赛道。\n\n课程通常会把理论、模型设计和应用案例结合起来，帮助你理解“同一套深度学习思想”如何在不同任务中落地。对自学者来说，这门课的作业和项目也很适合做进阶练手。\n\n## 课程资源\n\n- 课程网站：<https://ocw.mit.edu/courses/6-7960-deep-learning-fall-2024/>\n- 课程视频：MIT OCW 页面提供 Lecture 视频与相关材料\n- 课程教材：Lecture Notes / 讲义 + 推荐论文\n- 课程作业：MIT OCW 页面提供作业与项目信息\n\n## 资源汇总\n\n暂未提供公开的个人课程笔记与作业仓库。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/MIT6-7960/"
+  },
+  "official": "本课程涵盖深度学习的基本概念，包括神经网络架构（多层感知机、卷积神经网络、循环神经网络、图神经网络和 Transformer）、核心概念（深度学习中的几何和不变性、反向传播、自动微分）、学习理论和高维空间中的泛化，以及应用领域（计算机视觉、自然语言处理和机器人学）。课程针对电子工程和计算机科学系的本科生和研究生。",
+  "officialSource": {
+   "kind": "website",
+   "label": "ocw.mit.edu",
+   "url": "https://ocw.mit.edu/courses/6-7960-deep-learning-fall-2024/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://ocw.mit.edu/courses/6-7960-deep-learning-fall-2024/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Deep Learning"
+}

@@ -183,32 +183,28 @@ export function AttendancePage() {
 
         <div className="split-side stack" style={{ gap: 20 }}>
           <section className="card stack" aria-labelledby="how-h" style={{ gap: 10 }}>
-            <h2 id="how-h" className="h3" style={{ fontSize: 15 }}>
+            <h2 id="how-h" className="h3">
               怎么签
             </h2>
             <ul className="stack small sub" style={{ gap: 8 }}>
-              <li className="row" style={{ alignItems: "flex-start" }}>
-                <Icon name="camera" size={18} style={{ flexShrink: 0, marginTop: 1 }} />
-                <span>到了拍一张、走前拍一张，拍桌面或屏幕就行，不用拍脸。只能现场拍，不能从相册选。</span>
-              </li>
               {ev && (
                 <li className="row" style={{ alignItems: "flex-start" }}>
                   <Icon name="clipboard" size={18} style={{ flexShrink: 0, marginTop: 1 }} />
                   <span>
-                    晚自习是每{daysText(ev.days)} {ev.window[0]}–{ev.window[1]}，提前 15 分钟可以签。到点自动结束，没签退记作“未签退”。
+                    晚自习：每{daysText(ev.days)} {ev.window[0]}–{ev.window[1]}
                   </span>
                 </li>
               )}
               <li className="row" style={{ alignItems: "flex-start" }}>
                 <Icon name="home" size={18} style={{ flexShrink: 0, marginTop: 1 }} />
-                <span>大创场地随时可以签，当天 23:59 自动结束。不统计连续天数，哪天没来也不会断。</span>
+                <span>大创场地：随时，23:59 自动结束</span>
               </li>
             </ul>
           </section>
 
           <section className="card" aria-labelledby="hist-h" style={{ paddingBottom: 8 }}>
             <div className="section-head" style={{ marginBottom: 6 }}>
-              <h2 id="hist-h" className="h3" style={{ fontSize: 15 }}>
+              <h2 id="hist-h" className="h3">
                 我的记录
               </h2>
               {data && (
@@ -220,19 +216,19 @@ export function AttendancePage() {
             {!data ? (
               <Skeleton h={160} />
             ) : data.recent.length === 0 ? (
-              <Empty title="还没有记录">第一次签到之后，这里会列出最近的记录。</Empty>
+              <Empty title="还没有记录" />
             ) : (
               <ul>
                 {data.recent.map((r) => (
                   <li key={r.id} className="list-row">
                     <span className="stack" style={{ width: 52, flexShrink: 0, gap: 0 }}>
-                      <span className="num" style={{ fontSize: 14, lineHeight: "20px", fontWeight: 600 }}>
+                      <span className="num" style={{ fontSize: "var(--fs-sm)", lineHeight: "22px", fontWeight: 600 }}>
                         {shortDay(r.day)}
                       </span>
                       <span className="xsmall sub">{weekday(r.day)}</span>
                     </span>
                     <span className="grow stack" style={{ gap: 0 }}>
-                      <span style={{ fontSize: 14, lineHeight: "20px" }}>{KIND_LABEL[r.kind]}</span>
+                      <span style={{ fontSize: "var(--fs-sm)", lineHeight: "22px" }}>{KIND_LABEL[r.kind]}</span>
                       <span className="xsmall sub num">
                         {clock(r.inAt)} – {r.outAt ? clock(r.outAt) : "进行中"}
                       </span>
@@ -251,7 +247,7 @@ export function AttendancePage() {
       {camera && (
         <CameraSheet
           title={`${KIND_LABEL[scene]}${camera === "in" ? "签到" : "签退"} · ${clock(Date.now())}`}
-          hint="拍到桌面或屏幕就行，不用拍脸。只能现场拍，不能从相册选。"
+          hint="拍桌面或屏幕"
           onCapture={capture}
           onClose={() => setCamera(null)}
         />
@@ -361,7 +357,7 @@ function MainPanel({
           拍照签到
         </button>
         <p className="small sub pretty" style={{ textAlign: "center", maxWidth: 420 }}>
-          {needCode ? "先输入屏幕上今天的 4 位数，再拍一张现场照片。" : "到教室后拍一张现场照片。不统计连续天数，哪天没来也不会断。"}
+          {needCode ? "先输入屏幕上的 4 位数" : null}
         </p>
       </>
     );

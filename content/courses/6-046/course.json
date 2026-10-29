@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "6-046",
+ "title": "MIT 6.046: Design and Analysis of Algorithms",
+ "category": "数据结构与算法",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "算法入门(6.006/CS61B/CS106B/CS106X or equivalent)",
+ "difficulty": 5,
+ "hours": "100h+",
+ "summary": "6.006的后续课程。授课老师依旧是 Erik Demaine 和 Srini Devadas，此外还有一位新老师 Nancy Lynch.",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n6.006的后续课程。授课老师依旧是 Erik Demaine 和 Srini Devadas，此外还有一位新老师 Nancy Lynch.\n\n相比较于“现学现用”的6.006，6.046更加侧重于如何运用课上所学到的内容举一反三，设计出一套完备的算法并能够证明该算法能解决相应的问题。虽然该课程在板书以及作业中的编程语言为 Python，但基本上没有编程作业；绝大部分的作业都是提出要求，然后需要学生进行算法设计以及合理性证明。所以该课程的难度又提高了一大截:)\n\n在该门课程后还有一门 6.854 高级算法，但对于绝大多数考试以及应聘来说，学完该课程基本上已经能覆盖99%的题目了。\n\n## 课程资源\n\n- 课程网站：[Spring 2015](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2015/)\n- 课程视频：[Spring 2015](https://www.bilibili.com/video/BV1A7411E737)\n- 课程教材：Introduction to Algorithms (CLRS)\n- 课程作业：[Spring 2015](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2015/pages/assignments/)\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/6.046/"
+  },
+  "official": "这是一门中级算法课程，重点关注教授设计和分析高效算法的技术，强调实际应用方法。课程涵盖分治法、随机化、动态规划、贪心算法、增量改进、复杂度分析和密码学等主题。本课程由麻省理工学院电气工程与计算机科学系与数学系合作开设，旨在帮助学生掌握算法设计的核心原理和实际应用技巧。",
+  "officialSource": {
+   "kind": "website",
+   "label": "ocw.mit.edu",
+   "url": "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2015/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · Spring 2015",
+   "url": "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2015/"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · Spring 2015",
+   "url": "https://www.bilibili.com/video/BV1A7411E737"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · Spring 2015",
+   "url": "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2015/pages/assignments/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Design and Analysis of Algorithms"
+}

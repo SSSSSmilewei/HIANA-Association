@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs110l",
+ "title": "CS110L: Safety in Systems Programming",
+ "category": "编程入门",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "Rust",
+ "prerequisites": "最好有一定的编程背景并对计算机系统有初步的认识。",
+ "difficulty": 3,
+ "hours": "30 小时",
+ "summary": "在这门课中你将会学习 Rust 这门神奇的语言。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n在这门课中你将会学习 Rust 这门神奇的语言。\n\n如果你学过 C 并接触过一些系统编程的话，应该对 C 的内存泄漏以及指针的危险有所耳闻，但 C 的底层特性以及高效仍然让它在系统级编程中无法被例如 Java 等自带垃圾收集机制的高级语言所替代。而 Rust 的目标则是希望在 C 的高效基础上，弥补其安全不足的缺点。因此 Rust 在设计之初，就有带有很多系统编程的观点。学习 Rust，也能让你之后能用 C 语言编写出更安全更优雅的系统级代码（例如操作系统等）。\n\n这门课的后半部分关注在并发（concurrency）这一主题上，你将会系统地掌握多进程、多线程、基于事件驱动的并发等若干并发技术，并在第二个 Project 中比较它们各自的优劣。Rust 中 “futures” 的概念非常有趣和优雅，这些基础知识对你后续对计算机系统相关课程的学习很有帮助。另外，清华大学的操统实验 rCore 就是基于 Rust 编写的，具体参见[文档](https://rcore-os.github.io/rCore-Tutorial-Book-v3/index.html)。\n\n## 课程资源\n\n- 课程网站：<https://reberhardt.com/cs110l/spring-2020/>\n- 课程视频：<https://youtu.be/j7AQrtLevUE>\n- 课程教材：无\n- 课程作业：共 6 个 Lab 和 2 个 Project，作业文档和代码框架详见课程网站。其中两个 Project 非常有趣，分别是：\n  1. 用 Rust 实现一个类似于 GDB 的 debugger\n  2. 用 Rust 实现一个负载均衡器\n\n> [CS 242: Programming Languages, Fall2019](https://stanford-cs242.github.io/f19/) week6 到 week9 关于 Rust 内容的讲解非常细致， 可以作为该课程的讲义补充。 另外， Ryan 在 <https://reberhardt.com/cs110l/spring-2021/> 中补充了 2020 版本缺失的关于 Futures Trait 内容的视频。\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/CS110L - GitHub](https://github.com/PKUFlyingPig/CS110L) 中。\n\n在2022年 CS110L 没有开源作业源码的背景下，Rust 快速演进导致2020版本课程项目中所使用的库过于老旧。对此，[@fung-hwang](https://github.com/fung-hwang) 尝试进行了适配（时间为2022.11)。其适配过程和作业实现都汇总在 [fung-hwang/CS110L-2020spr - GitHub](https://github.com/fung-hwang/CS110L-2020spr) 中。也许当你开始本课程时 Rust 和这些库又发生了变化，但你仍可以参考并从中获得启发。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/Rust/CS110L/"
+  },
+  "official": "本课程通过 Rust 编程语言探索系统编程中的安全问题。课程内容包括内存安全、错误处理、Rust 编程概念、多线程和安全编程实践。通过讲座和赋值学习这一关键的系统编程技能。",
+  "officialSource": {
+   "kind": "website",
+   "label": "reberhardt.com",
+   "url": "https://reberhardt.com/cs110l/spring-2020/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://reberhardt.com/cs110l/spring-2020/"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://youtu.be/j7AQrtLevUE"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Safety in Systems Programming"
+}

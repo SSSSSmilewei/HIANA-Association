@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs70",
+ "title": "UCB CS70 : discrete Math and probability theory",
+ "category": "数学进阶",
+ "provider": "UC Berkeley",
+ "instructors": [],
+ "language": "无",
+ "prerequisites": "无",
+ "difficulty": 3,
+ "hours": "60 小时",
+ "summary": "伯克利的离散数学入门课程，个人觉得这门课最大的亮点在于并不是单纯的理论知识的讲授，而是在每个模块都会介绍理论知识在实际算法中的运用，让计算机系的学生在夯实理论基础的同时，跳脱出冰冷形式化的数学符号，在实际应用中感受和体会理论的本质。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n伯克利的离散数学入门课程，个人觉得这门课最大的亮点在于并不是单纯的理论知识的讲授，而是在每个模块都会介绍理论知识在实际算法中的运用，让计算机系的学生在夯实理论基础的同时，跳脱出冰冷形式化的数学符号，在实际应用中感受和体会理论的本质。\n\n具体的理论与算法的对应关系列举如下：\n\n- 逻辑证明：稳定匹配算法\n- 图论：网络拓扑设计\n- 基础数论：RSA 算法\n- 多项式环：纠错码设计\n- 概率论：哈希表设计、负载均衡等等\n\n课程 notes 也写得非常深入浅出，公式推导与实际例子星罗棋布，阅读体验很好。\n\n## 课程资源\n\n- 课程网站：<http://www.eecs70.org/>\n- 课程教材：参见课程 notes\n- 课程作业：参见课程 Schedule\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/UCB-CS70 - GitHub](https://github.com/PKUFlyingPig/UCB-CS70) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E5%AD%A6%E8%BF%9B%E9%98%B6/CS70/"
+  },
+  "official": "本课程涵盖离散数学和概率论的基础主题，从证明技术和数论，通过图论、计数和概率分布，到马尔可夫链和连续概率。这些概念对计算机科学的理论基础至关重要。",
+  "officialSource": {
+   "kind": "website",
+   "label": "www.eecs70.org",
+   "url": "http://www.eecs70.org/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://www.eecs70.org/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Discrete Mathematics and Probability Theory"
+}

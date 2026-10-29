@@ -173,7 +173,7 @@ export function Dialog({
   const ref = useRef<HTMLDivElement>(null);
   const close = useCallback(() => {
     setLeaving(true);
-    setTimeout(onClose, 200);
+    setTimeout(onClose, 320);
   }, [onClose]);
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
@@ -304,7 +304,7 @@ export function useNow(interval = 30_000) {
 
 export function useTitle(title: string) {
   useEffect(() => {
-    document.title = title ? `${title} · HIANA 协会学习平台` : "HIANA 协会学习平台";
+    document.title = title ? `${title} · 海纳协会学习平台` : "海纳协会学习平台";
   }, [title]);
 }
 

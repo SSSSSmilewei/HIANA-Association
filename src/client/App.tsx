@@ -1,15 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "./api";
 import { BrandMark, Shell } from "./components/Shell";
 import { AdminMembersPage, AdminNoticesPage, AdminSettingsPage, AdminTodayPage } from "./pages/Admin";
+import { AboutPage } from "./pages/About";
 import { AttendancePage } from "./pages/Attendance";
 import { CoursePage } from "./pages/Course";
 import { CoursesPage } from "./pages/Courses";
+import { FormatPage } from "./pages/Format";
+import { LessonPage } from "./pages/Lesson";
 import { HomePage } from "./pages/Home";
 import { LoginPage, PasswordPage } from "./pages/Login";
+import { Onboarding, needsOnboarding } from "./components/Onboarding";
+import { NoticeGate } from "./components/NoticeGate";
 import { NoticesPage } from "./pages/Notices";
 import { ProfilePage } from "./pages/Profile";
 import { matchPath, navigate, useLocation } from "./router";
+import { MeContext, loginHref, safeNext } from "./session";
 import type { Me } from "./types";
 import { Empty } from "./ui";
 
@@ -26,9 +32,15 @@ function Redirect({ to }: { to: string }) {
   return null;
 }
 
+/** 游客也能看的页面；其余页面要登录。 */
+function guestCanSee(path: string): boolean {
+  return path === "/" || path === "/about" || path === "/honors" || path.startsWith("/courses") || path === "/notices";
+}
+
 export function App() {
-  const { path } = useLocation();
+  const { path, search } = useLocation();
   const [me, setMe] = useState<Me | null>(null);
+  const [onboardingDone, setOnboarding] = useState(false);
 
   useEffect(() => {
     api<Me>("/api/auth/me")
@@ -36,53 +48,62 @@ export function App() {
       .catch(() => setMe({ role: null }));
   }, []);
 
+  const onboarding = !onboardingDone && needsOnboarding(me?.member?.id);
+
+  const ctx = useMemo(() => ({ me: me ?? { role: null }, setMe: (m: Me) => setMe(m) }), [me]);
+
+  // 以前发出去的激活链接 /k/口令：旧口令现在当重置码用
   const k = matchPath("/k/:code", path);
-  if (k) return <LoginPage initialCode={k.code} onLogin={setMe} />;
+  if (k) return <Redirect to={`/login?mode=reset&code=${encodeURIComponent(k.code)}`} />;
   if (!me) return <Boot />;
 
   const loggedOut = () => {
     setMe({ role: null });
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   };
+  const next = safeNext(new URLSearchParams(search).get("next"));
 
-  // 没登录：/login 是学号登录，/admin/login（或者想进后台）直接打开“会长”那一栏
-  if (!me.role) {
-    if (path === "/login") return <LoginPage onLogin={setMe} />;
-    if (path === "/admin/login") return <LoginPage key="admin" initialMode="admin" onLogin={setMe} />;
-    return <Redirect to={path.startsWith("/admin") ? "/admin/login" : "/login"} />;
+  if (path === "/admin/login") return <Redirect to={me.role ? "/admin" : loginHref("/admin")} />;
+  if (path === "/honors") return <Redirect to="/about#honors" />;
+  if (path === "/login") {
+    if (me.role) return <Redirect to={next} />;
+    return <LoginPage onLogin={(m) => (setMe(m), navigate(next, { replace: true }))} />;
   }
-  if (path === "/admin/login") return <Redirect to="/admin" />;
-  if (path === "/login") return <Redirect to={me.role === "admin" ? "/admin" : "/"} />;
 
-  // 刚用口令激活：先设密码，别的页面都进不去
-  if (me.role === "member" && me.needsPassword) return <PasswordPage me={me} onDone={() => setMe({ ...me, needsPassword: false })} />;
-  if (path === "/password" && me.role === "member") return <PasswordPage me={me} onDone={() => {}} />;
+  // 游客：只能看首页、协会、课程、公告；其余页面先去登录，登录完回来
+  if (!me.role && !guestCanSee(path)) return <Redirect to={loginHref(path + search)} />;
+  if (path === "/password" && me.role) return <PasswordPage me={me} />;
 
   const isAdmin = !!me.isAdmin;
-  if (me.role === "admin" && !path.startsWith("/admin")) return <Redirect to="/admin" />;
-
   let page: React.ReactNode;
   const course = matchPath("/courses/:slug", path);
+  const lesson = matchPath("/courses/:slug/learn/:page", path);
   if (path.startsWith("/admin")) {
-    if (!isAdmin) page = <Empty title="这里需要管理员账号">请会长在后台把你设为管理员。</Empty>;
+    if (!isAdmin) page = <Empty title="这里需要管理员账号" />;
     else if (path === "/admin") page = <AdminTodayPage />;
     else if (path === "/admin/members") page = <AdminMembersPage selfId={me.member?.id ?? null} />;
     else if (path === "/admin/notices") page = <AdminNoticesPage />;
     else if (path === "/admin/settings") page = <AdminSettingsPage />;
     else page = <Redirect to="/admin" />;
-  } else if (path === "/") page = <HomePage me={me} />;
+  } else if (path === "/") page = <HomePage />;
+  else if (path === "/about") page = <AboutPage />;
   else if (path === "/courses") page = <CoursesPage />;
+  else if (path === "/courses/format") page = <FormatPage />;
   else if (course) page = <CoursePage key={course.slug} slug={course.slug} />;
-  else if (path === "/checkin") page = <AttendancePage />;
+  else if (lesson) page = <LessonPage key={lesson.slug} slug={lesson.slug} page={lesson.page} />;
+  else if (path === "/checkin") page = me.member?.kind === "external" ? <Empty title="校外账号不用签到" /> : <AttendancePage />;
   else if (path === "/notices") page = <NoticesPage />;
   else if (path === "/me") page = <ProfilePage me={me} onLogout={loggedOut} />;
-  else page = <Empty title="没有这个页面">可能链接写错了。</Empty>;
+  else page = <Empty title="没有这个页面" />;
 
   return (
-    <Shell me={me}>
-      <div key={path} className="page-wrap">
-        {page}
-      </div>
-    </Shell>
+    <MeContext.Provider value={ctx}>
+      {me.role && (onboarding ? <Onboarding onDone={() => setOnboarding(false)} /> : <NoticeGate />)}
+      <Shell me={me}>
+        <div key={path} className="page-wrap">
+          {page}
+        </div>
+      </Shell>
+    </MeContext.Provider>
   );
 }

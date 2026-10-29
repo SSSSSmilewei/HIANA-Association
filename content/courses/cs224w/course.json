@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs224w",
+ "title": "CS224w: Machine Learning with Graphs",
+ "category": "深度学习",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "Python, LaTeX",
+ "prerequisites": "深度学习基础 + Python",
+ "difficulty": 4,
+ "hours": "80 小时",
+ "summary": "Stanford 的图神经网络入门课，这门课我没有上过，但众多做 GNN 的朋友都向我力荐过这门课，想必 Stanford 的课质量还是一如既往地有保证的。另外就是这门课的授课老师非常年轻帅气:)",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nStanford 的图神经网络入门课，这门课我没有上过，但众多做 GNN 的朋友都向我力荐过这门课，想必 Stanford 的课质量还是一如既往地有保证的。另外就是这门课的授课老师非常年轻帅气:)\n\n## 课程资源\n\n- 课程网站：<http://web.stanford.edu/class/cs224w/>\n- 课程视频：<https://www.youtube.com/watch?v=JAB_plj2rbA>\n- 课程教材：无\n- 课程作业：<http://web.stanford.edu/class/cs224w/>，6 个编程作业，3 个 LaTeX 书面作业\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/CS224w/"
+  },
+  "official": "本课程探讨如何分析和建模表示为对象间关系图的复杂网络。课程处理大规模图分析特定的计算和算法挑战，学习基础图结构及其特征的方法，并介绍能够从各种网络中揭示洞见的机器学习技术和数据挖掘工具。课程涵盖表示学习和图神经网络、网络规模系统的相关算法、知识图推理、影响力最大化、疾病暴发检测和社交网络分析等关键领域。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "http://web.stanford.edu/class/cs224w/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://web.stanford.edu/class/cs224w/"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.youtube.com/watch?v=JAB_plj2rbA"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "http://web.stanford.edu/class/cs224w/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Machine Learning with Graphs"
+}

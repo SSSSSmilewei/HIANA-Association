@@ -8,3 +8,4 @@ app/.dart_tool/
 app/build/
 app/.flutter-plugins*
 app/pubspec.lock
+.staging/

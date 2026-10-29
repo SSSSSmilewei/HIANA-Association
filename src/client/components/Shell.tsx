@@ -1,6 +1,7 @@
 import { useApi } from "../api";
 import { Icon, type IconName } from "../icons";
 import { Link, useLocation } from "../router";
+import { loginHref } from "../session";
 import type { AttendanceState, Me } from "../types";
 
 interface NavItem {
@@ -18,6 +19,18 @@ const MEMBER_NAV: NavItem[] = [
   { to: "/checkin", label: "签到", icon: "camera", match: (p) => p.startsWith("/checkin") },
   { to: "/notices", label: "公告与比赛", short: "公告", icon: "megaphone", match: (p) => p.startsWith("/notices") },
   { to: "/me", label: "我的", icon: "user", match: (p) => p.startsWith("/me") || p === "/password" },
+];
+
+/** 协会介绍（含学生成就）：侧边栏单独一组 */
+const ASSOC_NAV: NavItem[] = [{ to: "/about", label: "协会介绍", icon: "flag", match: (p) => p === "/about" }];
+
+/** 游客：只有能看的几页，最后一项是登录 */
+const GUEST_NAV: NavItem[] = [
+  MEMBER_NAV[0],
+  { to: "/about", label: "协会", icon: "flag", match: (p) => p === "/about" },
+  MEMBER_NAV[1],
+  MEMBER_NAV[3],
+  { to: "/login", label: "登录", icon: "user", match: (p) => p === "/login" },
 ];
 
 const ADMIN_NAV: NavItem[] = [
@@ -58,49 +71,67 @@ function NavList({ items, path, label, small }: { items: NavItem[]; path: string
 }
 
 export function Shell({ me, children }: { me: Me; children: React.ReactNode }) {
-  const { path } = useLocation();
+  const { path, search } = useLocation();
   const isMember = me.role === "member";
   const isAdmin = !!me.isAdmin;
   const inAdmin = path.startsWith("/admin");
-  const att = useApi<AttendanceState>(isMember ? "/api/attendance" : null, { refreshMs: 120_000 });
+  // 签到只给校内账号
+  const campus = isMember && me.member?.kind !== "external";
+  const att = useApi<AttendanceState>(campus ? "/api/attendance" : null, { refreshMs: 120_000 });
   const live = !!att.data && att.data.evening.open && !att.data.evening.record && !att.data.current;
 
-  const member = MEMBER_NAV.map((n) => (n.to === "/checkin" ? { ...n, dot: live } : n));
-  const tabs = !isMember ? ADMIN_NAV : inAdmin && isAdmin ? [{ ...MEMBER_NAV[0], label: "学习", match: () => false }, ...ADMIN_NAV] : member;
+  const member = MEMBER_NAV.filter((n) => campus || n.to !== "/checkin").map((n) => (n.to === "/checkin" ? { ...n, dot: live } : n));
+  const guestTabs = GUEST_NAV.map((n) => (n.to === "/login" ? { ...n, to: loginHref(path + search) } : n));
+  const tabs = !isMember ? guestTabs : inAdmin && isAdmin ? [{ ...MEMBER_NAV[0], label: "学习", match: () => false }, ...ADMIN_NAV] : member;
   const tabIndex = tabs.findIndex((n) => n.match(path));
-  const name = me.member?.name ?? "管理员";
+  const name = me.member?.name ?? "";
 
   return (
     <div className="shell">
       <aside className="sidebar">
         <div className="sidebar-inner">
-          <Link to={isMember ? "/" : "/admin"} className="brand">
+          <Link to="/" className="brand">
             <BrandMark />
             <span className="stack" style={{ gap: 1 }}>
-              <span className="brand-name">HIANA</span>
+              <span className="brand-name">海纳协会</span>
               <span className="brand-sub">智慧网络算法协会</span>
             </span>
           </Link>
-          {isMember && <NavList items={member} path={path} label="主导航" />}
+          <NavList items={isMember ? member : [GUEST_NAV[0], GUEST_NAV[2], GUEST_NAV[3]]} path={path} label="主导航" />
+          <NavList items={ASSOC_NAV} path={path} label="协会" small />
           {isAdmin && <NavList items={ADMIN_NAV} path={path} label="管理" small />}
-          <div className="me-card">
-            <span className="avatar" aria-hidden="true">
-              {name.slice(0, 1)}
-            </span>
-            <span className="grow stack" style={{ gap: 0 }}>
-              <span style={{ fontSize: 14, lineHeight: "20px", fontWeight: 600 }} className="ellipsis">
-                {name}
+          {isMember ? (
+            <div className="me-card">
+              <span className="avatar" aria-hidden="true">
+                {name.slice(0, 1)}
               </span>
-              <span className="xsmall sub ellipsis">
-                {[me.member?.className, isAdmin ? "管理员" : null].filter(Boolean).join(" · ") || me.member?.studentNo}
+              <span className="grow stack" style={{ gap: 0 }}>
+                <span style={{ fontSize: "var(--fs-sm)", lineHeight: "22px", fontWeight: 600 }} className="ellipsis">
+                  {name}
+                </span>
+                <span className="xsmall sub ellipsis">
+                  {[me.member?.className, isAdmin ? "管理员" : null].filter(Boolean).join(" · ") || me.member?.studentNo}
+                </span>
               </span>
-            </span>
-            {isMember && (
               <Link to="/me#settings" className="icon-btn" aria-label="外观与设置" style={{ border: 0, background: "transparent" }}>
                 <Icon name="sun" size={18} />
               </Link>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="me-card guest-card">
+              <span className="grow" style={{ fontSize: "var(--fs-sm)", lineHeight: "22px", fontWeight: 600 }}>
+                游客
+              </span>
+              <span className="row" style={{ gap: 6 }}>
+                <Link to={loginHref(path + search)} className="btn btn-primary btn-sm">
+                  登录
+                </Link>
+                <Link to={loginHref(path + search, "register")} className="btn btn-ghost btn-sm">
+                  注册
+                </Link>
+              </span>
+            </div>
+          )}
         </div>
       </aside>
       <main className="main" id="main">

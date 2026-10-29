@@ -1,38 +1,120 @@
 import { useMemo, useState } from "react";
-import { UNIT_KIND_LABEL, getCourse } from "../../shared/courses";
+import { ITEM_KIND_LABEL } from "../../shared/light";
+import { itemHref } from "../library";
 import { overview } from "../../shared/heatmap";
-import { api, clock, daysBetween, greeting, longDay, minutesText, mutate, useApi } from "../api";
+import { api, clock, daysBetween, longDay, minutesText, mutate, useApi } from "../api";
 import { KIND_LABEL, phaseOf } from "../attendance";
 import { Legend, Wall } from "../components/Heatmap";
-import { courseCode, refreshLearning } from "../courseMeta";
+import { refreshLearning } from "../courseMeta";
+import { Welcome } from "../greeting/Welcome";
 import { Icon, KIND_ICON } from "../icons";
 import { Link } from "../router";
-import type { AttendanceState, Calendar, HeatmapPayload, Me, NextItem, Notice } from "../types";
+import { loginHref, useMe } from "../session";
+import type { AttendanceState, Calendar, CourseSummary, HeatmapPayload, NextItem, Notice } from "../types";
 import { Bar, Empty, ErrorBox, Skeleton, SkeletonCards, useNow, useTitle, useToast } from "../ui";
 
-export function HomePage({ me }: { me: Me }) {
+export function HomePage() {
+  const { me } = useMe();
+  return me.role ? <MemberHome campus={me.member?.kind !== "external"} /> : <GuestHome />;
+}
+
+function HomeHead({ today, week }: { today?: string; week?: number | null }) {
+  return (
+    <header className="page-head">
+      <div className="stack" style={{ gap: 6 }}>
+        <span className="eyebrow">{today ? [week ? `第 ${week} 周` : null, longDay(today)].filter(Boolean).join(" · ") : " "}</span>
+        <Welcome />
+      </div>
+    </header>
+  );
+}
+
+/** 游客首页：登录注册入口、站内课程、公告。不请求任何需要账号的接口。 */
+function GuestHome() {
+  useTitle("");
+  const cal = useApi<Calendar>("/api/calendar");
+  const courses = useApi<CourseSummary[]>("/api/courses");
+  const notices = useApi<Notice[]>("/api/notices");
+  const today = cal.data?.today;
+  const hosted = (courses.data ?? []).filter((c) => c.itemCount > 0);
+
+  return (
+    <div className="page">
+      <HomeHead today={today} week={cal.data?.week} />
+
+      <section className="card stack guest-intro" aria-labelledby="intro-h">
+        <h2 id="intro-h" className="h2">
+          海纳协会
+        </h2>
+        <div className="row wrap">
+          <Link to={loginHref("/", "register")} className="btn btn-primary">
+            用邀请码注册
+          </Link>
+          <Link to={loginHref("/")} className="btn btn-ghost">
+            已有账号，登录
+          </Link>
+        </div>
+        <div className="row wrap" style={{ gap: 16 }}>
+          <Link to="/about" className="more-link">
+            协会介绍与学生成就
+            <Icon name="arrowRight" size={16} stroke={2} />
+          </Link>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="req-h">
+        <div className="section-head">
+          <h2 id="req-h" className="h2">
+            站内课程
+          </h2>
+          <Link to="/courses" className="more-link">
+            全部课程
+            <Icon name="arrowRight" size={16} stroke={2} />
+          </Link>
+        </div>
+        {courses.data ? (
+          <div className="grid-cards">
+            {hosted.map((c) => (
+              <article key={c.slug} className="card next-card" data-vt-host>
+                <div className="row" style={{ justifyContent: "space-between" }}>
+                  <span className="course-code">{c.provider}</span>
+                  <span className="small sub num">{c.itemCount} 项</span>
+                </div>
+                <Link to={`/courses/${c.slug}`} vt="course-title" className="course-title">
+                  <span data-vt>{c.title}</span>
+                </Link>
+                <p className="small sub pretty clamp-3">{c.summary}</p>
+              </article>
+            ))}
+          </div>
+        ) : courses.error ? (
+          <ErrorBox error={courses.error} onRetry={courses.reload} />
+        ) : (
+          <SkeletonCards n={3} h={170} />
+        )}
+      </section>
+
+      <NoticeRow notices={notices.data} today={today} error={notices.error} retry={notices.reload} />
+    </div>
+  );
+}
+
+/** 登录后的首页。campus = 校内账号（有签到卡）；校外账号没有签到。 */
+function MemberHome({ campus }: { campus: boolean }) {
   useTitle("");
   const now = useNow(30_000);
   const cal = useApi<Calendar>("/api/calendar");
-  const att = useApi<AttendanceState>("/api/attendance", { refreshMs: 60_000 });
+  const att = useApi<AttendanceState>(campus ? "/api/attendance" : null, { refreshMs: 60_000 });
   const next = useApi<{ today: string; items: NextItem[] }>("/api/learning/next");
   const notices = useApi<Notice[]>("/api/notices");
   const heat = useApi<HeatmapPayload>("/api/heatmap");
 
   const grid = useMemo(() => (heat.data ? overview(heat.data.series, heat.data.today, 40) : null), [heat.data]);
   const today = cal.data?.today ?? att.data?.today;
-  const name = me.member?.name ?? "";
 
   return (
     <div className="page">
-      <header className="page-head">
-        <div className="stack" style={{ gap: 6 }}>
-          <span className="eyebrow">{today ? [cal.data?.week ? `第 ${cal.data.week} 周` : null, longDay(today)].filter(Boolean).join(" · ") : " "}</span>
-          <h1 className="h1">
-            {greeting(now)}，{name}
-          </h1>
-        </div>
-      </header>
+      <HomeHead today={today} week={cal.data?.week} />
 
       <section className="hero" aria-label="今天">
         <Wall grid={grid} />
@@ -40,7 +122,9 @@ export function HomePage({ me }: { me: Me }) {
           <span>最近的学习</span>
           <Legend />
         </div>
-        <div className="hero-card glass">{att.data ? <CheckinCard s={att.data} now={now} /> : att.error ? <ErrorBox error={att.error} onRetry={att.reload} /> : <CardSkeleton />}</div>
+        {campus && (
+          <div className="hero-card glass">{att.data ? <CheckinCard s={att.data} now={now} /> : att.error ? <ErrorBox error={att.error} onRetry={att.reload} /> : <CardSkeleton />}</div>
+        )}
       </section>
 
       <section className="section" aria-labelledby="next-h">
@@ -69,9 +153,7 @@ export function HomePage({ me }: { me: Me }) {
                     去选课
                   </Link>
                 }
-              >
-                先选三门必修：Missing Semester、Git 和 CS50x。选了的课会在这里显示下一步该学什么。
-              </Empty>
+              />
             </div>
           )
         ) : next.error ? (
@@ -116,7 +198,7 @@ function CheckinCard({ s, now }: { s: AttendanceState; now: number }) {
         </div>
         <div className="stack" style={{ gap: 4 }}>
           <p className="hero-title">已经学了 {minutesText(p.minutes)}</p>
-          <p className="small sub">离开前拍照签退。忘了的话 {clock(p.endsAt)} 会自动结束。</p>
+          <p className="small sub num">{clock(p.endsAt)} 自动结束</p>
         </div>
         <div className="row wrap">
           <Link to="/checkin?go=out" className="btn btn-primary btn-lg">
@@ -138,7 +220,7 @@ function CheckinCard({ s, now }: { s: AttendanceState; now: number }) {
         </div>
         <div className="stack" style={{ gap: 4 }}>
           <p className="hero-title">你还没签到</p>
-          <p className="small sub">还有 {minutesText(p.remaining)}结束。到教室后拍一张现场照片就行。</p>
+          <p className="small sub">还有 {minutesText(p.remaining)}结束</p>
         </div>
         <div className="row wrap">
           <Link to="/checkin?go=evening" className="btn btn-primary btn-lg">
@@ -165,7 +247,7 @@ function CheckinCard({ s, now }: { s: AttendanceState; now: number }) {
           <p className="hero-title num">
             {clock(p.inAt)} – {p.outAt ? clock(p.outAt) : "进行中"}
           </p>
-          <p className="small sub">{p.auto ? "这次没有签退，按结束时间记的。下次离开前记得拍一张。" : "今天的格子已经亮了。去大创场地继续学的话，可以再签一次场地。"}</p>
+          <p className="small sub">{p.auto ? "未签退，按结束时间记" : null}</p>
         </div>
         <div className="row wrap">
           <Link to="/checkin?go=venue" className="btn btn-ghost btn-lg">
@@ -183,7 +265,6 @@ function CheckinCard({ s, now }: { s: AttendanceState; now: number }) {
         </div>
         <div className="stack" style={{ gap: 4 }}>
           <p className="hero-title">{clock(p.opensAt)} 起可以签到</p>
-          <p className="small sub">在大创场地学习的话，现在就可以签场地。</p>
         </div>
         <div className="row wrap">
           <Link to="/checkin?go=venue" className="btn btn-ghost btn-lg">
@@ -200,7 +281,6 @@ function CheckinCard({ s, now }: { s: AttendanceState; now: number }) {
       </div>
       <div className="stack" style={{ gap: 4 }}>
         <p className="hero-title">去大创场地学一会儿？</p>
-        <p className="small sub">进场拍照签到，离开拍照签退，当天 23:59 自动结束。</p>
       </div>
       <div className="row wrap">
         <Link to="/checkin?go=venue" className="btn btn-primary btn-lg">
@@ -220,10 +300,10 @@ function NextCard({ item, i }: { item: NextItem; i: number }) {
     if (!u) return;
     setBusy(true);
     try {
-      const r = await api<{ next: { title: string } | null }>(`/api/courses/${item.slug}/units/${u.id}`, { method: "PUT", body: { done: true } });
+      const r = await api<{ next: { title: string } | null }>(`/api/courses/${item.slug}/items/${u.id}`, { method: "PUT", body: { done: true } });
       // 先在本地换成下一步，接口刷新回来再校正
       mutate<{ today: string; items: NextItem[] }>("/api/learning/next", (old) =>
-        old ? { ...old, items: old.items.map((x) => (x.slug === item.slug ? { ...x, next: (r.next as NextItem["next"]) ?? null } : x)).filter((x) => x.next) } : old,
+        old ? { ...old, items: old.items.map((x) => (x.slug === item.slug ? { ...x, next: (r.next as NextItem["next"]) ?? null } : x)).filter((x) => x.slug !== item.slug || x.next) } : old,
       );
       toast(r.next ? `完成了。下一步：${r.next.title}` : `${item.title} 全部学完了`);
       refreshLearning();
@@ -236,15 +316,17 @@ function NextCard({ item, i }: { item: NextItem; i: number }) {
   return (
     <article className="card next-card rise" style={{ "--i": i } as React.CSSProperties} data-vt-host>
       <div className="row" style={{ justifyContent: "space-between" }}>
-        <span className="course-code">{courseCode({ slug: item.slug, university: universityOf(item.slug) })}</span>
-        <span className="xsmall sub num">
-          {item.progress.doneUnits} / {item.progress.units} 单元
-        </span>
+        <span className="course-code">{item.provider}</span>
+        {item.progress.items > 0 && (
+          <span className="small sub num">
+            {item.progress.doneItems} / {item.progress.items}
+          </span>
+        )}
       </div>
-      <Link to={`/courses/${item.slug}`} vt="course-title" style={{ fontSize: 15, lineHeight: "22px", fontWeight: 600, color: "var(--ink)" }}>
+      <Link to={`/courses/${item.slug}`} vt="course-title" className="course-title">
         <span data-vt>{item.title}</span>
       </Link>
-      <Bar ratio={item.progress.ratio} label={`${item.title} 进度`} />
+      {item.progress.items > 0 && <Bar ratio={item.progress.ratio} label={`${item.title} 进度`} />}
       {u && (
         <div className="next-step">
           <span className="kind-icon" aria-hidden="true">
@@ -252,9 +334,11 @@ function NextCard({ item, i }: { item: NextItem; i: number }) {
           </span>
           <span className="grow stack" style={{ gap: 2 }}>
             <span className="xsmall sub">
-              下一步 · {UNIT_KIND_LABEL[u.kind]} · {u.periods} 课时
+              下一步 · {ITEM_KIND_LABEL[u.kind as keyof typeof ITEM_KIND_LABEL] ?? u.kind} · {u.periods} 课时
             </span>
-            <span style={{ fontSize: 15, lineHeight: "22px", fontWeight: 500 }}>{u.title}</span>
+            <Link to={itemHref(item.slug, u)} style={{ fontSize: "var(--fs-md)", lineHeight: "22px", fontWeight: 500, color: "var(--ink)" }}>
+              {u.title}
+            </Link>
           </span>
           <button type="button" className="check-btn next" aria-label={`标记完成：${u.title}`} aria-pressed={false} disabled={busy} onClick={markDone}>
             <Icon name="check" size={18} stroke={2} />
@@ -263,11 +347,6 @@ function NextCard({ item, i }: { item: NextItem; i: number }) {
       )}
     </article>
   );
-}
-
-/** 课号标签要用学校名；首页接口没带，按 slug 查一下课程目录（已经打包在前端里）。 */
-function universityOf(slug: string) {
-  return getCourse(slug)?.university ?? "";
 }
 
 function NoticeRow({ notices, today, error, retry }: { notices?: Notice[]; today?: string; error?: Error; retry: () => void }) {
@@ -284,7 +363,7 @@ function NoticeRow({ notices, today, error, retry }: { notices?: Notice[]; today
       {plain.length > 0 && (
         <div className="card stack" style={{ gap: 6 }}>
           <div className="section-head" style={{ marginBottom: 2 }}>
-            <h2 className="h3" style={{ fontSize: 18 }}>
+            <h2 className="h3">
               公告
             </h2>
             <Link to="/notices" className="more-link" style={{ minHeight: 0 }}>
@@ -295,7 +374,7 @@ function NoticeRow({ notices, today, error, retry }: { notices?: Notice[]; today
             <Link key={n.id} to="/notices" className="list-row" style={{ color: "var(--ink)", alignItems: "flex-start" }}>
               {n.pinned && <span className="tag tag-accent">置顶</span>}
               <span className="grow stack" style={{ gap: 2 }}>
-                <span style={{ fontSize: 15, lineHeight: "22px", fontWeight: 500 }}>{n.title}</span>
+                <span style={{ fontSize: "var(--fs-md)", lineHeight: "22px", fontWeight: 500 }}>{n.title}</span>
                 {n.body && <span className="small sub ellipsis">{n.body}</span>}
               </span>
               <span className="xsmall sub" style={{ flexShrink: 0, lineHeight: "22px" }}>
@@ -323,7 +402,7 @@ function CompetitionTeaser({ n, today, more }: { n: Notice; today?: string; more
         比赛
       </span>
       <span className="stack" style={{ position: "relative", gap: 4, maxWidth: "70%" }}>
-        <span style={{ fontSize: 20, lineHeight: "28px", fontWeight: 700 }}>{n.title}</span>
+        <span style={{ fontSize: "var(--fs-xl)", lineHeight: "30px", fontWeight: 700 }}>{n.title}</span>
         {n.body && (
           <span className="small night-sub" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
             {n.body}
@@ -338,7 +417,7 @@ function CompetitionTeaser({ n, today, more }: { n: Notice; today?: string; more
                 {days}
               </span>
               <span className="small night-sub">
-                天后截止{n.joined ? " · 你已登记" : n.entries.length ? ` · ${n.entries.length} 人登记` : ""}
+                天后截止{n.joined ? " · 你已登记" : n.entryCount ? ` · ${n.entryCount} 人登记` : ""}
               </span>
             </>
           ) : (

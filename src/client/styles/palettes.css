@@ -1,0 +1,284 @@
+/*
+ * 配色主题：<html data-palette="名称">，叠在液态玻璃 / 经典直角两套皮肤之上。
+ * 每个主题只写 7 个基色（浅、深各一套），其余变量都由基色推导。
+ * 不设 data-palette（或为 "hiana"）时用 tokens.css 里的默认橙色。
+ */
+
+:root[data-palette]:not([data-palette="hiana"]) {
+  --bg: var(--p-bg);
+  --surface: var(--p-surface);
+  --ink: var(--p-ink);
+  --sub: color-mix(in srgb, var(--p-ink) 66%, var(--p-bg));
+  --nav-idle: color-mix(in srgb, var(--p-ink) 80%, var(--p-bg));
+  --well: color-mix(in srgb, var(--p-ink) 6%, var(--p-bg));
+  --line: color-mix(in srgb, var(--p-ink) 12%, transparent);
+  --line-strong: color-mix(in srgb, var(--p-ink) 40%, transparent);
+  --track: color-mix(in srgb, var(--p-ink) 12%, transparent);
+  --chevron: color-mix(in srgb, var(--p-ink) 30%, var(--p-bg));
+
+  --accent: var(--p-accent);
+  --accent-text: var(--p-text);
+  --link: var(--p-text);
+  --cta: var(--p-cta);
+  --cta-ink: var(--p-cta-ink);
+  --cta-shadow: color-mix(in srgb, var(--p-cta) 30%, transparent);
+  --tint: color-mix(in srgb, var(--p-accent) 16%, transparent);
+  --next-bg: color-mix(in srgb, var(--p-accent) 10%, transparent);
+  --focus: var(--p-accent);
+  --glow: color-mix(in srgb, var(--p-accent) 8%, transparent);
+  --glow-2: color-mix(in srgb, var(--p-accent) 4%, transparent);
+  --ok-bg: color-mix(in srgb, var(--p-accent) 16%, transparent);
+  --ok-ink: var(--p-text);
+  --muted-bg: color-mix(in srgb, var(--p-ink) 8%, transparent);
+  --muted-ink: color-mix(in srgb, var(--p-ink) 75%, var(--p-bg));
+  --scrim: color-mix(in srgb, var(--p-ink) 40%, transparent);
+
+  /* 热力图：由底色向强调色渐变 */
+  --wall: var(--p-bg);
+  --heat-line: color-mix(in srgb, var(--p-ink) 14%, transparent);
+  --l1: color-mix(in srgb, var(--p-accent) 24%, var(--p-bg));
+  --l2: color-mix(in srgb, var(--p-accent) 46%, var(--p-bg));
+  --l3: color-mix(in srgb, var(--p-accent) 70%, var(--p-bg));
+  --l4: color-mix(in srgb, var(--p-accent) 92%, var(--p-ink));
+
+  /* 深色卡片（浅色模式下反色） */
+  --n0: color-mix(in srgb, var(--night-ink) 8%, transparent);
+  --n1: color-mix(in srgb, var(--p-accent) 28%, var(--night));
+  --n2: color-mix(in srgb, var(--p-accent) 52%, var(--night));
+  --n3: color-mix(in srgb, var(--p-accent) 76%, var(--night));
+  --n4: var(--p-accent);
+  --night-sub: color-mix(in srgb, var(--night-ink) 72%, var(--night));
+  --night-accent: color-mix(in srgb, var(--p-accent) 60%, var(--night-ink));
+  --night-tag: color-mix(in srgb, var(--p-accent) 22%, transparent);
+  --night-tag-ink: var(--night-accent);
+}
+:root[data-palette]:not([data-palette="hiana"])[data-mode="light"] {
+  --glass-shadow: color-mix(in srgb, var(--p-ink) 16%, transparent);
+  --pill-shadow: 0 1px 2px color-mix(in srgb, var(--p-ink) 10%, transparent);
+  --night: var(--p-ink);
+  --night-ink: var(--p-bg);
+}
+:root[data-palette]:not([data-palette="hiana"])[data-mode="dark"] {
+  --night: var(--p-surface);
+  --night-ink: var(--p-ink);
+  /* 深色底上热力图收敛一些，避免最亮的格子刺眼 */
+  --l1: color-mix(in srgb, var(--p-accent) 14%, var(--p-bg));
+  --l2: color-mix(in srgb, var(--p-accent) 28%, var(--p-bg));
+  --l3: color-mix(in srgb, var(--p-accent) 46%, var(--p-bg));
+  --l4: color-mix(in srgb, var(--p-accent) 68%, var(--p-bg));
+  /* 深色模式的阴影必须是黑的，不能用浅色文字色调出光晕 */
+  --glass-shadow: rgba(0, 0, 0, 0.5);
+  --pill-shadow: inset 0 1px 0 color-mix(in srgb, var(--p-ink) 8%, transparent);
+}
+/* 玻璃皮肤：半透明表面；经典皮肤保持实心 */
+:root[data-palette]:not([data-palette="hiana"]):not([data-skin="classic"]) {
+  --glass: color-mix(in srgb, var(--p-surface) 62%, transparent);
+  --glass-strong: color-mix(in srgb, var(--p-surface) 88%, transparent);
+  --glass-edge: color-mix(in srgb, var(--p-ink) 12%, transparent);
+  --glass-hi: color-mix(in srgb, var(--p-ink) 6%, transparent);
+  --pill: color-mix(in srgb, var(--p-ink) 9%, var(--p-surface));
+  --ghost: color-mix(in srgb, var(--p-ink) 5%, transparent);
+}
+:root[data-palette]:not([data-palette="hiana"])[data-skin="classic"] {
+  --glass: var(--p-surface);
+  --glass-strong: var(--p-surface);
+  --glass-edge: var(--line);
+  --pill: var(--well);
+  --line-strong: var(--p-ink);
+  --now: var(--p-accent);
+}
+:root[data-palette]:not([data-palette="hiana"]) {
+  --now: color-mix(in srgb, var(--p-accent) 60%, #e5484d);
+  --bad-bg: color-mix(in srgb, #e5484d 14%, transparent);
+  --bad-ink: color-mix(in srgb, #e5484d 78%, var(--p-ink));
+}
+
+:root[data-palette="nord"] {
+  --p-bg: #eceff4;
+  --p-surface: #ffffff;
+  --p-ink: #2e3440;
+  --p-accent: #5e81ac;
+  --p-text: #4c6a91;
+  --p-cta: #5e81ac;
+  --p-cta-ink: #ffffff;
+}
+:root[data-palette="nord"][data-mode="dark"] {
+  --p-bg: #2e3440;
+  --p-surface: #3b4252;
+  --p-ink: #eceff4;
+  --p-accent: #88c0d0;
+  --p-text: #88c0d0;
+  --p-cta: #88c0d0;
+  --p-cta-ink: #2e3440;
+}
+
+:root[data-palette="catppuccin"] {
+  --p-bg: #eff1f5;
+  --p-surface: #ffffff;
+  --p-ink: #4c4f69;
+  --p-accent: #8839ef;
+  --p-text: #8839ef;
+  --p-cta: #8839ef;
+  --p-cta-ink: #ffffff;
+}
+:root[data-palette="catppuccin"][data-mode="dark"] {
+  --p-bg: #1e1e2e;
+  --p-surface: #313244;
+  --p-ink: #cdd6f4;
+  --p-accent: #cba6f7;
+  --p-text: #cba6f7;
+  --p-cta: #cba6f7;
+  --p-cta-ink: #1e1e2e;
+}
+
+:root[data-palette="tokyo-night"] {
+  --p-bg: #e6e7ed;
+  --p-surface: #ffffff;
+  --p-ink: #343b58;
+  --p-accent: #2e7de9;
+  --p-text: #2563c9;
+  --p-cta: #2e7de9;
+  --p-cta-ink: #ffffff;
+}
+:root[data-palette="tokyo-night"][data-mode="dark"] {
+  --p-bg: #1a1b26;
+  --p-surface: #24283b;
+  --p-ink: #c0caf5;
+  --p-accent: #7aa2f7;
+  --p-text: #7aa2f7;
+  --p-cta: #7aa2f7;
+  --p-cta-ink: #1a1b26;
+}
+
+:root[data-palette="dracula"] {
+  --p-bg: #fffbeb;
+  --p-surface: #ffffff;
+  --p-ink: #1f1f1f;
+  --p-accent: #644ac9;
+  --p-text: #644ac9;
+  --p-cta: #644ac9;
+  --p-cta-ink: #ffffff;
+}
+:root[data-palette="dracula"][data-mode="dark"] {
+  --p-bg: #282a36;
+  --p-surface: #343746;
+  --p-ink: #f8f8f2;
+  --p-accent: #bd93f9;
+  --p-text: #bd93f9;
+  --p-cta: #bd93f9;
+  --p-cta-ink: #282a36;
+}
+
+:root[data-palette="gruvbox"] {
+  --p-bg: #fbf1c7;
+  --p-surface: #f9f5d7;
+  --p-ink: #3c3836;
+  --p-accent: #b57614;
+  --p-text: #9d5f0d;
+  --p-cta: #b57614;
+  --p-cta-ink: #fbf1c7;
+}
+:root[data-palette="gruvbox"][data-mode="dark"] {
+  --p-bg: #282828;
+  --p-surface: #3c3836;
+  --p-ink: #ebdbb2;
+  --p-accent: #fabd2f;
+  --p-text: #fabd2f;
+  --p-cta: #d79921;
+  --p-cta-ink: #282828;
+}
+
+:root[data-palette="one"] {
+  --p-bg: #fafafa;
+  --p-surface: #ffffff;
+  --p-ink: #383a42;
+  --p-accent: #4078f2;
+  --p-text: #3366d6;
+  --p-cta: #4078f2;
+  --p-cta-ink: #ffffff;
+}
+:root[data-palette="one"][data-mode="dark"] {
+  --p-bg: #282c34;
+  --p-surface: #2f343e;
+  --p-ink: #abb2bf;
+  --p-accent: #61afef;
+  --p-text: #61afef;
+  --p-cta: #61afef;
+  --p-cta-ink: #282c34;
+}
+
+:root[data-palette="solarized"] {
+  --p-bg: #fdf6e3;
+  --p-surface: #eee8d5;
+  --p-ink: #073642;
+  --p-accent: #268bd2;
+  --p-text: #1a6fae;
+  --p-cta: #268bd2;
+  --p-cta-ink: #fdf6e3;
+}
+:root[data-palette="solarized"][data-mode="dark"] {
+  --p-bg: #002b36;
+  --p-surface: #073642;
+  --p-ink: #93a1a1;
+  --p-accent: #268bd2;
+  --p-text: #4aa3e0;
+  --p-cta: #268bd2;
+  --p-cta-ink: #fdf6e3;
+}
+
+:root[data-palette="kanagawa"] {
+  --p-bg: #f2ecbc;
+  --p-surface: #f9f4d2;
+  --p-ink: #545464;
+  --p-accent: #4d699b;
+  --p-text: #43598a;
+  --p-cta: #4d699b;
+  --p-cta-ink: #f9f4d2;
+}
+:root[data-palette="kanagawa"][data-mode="dark"] {
+  --p-bg: #1f1f28;
+  --p-surface: #2a2a37;
+  --p-ink: #dcd7ba;
+  --p-accent: #7e9cd8;
+  --p-text: #7e9cd8;
+  --p-cta: #7e9cd8;
+  --p-cta-ink: #1f1f28;
+}
+
+:root[data-palette="rose-pine"] {
+  --p-bg: #faf4ed;
+  --p-surface: #fffaf3;
+  --p-ink: #575279;
+  --p-accent: #907aa9;
+  --p-text: #7a6592;
+  --p-cta: #7a6592;
+  --p-cta-ink: #fffaf3;
+}
+:root[data-palette="rose-pine"][data-mode="dark"] {
+  --p-bg: #191724;
+  --p-surface: #1f1d2e;
+  --p-ink: #e0def4;
+  --p-accent: #c4a7e7;
+  --p-text: #c4a7e7;
+  --p-cta: #c4a7e7;
+  --p-cta-ink: #191724;
+}
+
+:root[data-palette="vesper"] {
+  --p-bg: #f6f1ea;
+  --p-surface: #ffffff;
+  --p-ink: #1c1c1c;
+  --p-accent: #c2662a;
+  --p-text: #a4521d;
+  --p-cta: #a4521d;
+  --p-cta-ink: #ffffff;
+}
+:root[data-palette="vesper"][data-mode="dark"] {
+  --p-bg: #101010;
+  --p-surface: #1a1a1a;
+  --p-ink: #e6e6e6;
+  --p-accent: #ffc799;
+  --p-text: #ffc799;
+  --p-cta: #ffc799;
+  --p-cta-ink: #101010;
+}

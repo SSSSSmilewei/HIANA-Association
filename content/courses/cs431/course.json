@@ -1,0 +1,47 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs431",
+ "title": "CS431: Concurrent Programming",
+ "category": "编程入门",
+ "provider": "KAIST",
+ "instructors": [],
+ "language": "Rust",
+ "prerequisites": "Rust 编程基础与对并发的初步了解",
+ "difficulty": 4,
+ "hours": "50 小时",
+ "summary": "CS431是一门讨论并发编程的课程，主要使用 Rust 语言。课程内容主要包括理论与实践两个部分。理论部分聚焦于建立并发情形下的编程模型，而实践部分则主要是理解 Rust 相关库中锁与无锁数据结构的实现原理。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nCS431是一门讨论并发编程的课程，主要使用 Rust 语言。课程内容主要包括理论与实践两个部分。理论部分聚焦于建立并发情形下的编程模型，而实践部分则主要是理解 Rust 相关库中锁与无锁数据结构的实现原理。\n\n这门课程同时配有一系列代码量不大但并不简单的作业来巩固你对并发编程的理解，从基于锁的并发安全缓存设计和链表，到无锁的哈希表和著名的 [hazard pointer](https://ieeexplore.ieee.org/document/1291819). 和众多高质量课程一样，这些作业质量较高且配有详细的本地测试，适合自学。\n\n这门课程比我预想的要深入的多，我所知晓的关于自旋锁，互斥锁的知识在该门课程中都是最基础的，而对于 promising semantics, 访存模型和无锁数据结构的介绍让我对并发和 Rust 都有更深入的理解。\n\n## 课程资源\n\n- 课程网站：[Website](https://github.com/kaist-cp/cs431)\n- 课程视频：[Youtube](https://www.youtube.com/playlist?list=PL5aMzERQ_OZ9j40DJNlsem2qAGoFbfwb4)\n- 课程教材：[Slides](https://docs.google.com/presentation/d/1NMg08N1LUNDPuMxNZ-UMbdH13p8LXgMM3esbWRMowhU/edit?usp=sharing)\n- 课程作业：[Homework](https://github.com/kaist-cp/cs431/tree/main/homework)\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/Rust/cs431/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · Website",
+   "url": "https://github.com/kaist-cp/cs431"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · Youtube",
+   "url": "https://www.youtube.com/playlist?list=PL5aMzERQ_OZ9j40DJNlsem2qAGoFbfwb4"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材 · Slides",
+   "url": "https://docs.google.com/presentation/d/1NMg08N1LUNDPuMxNZ-UMbdH13p8LXgMM3esbWRMowhU/edit?usp=sharing"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · Homework",
+   "url": "https://github.com/kaist-cp/cs431/tree/main/homework"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Concurrent Programming"
+}

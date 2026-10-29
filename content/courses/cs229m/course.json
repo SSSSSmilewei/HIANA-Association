@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs229m",
+ "title": "STATS214 / CS229M: Machine Learning Theory",
+ "category": "机器学习进阶",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "",
+ "prerequisites": "Machine Learning, Deep Learning, Statistics",
+ "difficulty": 5,
+ "hours": "",
+ "summary": "经典学习理论 + 最新深度学习理论，非常硬核。授课老师之前是 Percy Liang，现在是 Tengyu Ma。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n- 课程网站：<http://web.stanford.edu/class/stats214/>\n\n经典学习理论 + 最新深度学习理论，非常硬核。授课老师之前是 Percy Liang，现在是 Tengyu Ma。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%BF%9B%E9%98%B6/CS229M/"
+  },
+  "official": "本课程探讨机器学习算法何时有效及其原因。课程旨在形式化算法从数据中学习的含义，并运用数学思维设计更优的机器学习方法。重点是建立对学习算法统计性质的理论认识。课程涵盖通过均匀收敛的泛化界、深度学习理论（包括非凸优化、神经切核和隐式算法正则化）、无监督学习与域自适应等主题。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "http://web.stanford.edu/class/stats214/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "http://web.stanford.edu/class/stats214/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Machine Learning Theory"
+}

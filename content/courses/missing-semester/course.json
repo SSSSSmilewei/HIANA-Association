@@ -1,0 +1,1358 @@
+{
+ "format": "hiana-course@1",
+ "slug": "missing-semester",
+ "title": "MIT Missing Semester（2026 版）",
+ "category": "编程入门",
+ "provider": "MIT",
+ "instructors": [
+  "Anish Athalye",
+  "Jon Gjengset",
+  "Jose Javier Gonzalez Ortiz"
+ ],
+ "language": "shell",
+ "prerequisites": "无",
+ "difficulty": 2,
+ "hours": "10 小时",
+ "summary": "正如课程名字所言：“计算机教学中消失的一个学期”，这门课将会教会你许多大学的课堂上不会涉及但却对每个 CSer 无比重要的工具或者知识点。例如 Shell 编程、命令行配置、Git、Vim、tmux、ssh 等等。如果你是一个计算机小白，那么我非常建议你学习一下这门课……",
+ "tags": [],
+ "license": "© MIT Missing Semester，CC BY-NC-SA 4.0；中文翻译 missing-semester-cn，同协议",
+ "intro": {
+  "community": "## 课程简介\n\n正如课程名字所言：“计算机教学中消失的一个学期”，这门课将会教会你许多大学的课堂上不会涉及但却对每个 CSer 无比重要的工具或者知识点。例如 Shell 编程、命令行配置、Git、Vim、`tmux`、`ssh` 等等。如果你是一个计算机小白，那么我非常建议你学习一下这门课，因为它基本涉及了本书必学工具中的绝大部分内容。\n\n除了 MIT 官方的学习资料外，北京大学图灵班开设的前沿计算实践中也开设了相关课程，资料位于[这个网站](http://vcl.pku.edu.cn/course/PFCII/2021-spring/index.html)下，供大家参考。\n\n## 课程资源\n\n- 课程网站：<https://missing.csail.mit.edu/>\n- 课程中文网站: <https://missing-semester-cn.github.io/>\n- 课程视频：[IAP 2020](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J), [IAP 2026](https://www.youtube.com/playlist?list=PLyzOVJj3bHQunmnnTXrNbZnBaCA-ieK4L) in YouTube\n- 课程中文字幕视频：\n    - Missing_Semi_中译组（未完结）：<https://space.bilibili.com/1010983811?spm_id_from=333.337.search-card.all.click>\n    - 刘黑黑a（已完结）：<https://space.bilibili.com/518734451?spm_id_from=333.337.search-card.all.click>\n- 课程作业：一些随堂小练习，具体见课程网站。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/MIT-Missing-Semester/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "https://missing.csail.mit.edu/"
+  },
+  {
+   "kind": "website",
+   "label": "原课程",
+   "url": "https://missing-semester-cn.github.io/2026/"
+  },
+  {
+   "kind": "video",
+   "label": "YouTube 频道",
+   "url": "https://www.youtube.com/@MissingSemester"
+  }
+ ],
+ "modules": [
+  {
+   "id": "lectures",
+   "title": "讲座",
+   "items": [
+    {
+     "id": "course-shell",
+     "kind": "lecture",
+     "title": "第 1 讲：课程概览 + Shell 入门",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "course-shell",
+       "title": "课程概览 + Shell 入门"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=MSgoeuMqUmU"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "shell-cd-builtin",
+       "type": "choice",
+       "prompt": "关于 `cd`，下列说法正确的是？",
+       "options": [
+        "它是 `/bin/cd` 这个独立程序",
+        "它是 Shell 的内建命令，所以 `which cd` 可能找不到文件",
+        "它只能接受绝对路径",
+        "它会修改 `$PATH`"
+       ],
+       "answer": 1,
+       "explain": "cd 需要改变 Shell 自身进程的工作目录，所以必须是内建命令。"
+      },
+      {
+       "id": "shell-path",
+       "type": "choice",
+       "prompt": "Shell 如何找到 `date` 这样的程序？",
+       "options": [
+        "在整个磁盘上搜索",
+        "在 `$PATH` 列出的、以冒号分隔的目录中依次查找同名可执行文件",
+        "只在当前目录查找",
+        "读取 `/etc/commands`"
+       ],
+       "answer": 1,
+       "explain": "`$PATH` 是冒号分隔的目录列表；也可以直接给完整路径绕过它。"
+      },
+      {
+       "id": "shell-pwd",
+       "type": "text",
+       "prompt": "打印当前工作目录的命令是 ___ 。",
+       "answer": [
+        "pwd"
+       ],
+       "explain": "pwd = print working directory，也可以 echo $PWD。"
+      },
+      {
+       "id": "shell-space",
+       "type": "choice",
+       "prompt": "要进入名为 `My Photos` 的目录，下面哪些写法可行？",
+       "options": [
+        "`cd My Photos`",
+        "`cd \"My Photos\"`",
+        "`cd My\\ Photos`",
+        "`cd 'My Photos'`"
+       ],
+       "answer": [
+        1,
+        2,
+        3
+       ],
+       "explain": "空格会把参数拆开；用引号或反斜杠转义都可以。"
+      },
+      {
+       "id": "shell-help",
+       "type": "text",
+       "prompt": "大多数命令可以加什么参数查看简短帮助？（写带短横线的形式）",
+       "answer": [
+        "--help"
+       ],
+       "explain": "`man` 看完整手册，`--help` 看简短帮助。"
+      },
+      {
+       "id": "shell-dotdot",
+       "type": "choice",
+       "prompt": "当前目录是 `/home/jon`，执行 `cd ../..` 后到达？",
+       "options": [
+        "/home",
+        "/",
+        "/home/jon",
+        "/usr"
+       ],
+       "answer": 1,
+       "explain": "每个 `..` 上升一级：/home/jon -> /home -> /。"
+      },
+      {
+       "id": "shell-uniq",
+       "type": "choice",
+       "prompt": "`uniq` 默认去除的是？",
+       "options": [
+        "所有重复行",
+        "连续重复的行",
+        "空行",
+        "以 # 开头的行"
+       ],
+       "answer": 1,
+       "explain": "uniq 只处理相邻重复，所以常和 sort 搭配：`sort | uniq`。"
+      },
+      {
+       "id": "count-unique",
+       "type": "code",
+       "lang": "python",
+       "title": "统计不同的行",
+       "prompt": "从标准输入读入若干行（直到输入结束），输出不同行的个数，再逐行按字典序输出每个不同的行及其出现次数，格式 `次数 行内容`（像 `sort | uniq -c`）。\n\n示例输入：\n```\nb\na\nb\n```\n输出：\n```\n1 a\n2 b\n```",
+       "starter": "import sys\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "b\na\nb\n",
+         "stdout": "1 a\n2 b\n"
+        },
+        {
+         "name": "全相同",
+         "stdin": "x\nx\nx\n",
+         "stdout": "3 x\n"
+        },
+        {
+         "name": "空输入",
+         "stdin": "",
+         "stdout": ""
+        },
+        {
+         "name": "非连续重复",
+         "stdin": "a\nb\na\nc\nb\na\n",
+         "stdout": "3 a\n2 b\n1 c\n"
+        }
+       ],
+       "solution": "import sys\nfrom collections import Counter\nc=Counter(l.rstrip('\\n') for l in sys.stdin)\nfor k in sorted(c): print(c[k],k)\n"
+      }
+     ]
+    },
+    {
+     "id": "command-line-environment",
+     "kind": "lecture",
+     "title": "第 2 讲：命令行环境",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "command-line-environment",
+       "title": "命令行环境"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=ccBGsPedE9Q"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "cle-sigint",
+       "type": "choice",
+       "prompt": "在终端按 `Ctrl-C` 通常会让 Shell 向前台进程发送？",
+       "options": [
+        "SIGKILL",
+        "SIGINT",
+        "SIGHUP",
+        "SIGSTOP"
+       ],
+       "answer": 1,
+       "explain": "Ctrl-C 发送 SIGINT；Ctrl-\\ 发送 SIGQUIT。"
+      },
+      {
+       "id": "cle-sigterm",
+       "type": "choice",
+       "prompt": "想请求进程「优雅退出」，最通用的信号是？",
+       "options": [
+        "SIGTERM",
+        "SIGKILL",
+        "SIGSTOP",
+        "SIGUSR2"
+       ],
+       "answer": 0,
+       "explain": "SIGTERM 可被程序捕获并做清理；SIGKILL 不能被捕获。"
+      },
+      {
+       "id": "cle-nohup",
+       "type": "text",
+       "prompt": "让进程在终端关闭（收到 SIGHUP）后继续运行的包装命令是 ___ 。",
+       "answer": [
+        "nohup"
+       ],
+       "explain": "nohup 忽略 SIGHUP；已启动的进程可用 disown。"
+      },
+      {
+       "id": "cle-exit",
+       "type": "choice",
+       "prompt": "Shell 中 `$?` 保存的是？",
+       "options": [
+        "当前进程 PID",
+        "上一条命令的返回码",
+        "当前用户",
+        "参数个数"
+       ],
+       "answer": 1,
+       "explain": "返回码 0 表示成功，非 0 表示失败。"
+      },
+      {
+       "id": "cle-pipe",
+       "type": "choice",
+       "prompt": "`cmd1 | cmd2` 的含义是？",
+       "options": [
+        "把 cmd1 的 stdout 接到 cmd2 的 stdin",
+        "把 cmd1 的 stderr 写入 cmd2",
+        "先后顺序执行",
+        "把输出追加到文件 cmd2"
+       ],
+       "answer": 0,
+       "explain": "管道连接流：前者标准输出，后者标准输入。"
+      },
+      {
+       "id": "cle-chmod",
+       "type": "choice",
+       "prompt": "`chmod +x script.sh` 的作用是？",
+       "options": [
+        "删除脚本",
+        "给文件加上可执行权限",
+        "把脚本复制到 PATH",
+        "加密脚本"
+       ],
+       "answer": 1,
+       "explain": "要用 ./script.sh 直接执行，需要有 x 权限。"
+      },
+      {
+       "id": "cle-ssh",
+       "type": "text",
+       "prompt": "用 ___ 命令可以登录远程机器，例如 `___ user@host`。",
+       "answer": [
+        "ssh"
+       ],
+       "explain": "SSH 是远程登录的标准方式。"
+      },
+      {
+       "id": "cle-parse-env",
+       "type": "code",
+       "lang": "python",
+       "title": "解析环境变量",
+       "prompt": "每行输入形如 `KEY=VALUE`（VALUE 里可能含 `=`，也可能为空）。按 KEY 字典序输出 `KEY -> VALUE`。若同一个 KEY 出现多次，以最后一次为准。忽略不含 `=` 的行。",
+       "starter": "import sys\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "PATH=/bin\nHOME=/root\n",
+         "stdout": "HOME -> /root\nPATH -> /bin\n"
+        },
+        {
+         "name": "含等号",
+         "stdin": "A=b=c\nB=\n",
+         "stdout": "A -> b=c\nB -> \n"
+        },
+        {
+         "name": "覆盖",
+         "stdin": "X=1\nX=2\n",
+         "stdout": "X -> 2\n"
+        },
+        {
+         "name": "非法行",
+         "stdin": "oops\nZ=9\n",
+         "stdout": "Z -> 9\n"
+        }
+       ],
+       "solution": "import sys\nd={}\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    if '=' not in l: continue\n    k,v=l.split('=',1)\n    d[k]=v\nfor k in sorted(d): print(k,'->',d[k])\n"
+      }
+     ]
+    },
+    {
+     "id": "development-environment",
+     "kind": "lecture",
+     "title": "第 3 讲：开发环境与工具",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "development-environment",
+       "title": "开发环境与工具"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=QnM1nVzrkx8"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "dev-modal",
+       "type": "choice",
+       "prompt": "Vim 的核心理念是？",
+       "options": [
+        "只有一种编辑模式",
+        "模态编辑：不同模式下按键含义不同",
+        "必须使用鼠标",
+        "只能编辑纯英文"
+       ],
+       "answer": 1,
+       "explain": "Normal、Insert、Visual 等模式让按键在不同模式下执行不同功能。"
+      },
+      {
+       "id": "dev-esc",
+       "type": "text",
+       "prompt": "从 Insert 模式回到 Normal 模式按 ___ 键。",
+       "answer": [
+        "esc",
+        "escape"
+       ],
+       "explain": "Esc 回到 Normal 模式。"
+      },
+      {
+       "id": "dev-dw",
+       "type": "choice",
+       "prompt": "Normal 模式下 `dw` 的含义？",
+       "options": [
+        "删除到下一个单词开头",
+        "删除整行",
+        "复制一个单词",
+        "向下翻页"
+       ],
+       "answer": 0,
+       "explain": "d 是删除操作符，w 是移动到下一个词，组合起来就是删除一个词。"
+      },
+      {
+       "id": "dev-count",
+       "type": "choice",
+       "prompt": "`3dd` 做什么？",
+       "options": [
+        "删除 3 行",
+        "删除第 3 行",
+        "重复插入 3 次",
+        "跳到第 3 行"
+       ],
+       "answer": 0,
+       "explain": "数字前缀是计数，dd 删除当前行。"
+      },
+      {
+       "id": "dev-save",
+       "type": "text",
+       "prompt": "在 Vim 中保存并退出的命令是 `:___`（两个字符）。",
+       "answer": [
+        "wq",
+        "x"
+       ],
+       "explain": ":wq 写入并退出，`:x` 也行。"
+      },
+      {
+       "id": "dev-lsp",
+       "type": "choice",
+       "prompt": "语言服务器协议（LSP）的主要价值？",
+       "options": [
+        "让编辑器获得跳转定义、补全、诊断等语言感知功能",
+        "加速编译",
+        "替代 Git",
+        "管理依赖"
+       ],
+       "answer": 0,
+       "explain": "LSP 把语言分析与编辑器解耦，一个 server 可供多种编辑器使用。"
+      },
+      {
+       "id": "dev-undo",
+       "type": "choice",
+       "prompt": "Vim Normal 模式下撤销上一步修改用？",
+       "options": [
+        "u",
+        "x",
+        "p",
+        "w"
+       ],
+       "answer": 0,
+       "explain": "u 撤销，Ctrl-r 重做。"
+      },
+      {
+       "id": "dev-vim-dw",
+       "type": "code",
+       "lang": "python",
+       "title": "模拟 dw",
+       "prompt": "输入一行文本，再输入一个整数 n。模拟光标在行首、连续按 n 次 `dw`（每次删除到下一个单词开头，单词以空白分隔；删除时连同其后的空白一起删）。输出剩余文本。若全删完输出空行。",
+       "starter": "s=input()\nn=int(input())\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "hello big world\n1\n",
+         "stdout": "big world\n"
+        },
+        {
+         "name": "两次",
+         "stdin": "a b c d\n2\n",
+         "stdout": "c d\n"
+        },
+        {
+         "name": "全删",
+         "stdin": "a b\n5\n",
+         "stdout": "\n"
+        },
+        {
+         "name": "零次",
+         "stdin": "x y\n0\n",
+         "stdout": "x y\n"
+        }
+       ],
+       "solution": "s=input()\nn=int(input())\nw=s.split()\nprint(' '.join(w[n:]))\n"
+      }
+     ]
+    },
+    {
+     "id": "debugging-profiling",
+     "kind": "lecture",
+     "title": "第 4 讲：调试与性能分析",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "debugging-profiling",
+       "title": "调试与性能分析"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=8VYT9TcUmKs"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "dbg-strace",
+       "type": "choice",
+       "prompt": "`strace` 用来？",
+       "options": [
+        "跟踪进程发起的系统调用",
+        "测量内存泄漏",
+        "压缩日志",
+        "格式化代码"
+       ],
+       "answer": 0,
+       "explain": "Linux 用 strace，macOS 对应 dtruss。"
+      },
+      {
+       "id": "dbg-sanitizer",
+       "type": "choice",
+       "prompt": "AddressSanitizer 等 Sanitizer 需要？",
+       "options": [
+        "重新编译并插桩程序",
+        "只需运行 time",
+        "修改内核",
+        "安装数据库"
+       ],
+       "answer": 0,
+       "explain": "Sanitizer 在编译期插桩；不能重编译时可用 Valgrind。"
+      },
+      {
+       "id": "dbg-valgrind",
+       "type": "text",
+       "prompt": "无法重新编译程序时，可用来检测内存错误的工具是 ___ 。",
+       "answer": [
+        "valgrind"
+       ],
+       "explain": "Valgrind 在运行时动态翻译二进制，无需重编译。"
+      },
+      {
+       "id": "dbg-time",
+       "type": "choice",
+       "prompt": "`time` 输出中 real、user、sys 里，哪个是墙钟时间？",
+       "options": [
+        "real",
+        "user",
+        "sys",
+        "三者都是"
+       ],
+       "answer": 0,
+       "explain": "real 是墙钟时间；user+sys 是 CPU 时间。"
+      },
+      {
+       "id": "dbg-sampling",
+       "type": "choice",
+       "prompt": "perf 属于哪类分析器？",
+       "options": [
+        "采样型",
+        "跟踪型（每次调用都记录）",
+        "内存型",
+        "网络型"
+       ],
+       "answer": 0,
+       "explain": "perf 按固定频率采样调用栈，开销小；Callgrind 是跟踪型。"
+      },
+      {
+       "id": "dbg-record",
+       "type": "choice",
+       "prompt": "记录-回放调试（如 rr）的好处？",
+       "options": [
+        "可以反复确定性地重放一次出错的执行",
+        "让程序跑得更快",
+        "自动修 bug",
+        "压缩二进制"
+       ],
+       "answer": 0,
+       "explain": "一次录制，随便回退检查，适合偶发 bug。"
+      },
+      {
+       "id": "dbg-massif",
+       "type": "text",
+       "prompt": "Valgrind 中用于分析堆内存使用随时间变化的工具是 ___ 。",
+       "answer": [
+        "massif"
+       ],
+       "explain": "Massif 是堆分析器。"
+      },
+      {
+       "id": "dbg-log-level",
+       "type": "code",
+       "lang": "python",
+       "title": "日志级别统计",
+       "prompt": "每行日志形如 `LEVEL message`，LEVEL 为 DEBUG/INFO/WARN/ERROR 之一。按 ERROR、WARN、INFO、DEBUG 的顺序输出各级别条数，格式 `LEVEL: n`（为 0 也输出）。忽略其他开头的行。",
+       "starter": "import sys\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "INFO a\nERROR b\nINFO c\n",
+         "stdout": "ERROR: 1\nWARN: 0\nINFO: 2\nDEBUG: 0\n"
+        },
+        {
+         "name": "空",
+         "stdin": "",
+         "stdout": "ERROR: 0\nWARN: 0\nINFO: 0\nDEBUG: 0\n"
+        },
+        {
+         "name": "杂项",
+         "stdin": "TRACE x\nWARN y\nhello\n",
+         "stdout": "ERROR: 0\nWARN: 1\nINFO: 0\nDEBUG: 0\n"
+        },
+        {
+         "name": "全部",
+         "stdin": "DEBUG a\nDEBUG b\nWARN c\nERROR d\nINFO e\n",
+         "stdout": "ERROR: 1\nWARN: 1\nINFO: 1\nDEBUG: 2\n"
+        }
+       ],
+       "solution": "import sys\nc={k:0 for k in ['ERROR','WARN','INFO','DEBUG']}\nfor l in sys.stdin:\n    p=l.split(None,1)\n    if p and p[0] in c: c[p[0]]+=1\nfor k in c: print(f'{k}: {c[k]}')\n"
+      }
+     ]
+    },
+    {
+     "id": "version-control",
+     "kind": "lecture",
+     "title": "第 5 讲：版本控制与 Git",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "version-control",
+       "title": "版本控制与 Git"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=9K8lB61dl3Y"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "vc-blob",
+       "type": "choice",
+       "prompt": "Git 对象模型中，文件内容存为？",
+       "options": [
+        "blob",
+        "tree",
+        "commit",
+        "tag"
+       ],
+       "answer": 0,
+       "explain": "blob 是文件，tree 是目录，commit 指向 tree 并记录父提交。"
+      },
+      {
+       "id": "vc-hash",
+       "type": "choice",
+       "prompt": "Git 对象的名字（哈希）来自？",
+       "options": [
+        "对象内容（内容寻址）",
+        "创建时间",
+        "文件名",
+        "随机数"
+       ],
+       "answer": 0,
+       "explain": "内容寻址：内容相同则哈希相同。"
+      },
+      {
+       "id": "vc-add",
+       "type": "text",
+       "prompt": "把修改放入暂存区的命令是 `git ___ file`。",
+       "answer": [
+        "add"
+       ],
+       "explain": "git add 暂存，git commit 提交。"
+      },
+      {
+       "id": "vc-branch",
+       "type": "choice",
+       "prompt": "分支在 Git 中本质是？",
+       "options": [
+        "指向某个提交的可移动引用",
+        "一份完整拷贝",
+        "一个目录",
+        "一个服务器"
+       ],
+       "answer": 0,
+       "explain": "所以创建分支几乎零成本。"
+      },
+      {
+       "id": "vc-fetch",
+       "type": "choice",
+       "prompt": "`git fetch` 与 `git pull` 的区别？",
+       "options": [
+        "pull 相当于 fetch 再合并",
+        "两者完全相同",
+        "fetch 会删除本地分支",
+        "pull 只在本地工作"
+       ],
+       "answer": 0,
+       "explain": "fetch 只下载；pull = fetch + merge（或 rebase）。"
+      },
+      {
+       "id": "vc-undo",
+       "type": "choice",
+       "prompt": "丢弃工作区中某文件未暂存的修改，较新的写法是？",
+       "options": [
+        "git restore file",
+        "git remove file",
+        "git init",
+        "git tag file"
+       ],
+       "answer": 0,
+       "explain": "git restore（旧写法 git checkout -- file）。"
+      },
+      {
+       "id": "vc-log",
+       "type": "text",
+       "prompt": "查看提交历史的命令是 `git ___`。",
+       "answer": [
+        "log"
+       ],
+       "explain": "git log --oneline --graph 很常用。"
+      },
+      {
+       "id": "vc-hash-toy",
+       "type": "code",
+       "lang": "python",
+       "title": "玩具内容寻址",
+       "prompt": "每行输入作为一个对象。给每个不同内容分配一个编号：第一次出现的内容编号为 0，下一个新内容为 1……。对每行输出其编号。相同内容得到相同编号（模拟内容寻址去重）。",
+       "starter": "import sys\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "a\nb\na\n",
+         "stdout": "0\n1\n0\n"
+        },
+        {
+         "name": "全新",
+         "stdin": "x\ny\nz\n",
+         "stdout": "0\n1\n2\n"
+        },
+        {
+         "name": "全同",
+         "stdin": "k\nk\nk\n",
+         "stdout": "0\n0\n0\n"
+        },
+        {
+         "name": "空行",
+         "stdin": "\n\na\n",
+         "stdout": "0\n0\n1\n"
+        }
+       ],
+       "solution": "import sys\nd={}\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    if l not in d: d[l]=len(d)\n    print(d[l])\n"
+      }
+     ]
+    },
+    {
+     "id": "shipping-code",
+     "kind": "lecture",
+     "title": "第 6 讲：打包与发布代码",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "shipping-code",
+       "title": "打包与发布代码"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=KBMiB-8P4Ns"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "ship-semver",
+       "type": "choice",
+       "prompt": "SemVer 中，做了不向后兼容的 API 变更应升级哪一位？",
+       "options": [
+        "MAJOR",
+        "MINOR",
+        "PATCH",
+        "都不用"
+       ],
+       "answer": 0,
+       "explain": "MAJOR.MINOR.PATCH：破坏性变更升 MAJOR，向后兼容的新功能升 MINOR，修复升 PATCH。"
+      },
+      {
+       "id": "ship-compat",
+       "type": "choice",
+       "prompt": "Python 中 `~=2.1.0` 表示？",
+       "options": [
+        "`>=2.1.0` 且 `<2.2.0`",
+        "必须等于 2.1.0",
+        "任意版本",
+        "`>=2.0` 且 `<3`"
+       ],
+       "answer": 0,
+       "explain": "~= 是兼容版本运算符，大致等价于 npm/cargo 的插入符。"
+      },
+      {
+       "id": "ship-lock",
+       "type": "text",
+       "prompt": "记录依赖解析后的精确版本、以实现可复现的文件叫 ___ file（两个英文词，中间空格）。",
+       "answer": [
+        "lock file",
+        "lockfile"
+       ],
+       "explain": "例如 uv.lock、package-lock.json、Cargo.lock。"
+      },
+      {
+       "id": "ship-container",
+       "type": "choice",
+       "prompt": "容器相比虚拟机的主要区别？",
+       "options": [
+        "共享宿主机内核，更轻量",
+        "自带完整内核和硬件模拟",
+        "只能运行 Windows",
+        "不能隔离文件系统"
+       ],
+       "answer": 0,
+       "explain": "容器靠内核的命名空间和 cgroups 隔离，不虚拟化硬件。"
+      },
+      {
+       "id": "ship-docker",
+       "type": "text",
+       "prompt": "构建镜像的 Docker 描述文件通常叫 ___ 。",
+       "answer": [
+        "Dockerfile",
+        "dockerfile"
+       ],
+       "explain": "Dockerfile 一步步描述镜像构成。"
+      },
+      {
+       "id": "ship-systemd",
+       "type": "choice",
+       "prompt": "在 Linux 上让服务开机自启并自动重启，常见做法是？",
+       "options": [
+        "编写 systemd unit 文件",
+        "手动每天运行",
+        "放进 /tmp",
+        "用 grep"
+       ],
+       "answer": 0,
+       "explain": "/etc/systemd/system/xxx.service 描述服务。"
+      },
+      {
+       "id": "ship-wheel",
+       "type": "choice",
+       "prompt": "Python 的预构建分发格式是？",
+       "options": [
+        "wheel (.whl)",
+        "jar",
+        "deb",
+        "dll"
+       ],
+       "answer": 0,
+       "explain": "wheel 可直接 pip install，无需从源码构建。"
+      },
+      {
+       "id": "ship-semver-sort",
+       "type": "code",
+       "lang": "python",
+       "title": "版本排序",
+       "prompt": "每行输入一个形如 `MAJOR.MINOR.PATCH` 的版本号，按语义化版本从低到高排序后输出（注意 1.10.0 大于 1.9.0，不是字符串排序）。相同版本只输出一次。",
+       "starter": "import sys\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "1.10.0\n1.9.0\n1.2.3\n",
+         "stdout": "1.2.3\n1.9.0\n1.10.0\n"
+        },
+        {
+         "name": "去重",
+         "stdin": "0.1.0\n0.1.0\n",
+         "stdout": "0.1.0\n"
+        },
+        {
+         "name": "空",
+         "stdin": "",
+         "stdout": ""
+        },
+        {
+         "name": "多位",
+         "stdin": "2.0.0\n10.0.0\n2.0.10\n2.0.9\n",
+         "stdout": "2.0.0\n2.0.9\n2.0.10\n10.0.0\n"
+        }
+       ],
+       "solution": "import sys\nv={tuple(map(int,l.strip().split('.'))) for l in sys.stdin if l.strip()}\nfor t in sorted(v): print('.'.join(map(str,t)))\n"
+      },
+      {
+       "id": "ship-bump",
+       "type": "code",
+       "lang": "python",
+       "title": "升级版本号",
+       "prompt": "输入第一行是版本号 `MAJOR.MINOR.PATCH`，第二行是 `major`、`minor` 或 `patch`。输出升级后的版本号（升 major 时 minor 与 patch 归零；升 minor 时 patch 归零）。",
+       "starter": "v=input()\nk=input()\n",
+       "tests": [
+        {
+         "name": "patch",
+         "stdin": "1.2.3\npatch\n",
+         "stdout": "1.2.4\n"
+        },
+        {
+         "name": "minor",
+         "stdin": "1.2.3\nminor\n",
+         "stdout": "1.3.0\n"
+        },
+        {
+         "name": "major",
+         "stdin": "1.2.3\nmajor\n",
+         "stdout": "2.0.0\n"
+        },
+        {
+         "name": "进位",
+         "stdin": "0.9.9\npatch\n",
+         "stdout": "0.9.10\n"
+        }
+       ],
+       "solution": "a,b,c=map(int,input().split('.'))\nk=input().strip()\nif k=='major': a,b,c=a+1,0,0\nelif k=='minor': b,c=b+1,0\nelse: c+=1\nprint(f'{a}.{b}.{c}')\n"
+      }
+     ]
+    },
+    {
+     "id": "agentic-coding",
+     "kind": "lecture",
+     "title": "第 7 讲：智能体编程",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "agentic-coding",
+       "title": "智能体编程"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=sTdz6PZoAnw"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "ag-llm",
+       "type": "choice",
+       "prompt": "LLM 在推理时本质上在做？",
+       "options": [
+        "从给定提示的补全分布中采样",
+        "在互联网上检索答案",
+        "执行符号证明",
+        "编译代码"
+       ],
+       "answer": 0,
+       "explain": "LLM 建模补全字符串的概率分布并采样。"
+      },
+      {
+       "id": "ag-window",
+       "type": "choice",
+       "prompt": "上下文窗口指？",
+       "options": [
+        "输入与输出字符串的最大长度限制",
+        "GUI 窗口",
+        "模型参数量",
+        "训练数据大小"
+       ],
+       "answer": 0,
+       "explain": "超出窗口会丢失信息，窗口很满时性能往往也会下降。"
+      },
+      {
+       "id": "ag-agentsmd",
+       "type": "text",
+       "prompt": "给编程智能体提供跨会话通用说明的文件常叫 ___ （文件名，大写）。",
+       "answer": [
+        "AGENTS.md",
+        "agents.md"
+       ],
+       "explain": "Claude Code 则查找 CLAUDE.md。"
+      },
+      {
+       "id": "ag-mcp",
+       "type": "choice",
+       "prompt": "MCP 是？",
+       "options": [
+        "Model Context Protocol，连接智能体与工具的开放协议",
+        "一种编程语言",
+        "内存检测器",
+        "版本控制系统"
+       ],
+       "answer": 0,
+       "explain": "例如 Notion MCP 服务器让智能体读写 Notion 文档。"
+      },
+      {
+       "id": "ag-compact",
+       "type": "choice",
+       "prompt": "上下文压缩（compaction）做什么？",
+       "options": [
+        "用 LLM 总结较早的对话并替换",
+        "删除模型",
+        "加密对话",
+        "提高温度"
+       ],
+       "answer": 0,
+       "explain": "让对话可以近似无限长。"
+      },
+      {
+       "id": "ag-clear",
+       "type": "choice",
+       "prompt": "对不相关的新任务，推荐做法？",
+       "options": [
+        "清空上下文窗口，开始新对话",
+        "继续在同一长对话里追问",
+        "关闭网络",
+        "重装系统"
+       ],
+       "answer": 0,
+       "explain": "无关上下文会降低性能。"
+      },
+      {
+       "id": "ag-privacy",
+       "type": "choice",
+       "prompt": "使用云端智能体时，隐私上应注意？",
+       "options": [
+        "你的代码和提示可能发送给第三方服务",
+        "没有任何数据离开本机",
+        "只有图片会上传",
+        "不需要关心"
+       ],
+       "answer": 0,
+       "explain": "需要阅读服务条款，敏感代码考虑本地模型或企业方案。"
+      },
+      {
+       "id": "ag-token-budget",
+       "type": "code",
+       "lang": "python",
+       "title": "上下文预算",
+       "prompt": "第一行为窗口上限 N（整数），之后每行为一条消息，格式 `长度 内容`。从最后一条消息向前取，尽可能多地保留最近消息，使总长度不超过 N。输出保留的消息数量，以及它们的总长度，格式 `数量 总长度`。",
+       "starter": "import sys\nN=int(input())\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "10\n4 a\n5 b\n3 c\n",
+         "stdout": "2 8\n"
+        },
+        {
+         "name": "全保留",
+         "stdin": "100\n1 a\n2 b\n",
+         "stdout": "2 3\n"
+        },
+        {
+         "name": "一条都放不下",
+         "stdin": "2\n5 a\n",
+         "stdout": "0 0\n"
+        },
+        {
+         "name": "空",
+         "stdin": "7\n",
+         "stdout": "0 0\n"
+        }
+       ],
+       "solution": "import sys\nN=int(input())\nL=[int(l.split()[0]) for l in sys.stdin if l.strip()]\nt=0;n=0\nfor x in reversed(L):\n    if t+x>N: break\n    t+=x;n+=1\nprint(n,t)\n"
+      }
+     ]
+    },
+    {
+     "id": "beyond-code",
+     "kind": "lecture",
+     "title": "第 8 讲：不止于代码",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "beyond-code",
+       "title": "不止于代码"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=2DOEATfXT8k"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "bc-oneway",
+       "type": "choice",
+       "prompt": "向外单向沟通（如写文档、博客）时，好的做法是？",
+       "options": [
+        "先想清楚读者是谁、要让他们做什么",
+        "越长越好",
+        "不要给示例",
+        "使用尽可能多的缩写"
+       ],
+       "answer": 0,
+       "explain": "以读者为中心。"
+      },
+      {
+       "id": "bc-pr",
+       "type": "choice",
+       "prompt": "给开源项目提 PR 前较好的做法？",
+       "options": [
+        "先读贡献指南，并从小改动或先开 issue 讨论开始",
+        "直接提交大型重构",
+        "不跑测试",
+        "绕过 CI"
+       ],
+       "answer": 0,
+       "explain": "尊重维护者的时间。"
+      },
+      {
+       "id": "bc-review",
+       "type": "choice",
+       "prompt": "代码评审时更有建设性的评论是？",
+       "options": [
+        "具体说明问题并给出理由或建议",
+        "只写“不好”",
+        "评价作者能力",
+        "不看代码直接通过"
+       ],
+       "answer": 0,
+       "explain": "评审针对代码而不是人。"
+      },
+      {
+       "id": "bc-pr-name",
+       "type": "text",
+       "prompt": "向别人的仓库提交修改请求在 GitHub 上叫 ___ （缩写，两个字母）。",
+       "answer": [
+        "PR",
+        "pull request"
+       ],
+       "explain": "Pull Request。"
+      },
+      {
+       "id": "bc-ai",
+       "type": "choice",
+       "prompt": "向他人提交由 AI 生成的内容时，礼仪上应当？",
+       "options": [
+        "自己先审阅并对内容负责，必要时说明使用了 AI",
+        "原样提交，不看",
+        "假装是纯手写",
+        "用 AI 回复评审意见而不阅读"
+       ],
+       "answer": 0,
+       "explain": "不要把审阅的负担甩给对方。"
+      },
+      {
+       "id": "bc-teach",
+       "type": "choice",
+       "prompt": "教学互助中，帮助别人学习更有效的方式是？",
+       "options": [
+        "引导对方思考，而不只是给答案",
+        "直接替他写完",
+        "嘲笑错误",
+        "避免交流"
+       ],
+       "answer": 0,
+       "explain": "授人以渔。"
+      },
+      {
+       "id": "bc-issue",
+       "type": "choice",
+       "prompt": "提 bug issue 时最有帮助的信息是？",
+       "options": [
+        "可复现的最小步骤、环境与期望/实际行为",
+        "“它坏了”",
+        "情绪表达",
+        "无关截图"
+       ],
+       "answer": 0,
+       "explain": "可复现是关键。"
+      },
+      {
+       "id": "bc-review-count",
+       "type": "code",
+       "lang": "python",
+       "title": "统计评审意见",
+       "prompt": "每行形如 `reviewer: 意见`。输出每位 reviewer 的意见条数，按条数降序、同数时按名字字典序，格式 `名字 条数`。",
+       "starter": "import sys\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "bob: nit\nann: ok\nbob: fix\n",
+         "stdout": "bob 2\nann 1\n"
+        },
+        {
+         "name": "平局",
+         "stdin": "z: a\na: b\n",
+         "stdout": "a 1\nz 1\n"
+        },
+        {
+         "name": "空",
+         "stdin": "",
+         "stdout": ""
+        },
+        {
+         "name": "无冒号",
+         "stdin": "hello\nx: y\n",
+         "stdout": "x 1\n"
+        }
+       ],
+       "solution": "import sys\nfrom collections import Counter\nc=Counter()\nfor l in sys.stdin:\n    if ':' in l: c[l.split(':',1)[0].strip()]+=1\nfor k,v in sorted(c.items(),key=lambda x:(-x[1],x[0])): print(k,v)\n"
+      }
+     ]
+    },
+    {
+     "id": "code-quality",
+     "kind": "lecture",
+     "title": "第 9 讲：代码质量",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "code-quality",
+       "title": "代码质量"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=XBiLUNx84CQ"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "cq-fmt",
+       "type": "choice",
+       "prompt": "代码格式化工具（如 ruff format、prettier）的作用？",
+       "options": [
+        "统一代码风格，消除风格争论",
+        "发现运行时 bug",
+        "部署服务",
+        "提高 CPU 频率"
+       ],
+       "answer": 0,
+       "explain": "格式化只改排版；lint 检查潜在问题。"
+      },
+      {
+       "id": "cq-lint",
+       "type": "choice",
+       "prompt": "Lint 工具主要用来？",
+       "options": [
+        "静态检查可疑写法与常见错误",
+        "压缩文件",
+        "生成文档图片",
+        "运行容器"
+       ],
+       "answer": 0,
+       "explain": "在不运行代码的情况下发现问题。"
+      },
+      {
+       "id": "cq-cov",
+       "type": "text",
+       "prompt": "衡量测试执行了多少代码的指标叫代码 ___ 。（两个汉字）",
+       "answer": [
+        "覆盖率"
+       ],
+       "explain": "代码覆盖率，高并不等于测试质量高。"
+      },
+      {
+       "id": "cq-precommit",
+       "type": "choice",
+       "prompt": "pre-commit 钩子在什么时候运行？",
+       "options": [
+        "git commit 之前",
+        "git push 之后",
+        "编译之后",
+        "永不"
+       ],
+       "answer": 0,
+       "explain": "可在提交前自动格式化、lint。"
+      },
+      {
+       "id": "cq-ci",
+       "type": "choice",
+       "prompt": "持续集成（CI）的核心做法？",
+       "options": [
+        "每次推送自动构建并运行测试",
+        "每年发布一次",
+        "只手动测试",
+        "禁止测试"
+       ],
+       "answer": 0,
+       "explain": "如 GitHub Actions。"
+      },
+      {
+       "id": "cq-regex",
+       "type": "choice",
+       "prompt": "正则 `^a.*b$` 能匹配？",
+       "options": [
+        "axxb",
+        "bxxa",
+        "a",
+        "ab c"
+       ],
+       "answer": 0,
+       "explain": "以 a 开头、以 b 结尾，中间任意。"
+      },
+      {
+       "id": "cq-regex2",
+       "type": "text",
+       "prompt": "正则中表示「一个或多个数字」的常见写法（Python 风格）是 ___ 。",
+       "answer": [
+        "\\d+",
+        "[0-9]+"
+       ],
+       "explain": "\\d 数字，+ 一次或多次。"
+      },
+      {
+       "id": "cq-regex-ids",
+       "type": "code",
+       "lang": "python",
+       "title": "提取工单号",
+       "prompt": "每行文本中可能包含形如 `#123` 的工单号（# 后跟一个或多个数字）。按出现顺序输出全部工单号（只输出数字部分，每个一行，不去重）。",
+       "starter": "import re,sys\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "fix #12 and #7\n",
+         "stdout": "12\n7\n"
+        },
+        {
+         "name": "多行",
+         "stdin": "a\nclose #1\n#22#33\n",
+         "stdout": "1\n22\n33\n"
+        },
+        {
+         "name": "无",
+         "stdin": "nothing here\n",
+         "stdout": ""
+        },
+        {
+         "name": "非数字",
+         "stdin": "#abc #4x\n",
+         "stdout": "4\n"
+        }
+       ],
+       "solution": "import re,sys\nfor l in sys.stdin:\n    for m in re.findall(r'#(\\d+)',l): print(m)\n"
+      },
+      {
+       "id": "cq-regex-group",
+       "type": "code",
+       "lang": "python",
+       "title": "重排日期",
+       "prompt": "每行是 `YYYY-MM-DD` 格式日期，用正则捕获组改写为 `DD/MM/YYYY` 输出；不匹配的行原样输出。",
+       "starter": "import re,sys\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "2026-01-09\n",
+         "stdout": "09/01/2026\n"
+        },
+        {
+         "name": "多行",
+         "stdin": "1999-12-31\n2000-02-29\n",
+         "stdout": "31/12/1999\n29/02/2000\n"
+        },
+        {
+         "name": "非法",
+         "stdin": "hello\n2026-1-9\n",
+         "stdout": "hello\n2026-1-9\n"
+        },
+        {
+         "name": "带前缀",
+         "stdin": "on 2026-01-09\n",
+         "stdout": "on 2026-01-09\n"
+        }
+       ],
+       "solution": "import re,sys\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    print(re.sub(r'^(\\d{4})-(\\d{2})-(\\d{2})$',r'\\3/\\2/\\1',l))\n"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "titleEn": "The Missing Semester of Your CS Education"
+}

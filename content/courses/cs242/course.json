@@ -1,0 +1,58 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs242",
+ "title": "CS242 Programming Languages",
+ "category": "编程语言设计与分析",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "OCaml, Rust",
+ "prerequisites": "对计算机系统和编程语言理论有初步了解",
+ "difficulty": 4,
+ "hours": "60 小时",
+ "summary": "CS242是一门讲程序语言 (Programming Language, PL) 的课程，但不是传统意义上的纯理论导向。这门课程首先介绍了如 Lambda 演算，类型系统这样的经典 PL 理论，然后借助系统编程的思想和实际的编程语言来驱动学生理解这些理论……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nCS242是一门讲程序语言 (Programming Language, PL) 的课程，但不是传统意义上的纯理论导向。这门课程首先介绍了如 Lambda 演算，类型系统这样的经典 PL 理论，然后借助系统编程的思想和实际的编程语言来驱动学生理解这些理论，展示了它们是如何在实际编程中帮助开发者避免各种错误。\n\n主讲老师 Will Crichton 还将他的课程设计思想写成了论文 [From Theory to Systems: A Grounded Approach to Programming Language Education](https://arxiv.org/abs/1904.06750)，阐述了这条从理论走向系统的教学路线。\n\n我们通过简单介绍每个作业来帮助读者了解这门课程的具体内容：\n\n- 对 JSON 的形式化与证明\n- PL 中经典的 Lambda 演算\n- 以 OCaml 为例的函数式编程入门\n- 使用 OCaml 实现一个函数式语言的类型检查器和解释器，同样是 PL 的经典作业\n- WebAssembly 的理论与实践\n- Linear Type 和 Rust 的所有权机制\n- Rust 的异步编程基础\n- 利用 Rust 类型系统设计状态机和实现 session-typed TCP 库\n- 最后的大作业有四个可选项：\n    1. 使用 Lean 进行定理证明\n    2. 使用 Rust 实现 Read-Log-Update 同步机制\n    3. 利用 F* 语言验证文件系统的正确性\n    4. 在程序语言视角下使用 OCaml 实现一个深度学习框架\n\n这些作业涵盖知识跨度非常大，从最经典的编程语言理论证明和实践到以 Rust 为例的编程语言对于编程和系统设计的影响，再到最后各有特色的大作业。几乎所有的编程作业都有详尽的本地测试，尤其是大作业中的深度学习框架更有超过 200 个测试，适合自学。\n\n前面几次的作业偏 PL 理论，后面几次的作业偏系统编程。\n如果你觉得前面几次的课程内容和作业过于理论，可以重点尝试使用 OCaml 实现解释器的作业，它既能让你对之前的理论有更深刻的理解，又能让你实战一个函数式语言的类型检查和解释。\n\n而后面的作业则更倾向于利用理论来指导系统编程与设计，尤其是 Rust 和它独特的所有权机制与类型系统。虽然我们要经常与编译器搏斗，但这也恰好说明了类型系统和理论对于编程和设计的意义。\n\n个人自学过程中感觉作业还是偏难的，但收获很大，在后续作业的编程实践和前面所学的理论知识产生交集时会有恍然大悟的愉悦。如果你在完成作业时遇到了困难，这是十分正常的，请静下心来认真思考，或者再读一遍实验指导。\n\n## 课程资源\n\n- 课程网站：[官网](https://web.stanford.edu/class/cs242/) [2019秋](https://stanford-cs242.github.io/f19/)\n- 课程视频：无，主要学习途径是课程笔记和完成作业\n- 课程教材：前半部分是著名的[TAPL](https://www.cis.upenn.edu/~bcpierce/tapl/)，后半部分则无固定教材\n- 课程作业：[实验指导](https://stanford-cs242.github.io/f19/assignments/)与[作业仓库](https://github.com/stanford-cs242/f19-assignments)\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/CS242/"
+  },
+  "official": "CS242编程语言课程涵盖编程语言理论的基础知识、其在当今广泛使用的语言中的应用，以及可能定义未来编程语言发展趋势的新兴方向。通过本课程学习，学生将掌握一套理论工具，用于理解陌生的编程语言、改进软件设计和编写能力。课程还将这些概念应用于现代编程语言和环境的实践调研中，帮助学生建立分析编程语言的系统化思维方式。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "https://web.stanford.edu/class/cs242/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · 官网",
+   "url": "https://web.stanford.edu/class/cs242/"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · 2019秋",
+   "url": "https://stanford-cs242.github.io/f19/"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材 · TAPL",
+   "url": "https://www.cis.upenn.edu/~bcpierce/tapl/"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · 实验指导",
+   "url": "https://stanford-cs242.github.io/f19/assignments/"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · 作业仓库",
+   "url": "https://github.com/stanford-cs242/f19-assignments"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Programming Languages"
+}

@@ -1,7 +1,8 @@
 // 全项目唯一允许 import material.dart 的文件（tool/check_no_material.sh 会检查）。
 // MaterialApp 只用来提供本地化、导航和文本编辑基建；透明 Material 只给 flutter_miuix 的输入框当祖先。
 // 这里不使用任何 Material 可见控件。
-import 'package:flutter/material.dart' show ColorScheme, Material, MaterialApp, MaterialType, NoSplash, ThemeData;
+import 'package:flutter/material.dart'
+    show ColorScheme, Material, MaterialApp, MaterialType, NoSplash, ThemeData;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_miuix/miuix.dart';
@@ -43,13 +44,16 @@ class HianaApp extends ConsumerWidget {
         builder: (context) {
           final theme = MiuixTheme.of(context);
           return MaterialApp(
-            title: 'HIANA 学习',
+            title: '海纳协会',
             debugShowCheckedModeBanner: false,
             // 只为了让 flutter_miuix 内部用到的文本编辑基建取到颜色；关掉水波纹，避免出现 Material 观感
             theme: ThemeData(
               useMaterial3: true,
               brightness: theme.brightness,
-              colorScheme: ColorScheme.fromSeed(seedColor: theme.colors.primary, brightness: theme.brightness),
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: theme.colors.primary,
+                brightness: theme.brightness,
+              ),
               splashFactory: NoSplash.splashFactory,
               scaffoldBackgroundColor: theme.colors.background,
             ),
@@ -58,7 +62,11 @@ class HianaApp extends ConsumerWidget {
             localizationsDelegates: GlobalMaterialLocalizations.delegates,
             // 页面里直接用 Text 时的默认样式（没有 Material 的 Scaffold 提供它）
             builder: (context, child) => DefaultTextStyle(
-              style: TextStyle(color: Hx.of(context).ink, fontSize: 15, height: 1.45),
+              style: TextStyle(
+                color: Hx.of(context).ink,
+                fontSize: 15,
+                height: 1.45,
+              ),
               child: child ?? const SizedBox.shrink(),
             ),
             home: const AuthGate(),
@@ -76,5 +84,6 @@ class MaterialSurface extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Material(type: MaterialType.transparency, child: child);
+  Widget build(BuildContext context) =>
+      Material(type: MaterialType.transparency, child: child);
 }

@@ -163,14 +163,6 @@ export function relativeTime(ms: number): string {
   if (h < 24) return `${h} 小时前`;
   return longDay(cnToday(ms), false);
 }
-export function greeting(now = Date.now()): string {
-  const h = Number(clock(now).slice(0, 2));
-  if (h < 5) return "夜深了";
-  if (h < 11) return "早上好";
-  if (h < 13) return "中午好";
-  if (h < 18) return "下午好";
-  return "晚上好";
-}
 export function minutesText(min: number): string {
   if (min < 60) return `${min} 分钟`;
   const h = Math.floor(min / 60);

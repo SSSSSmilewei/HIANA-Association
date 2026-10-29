@@ -1,0 +1,37 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs122",
+ "title": "Caltech CS 122: Database System Implementation",
+ "category": "数据库系统",
+ "provider": "Caltech",
+ "instructors": [],
+ "language": "Java",
+ "prerequisites": "无",
+ "difficulty": 5,
+ "hours": "150 小时",
+ "summary": "加州理工的这门课，不同于没有提供 SQL 层功能的 CMU15-445 课程。CS122 课程 Lab 的侧重点在于 SQL 层的相关实现，涉及查询优化器的各个模块，比如SQL的解析，Translate，如何实现 Join，统计信息以及代价估计，子查询实现，Agg……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n加州理工的这门课，不同于没有提供 SQL 层功能的 CMU15-445 课程。CS122 课程 Lab 的侧重点在于 SQL 层的相关实现，涉及查询优化器的各个模块，比如SQL的解析，Translate，如何实现 Join，统计信息以及代价估计，子查询实现，Agg，Group By 的实现等。除此之外，还有 B+树，WAL 相关实验。本门课程适合在学完 CMU15-445 课程之后，对查询优化相关内容有兴趣的同学。\n\n下面介绍一下这门课的前 3 个 Assignment 也就是实验 Lab 所要实现的功能：\n\n### Assignment1\n\n- 为 NanoDB 提供 delete，update 语句的支持。\n- 为 Buffer Pool Manager 添加合适的 pin/unpin 代码。\n- 提升 insert 语句的性能， 同时不使数据库文件大小过分膨胀。\n\n### Assignment2\n\n- 实现一个简单的计划生成器，将各种已经 Parser 过的 SQL 语句转化为可执行的执行计划。\n- 使用 nested-loop join 算法，实现支持 inner- and outer-join 的 Join 计划节点。\n- 添加一些单元测试， 保证 inner- and outer-join 功能实现正确。\n\n### Assignment3\n\n- 完成收集表的统计信息。\n- 完成各种计划节点的计划成本计算。\n- 计算可出现在执行计划中的各种谓词的选择性。\n- 根据谓词更新计划节点输出的元组统计信息。\n\n剩余 Assignment 和 Challenges 可以查看课程介绍，推荐使用 IDEA 打开工程，Maven 构建，注意日志相关配置。\n\n## 课程资源\n\n- 课程网站：<http://courses.cms.caltech.edu/cs122/>\n- 课程代码：<https://gitlab.caltech.edu/cs122-19wi>\n- 课程教材：无\n- 课程作业：7 Assignments + 2 Challenges\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F/CS122/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://courses.cms.caltech.edu/cs122/"
+  },
+  {
+   "kind": "repo",
+   "label": "代码",
+   "url": "https://gitlab.caltech.edu/cs122-19wi"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Database System Implementation"
+}

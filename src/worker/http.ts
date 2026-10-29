@@ -23,7 +23,7 @@ export interface Ctx {
   env: Env;
   params: Record<string, string>;
   session: Session | null;
-  /** 当前登录的账号（ADMIN_PASSWORD 初始化会话没有账号） */
+  /** 当前登录的账号；没登录（游客）时为 null */
   user: CurrentUser | null;
   /** 待写入响应的 Set-Cookie 头 */
   cookies: string[];

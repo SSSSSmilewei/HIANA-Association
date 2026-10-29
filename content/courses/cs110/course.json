@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs110",
+ "title": "CS110: Principles of Computer Systems",
+ "category": "计算机系统基础",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "C/C++",
+ "prerequisites": "编程基础、Unix、GDB、Valgrind",
+ "difficulty": 5,
+ "hours": "150小时",
+ "summary": "这门课程在 CS107 的基础知识上进行拓展，深入研究计算机系统和程序构建。它专注于设计大型系统、跨多台机器的软件以及并行计算。课程的目标是教授学生计算机软件和硬件系统工程的原理和实践。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n这门课程在 [CS107](https://web.stanford.edu/class/archive/cs/cs107/cs107.1246/calendar) 的基础知识上进行拓展，深入研究计算机系统和程序构建。它专注于设计大型系统、跨多台机器的软件以及并行计算。课程的目标是教授学生计算机软件和硬件系统工程的原理和实践。\n\n课程涵盖了广泛的主题，包括你的程序如何映射到计算机系统的组件上，理解程序行为和执行，理解大型系统的设计和权衡，编写跨多台机器的软件，以及编写在单台机器上并行运行任务的软件。\n\n这门课程的教学风格是引人入胜且实用的。教师通过理论知识和丰富的编程实验，引导学生理解计算机系统中众多的技术挑战和设计原则。每周的实验让你为项目增加新功能，这些项目专注于提高学生的实践技能，让你有机会初步了解计算机系统的每一个方面，并且会公布答案，让你及时检查自己对关键知识点的掌握情况。\n\n除了实验外，课程还包括旨在提供大量编程实践经验并加深对课程材料理解的项目作业。每项作业配有完整的测试框架。\n\n## 课程资源\n\n- 课程网站：[winter20](https://web.stanford.edu/class/archive/cs/cs110/cs110.1204/)\n- 课程视频：[spring19](https://www.youtube.com/playlist?list=PLai-xIlqf4JmTNR9aPCwIAOySs1GOm8sQ)\n- 课程教材：[Computer Systems: A Programmer’s Perspective](https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/books/CSAPP_2016.pdf)\n- 课程作业：7 labs + 8 assignments，参见课程网站。\n\n## 资源汇总\n\n@xuzheng465 在学习这门课中用到的所有资源和作业实现都汇总在 [xuzheng465/Stanford_CS110 - GitHub](https://github.com/xuzheng465/Stanford_CS110) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80/CS110/"
+  },
+  "official": "这是斯坦福大学的计算机系统课程，涵盖文件系统和操作系统基础、进程和并发（多进程、信号处理、线程）、网络和分布式系统（网络客户端、网络系统调用、HTTP 代理实现等）、线程池和 MapReduce 等实际设计模式。课程通过 8 个大型编程作业、讲座和实验强调通过实践学习。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "https://web.stanford.edu/class/archive/cs/cs110/cs110.1204/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · winter20",
+   "url": "https://web.stanford.edu/class/archive/cs/cs110/cs110.1204/"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · spring19",
+   "url": "https://www.youtube.com/playlist?list=PLai-xIlqf4JmTNR9aPCwIAOySs1GOm8sQ"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材 · Computer Systems: A Programmer’s Perspective",
+   "url": "https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/books/CSAPP_2016.pdf"
+  }
+ ],
+ "modules": [],
+ "titleEn": "CS110: Principles of Computer Systems"
+}

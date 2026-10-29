@@ -35,6 +35,8 @@ const TYPES: Record<string, string> = {
   ".png": "image/png",
   ".map": "application/json",
   ".txt": "text/plain; charset=utf-8",
+  ".md": "text/markdown; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
 };
 const ASSETS = {
   async fetch(input: Request | string) {

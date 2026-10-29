@@ -5,10 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/home_shell.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
-import 'login_page.dart';
-import 'set_password_page.dart';
 
-/// 根据登录状态决定显示哪一页：未登录 → 登录；刚激活 → 设密码；学员 → 主界面。
+/// 启动时等登录状态确认好，然后进主界面。没登录也进主界面（游客模式），
+/// 登录、注册在需要的地方打开 LoginPage。
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
 
@@ -17,7 +16,10 @@ class AuthGate extends ConsumerWidget {
     final session = ref.watch(sessionProvider);
     final bg = MiuixTheme.of(context).colors.background;
     return session.when(
-      loading: () => ColoredBox(color: bg, child: const Center(child: MiuixCircularProgressIndicator())),
+      loading: () => ColoredBox(
+        color: bg,
+        child: const Center(child: MiuixCircularProgressIndicator()),
+      ),
       // 断网等情况：保留令牌，给一个重试入口，而不是直接退出登录
       error: (e, _) => ColoredBox(
         color: bg,
@@ -29,11 +31,7 @@ class AuthGate extends ConsumerWidget {
           ),
         ),
       ),
-      data: (me) {
-        if (!me.isMember) return const LoginPage();
-        if (me.needsPassword) return const SetPasswordPage(firstTime: true);
-        return const HomeShell();
-      },
+      data: (_) => const HomeShell(),
     );
   }
 }

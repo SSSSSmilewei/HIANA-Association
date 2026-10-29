@@ -106,8 +106,12 @@ export function Icon({ name, size = 20, stroke = 1.8, className, style }: { name
 
 export const KIND_ICON: Record<string, IconName> = {
   lecture: "play",
-  pset: "pencil",
-  practice: "terminal",
+  video: "video",
   reading: "book",
+  assignment: "pencil",
+  pset: "pencil",
+  lab: "terminal",
   project: "flag",
+  quiz: "clipboard",
+  exam: "clipboard",
 };

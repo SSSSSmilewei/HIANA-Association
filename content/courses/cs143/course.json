@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs143",
+ "title": "Stanford CS143: Compilers",
+ "category": "编译原理",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "Java 或 C++",
+ "prerequisites": "计算机体系结构",
+ "difficulty": 5,
+ "hours": "150 小时",
+ "summary": "斯坦福的编译原理课程，设计者开发了一个 Classroom-Object-Oriented-Language，简称 COOL 语言。这门课的核心就是通过理论知识的学习，为 COOL 语言实现一个编译器……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n斯坦福的编译原理课程，设计者开发了一个 Classroom-Object-Oriented-Language，简称 COOL 语言。这门课的核心就是通过理论知识的学习，为 COOL 语言实现一个编译器，将 COOL 高级语言编译为 MIPS 汇编并在 Spim 这个 MIPS 模拟器上成功执行。\n\n理论部分基本按照龙书的顺序覆盖了词法分析、语法分析、语义分析、运行时环境、寄存器分配、代码优化与生成等内容，实践部分则相应地分为词法分析、语法分析、语义分析、代码生成四个阶段，难度循序渐进，并在优化部分给学生留下了很大的设计空间。\n\n## 课程资源\n\n- 课程网站：<http://web.stanford.edu/class/cs143/>\n- 课程视频：<https://www.bilibili.com/video/BV17K4y147Bz>\n- 课程教材：龙书\n- 课程作业：5 个书面作业 + 5 个编程作业带你实现一个编译器\n\n## 资源汇总\n\n@skyzluo 在学习这门课中用到的所有资源和作业实现都汇总在 [skyzluo/CS143-Compilers-Stanford - GitHub](https://github.com/skyzluo/CS143-Compilers-Stanford) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/CS143/"
+  },
+  "official": "这是斯坦福大学的编译器课程，涵盖编译器设计和实现的全方面。课程内容包括词法分析、语法分析（自顶向下和自底向上方法）、语义分析、类型检查、代码生成和优化技术、运行时环境、中间代码、寄存器分配和内存管理。学生需要使用 Flex、Bison 等工业级工具实现 Cool（课堂面向对象语言）编译器。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "http://web.stanford.edu/class/cs143/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://web.stanford.edu/class/cs143/"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.bilibili.com/video/BV17K4y147Bz"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Stanford CS143: Compilers"
+}

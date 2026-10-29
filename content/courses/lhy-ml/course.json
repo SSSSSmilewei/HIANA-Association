@@ -1,0 +1,62 @@
+{
+ "format": "hiana-course@1",
+ "slug": "lhy-ml",
+ "title": "国立台湾大学：李宏毅机器学习",
+ "category": "深度学习",
+ "provider": "國立台灣大學",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "熟练掌握 Python",
+ "difficulty": 4,
+ "hours": "80 小时",
+ "summary": "李宏毅老师是国立台湾大学的教授，其风趣幽默的授课风格深受大家喜爱，并且尤其喜欢在 PPT 中插入宝可梦等动漫元素，是个非常可爱的老师。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n李宏毅老师是国立台湾大学的教授，其风趣幽默的授课风格深受大家喜爱，并且尤其喜欢在 PPT 中插入宝可梦等动漫元素，是个非常可爱的老师。\n\n这门课挂着机器学习的牌子，但其课程内容之广实在令人咋舌，其作业一共包含 15 个 lab，分别是 Regression、Classification、CNN、Self-Attention、Transformer、GAN、BERT、Anomaly Detection、Explainable AI、Attack、Adaptation、\nRL、Compression、Life-Long Learning 以及 Meta Learning。可谓是包罗万象，能让学生对于深度学习的绝大多数领域都有一定了解，从而可以进一步选择想要深入的方向进行学习。\n\n大家也大可不必担心作业的难度，因为所有作业都会提供助教的示例代码，帮你完成数据处理、模型搭建等，你只需要在其基础上进行适量的修改即可。这也是一个学习别人优质代码的极好机会，大家需要水课程大作业的话，这里也是一个不错的资料来源。\n\n2025年版课程的课程内容发生改革，更加侧重于RAG、AI Agent、LLM种种更fasion的内容；与2023版及之前版本差异极大\n\n## 课程资源\n\n- 课程网站：[Spring2023](https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php), [Spring2025](https://speech.ee.ntu.edu.tw/~hylee/ml/2025-spring.php)\n- 课程视频：[Spring2023](https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php), [Spring2025](https://speech.ee.ntu.edu.tw/~hylee/ml/2025-spring.php)，每节课的链接参见课程网站\n- 课程教材：无\n- 课程作业：[Spring2023](https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php) (5 个 lab，几乎覆盖了主流深度学习的所有领域；部分作业colab上可能无法打开，这时候可以参考弘毅老师的github), [Spring2025](https://speech.ee.ntu.edu.tw/~hylee/ml/2025-spring.php) (主要关注 AI Agent 等 LLM 相关领域)\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/LHY/"
+  },
+  "official": "这是国立台湾大学李宏毅教授讲授的机器学习课程，强调生成式人工智能和现代机器学习技术。课程涵盖 ChatGPT 原理和大型语言模型、文本和图像生成（扩散模型、GAN）、基础模型及其应用、自注意机制和 Transformer、域适应和强化学习、网络压缩和元学习等主题。课程包含 15 个 homework，提供讲座视频、幻灯片和 Colab 笔记本。",
+  "officialSource": {
+   "kind": "website",
+   "label": "speech.ee.ntu.edu.tw",
+   "url": "https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · Spring2023",
+   "url": "https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · Spring2025",
+   "url": "https://speech.ee.ntu.edu.tw/~hylee/ml/2025-spring.php"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · Spring2023",
+   "url": "https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · Spring2025",
+   "url": "https://speech.ee.ntu.edu.tw/~hylee/ml/2025-spring.php"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · Spring2023",
+   "url": "https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · Spring2025",
+   "url": "https://speech.ee.ntu.edu.tw/~hylee/ml/2025-spring.php"
+  }
+ ],
+ "modules": []
+}

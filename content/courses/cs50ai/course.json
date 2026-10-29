@@ -1,0 +1,63 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs50ai",
+ "title": "CS50’s Introduction to AI with Python",
+ "category": "人工智能",
+ "provider": "Harvard",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "基本概率论 + Python 基础",
+ "difficulty": 3,
+ "hours": "30 小时",
+ "summary": "一门非常基础的 AI 入门课，让人眼前一亮的是 12 个设计精巧的编程作业，都会用学到的 AI 知识去实现一个简易的游戏 AI，比如用强化学习训练一个 Nim 游戏的 AI，用 alpha-beta 剪枝去扫雷等等，非常适合新手入门或者大佬休闲。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n一门非常基础的 AI 入门课，让人眼前一亮的是 12 个设计精巧的编程作业，都会用学到的 AI 知识去实现一个简易的游戏 AI，比如用强化学习训练一个 Nim 游戏的 AI，用 alpha-beta 剪枝去扫雷等等，非常适合新手入门或者大佬休闲。\n\n## 课程资源\n\n- 课程网站：[2024](https://cs50.harvard.edu/ai/2024/)、[2020](https://cs50.harvard.edu/ai/2020/)\n- 课程视频：[2024](https://cs50.harvard.edu/ai/2024/)、[2020](https://cs50.harvard.edu/ai/2020/)\n- 课程教材：无\n- 课程作业：[2024](https://cs50.harvard.edu/ai/2024/)、[2020](https://cs50.harvard.edu/ai/2020/)，12个精巧的编程作业\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/cs50_ai - GitHub](https://github.com/PKUFlyingPig/cs50_ai) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/CS50/"
+  },
+  "official": "本课程探索现代人工智能的基础概念和算法，涵盖图搜索、分类、优化和机器学习。课程通过实践 Python 项目来深入学习使游戏引擎、手写识别和机器翻译等技术得以实现的想法。课程为期七周，每周包括讲座和项目。学生将获得机器学习库的使用经验并具备设计自己的智能系统的知识。",
+  "officialSource": {
+   "kind": "website",
+   "label": "cs50.harvard.edu",
+   "url": "https://cs50.harvard.edu/ai/2024/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · 2024",
+   "url": "https://cs50.harvard.edu/ai/2024/"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · 2020",
+   "url": "https://cs50.harvard.edu/ai/2020/"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · 2024",
+   "url": "https://cs50.harvard.edu/ai/2024/"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · 2020",
+   "url": "https://cs50.harvard.edu/ai/2020/"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · 2024",
+   "url": "https://cs50.harvard.edu/ai/2024/"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · 2020",
+   "url": "https://cs50.harvard.edu/ai/2020/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "CS50's Introduction to AI with Python"
+}
