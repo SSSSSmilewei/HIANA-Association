@@ -1,0 +1,32 @@
+{
+ "format": "hiana-course@1",
+ "slug": "signal",
+ "title": "UCB EE120: Signal and Systems",
+ "category": "电子基础",
+ "provider": "UC Berkeley",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "CS61A, CS70，微积分，线性代数",
+ "difficulty": 5,
+ "hours": "100 小时",
+ "summary": "这门课最精华的部分就是 6 个超有趣的编程作业了，会让你用 Python 通过学习到的信号与系统的理论知识，解决各类实际问题。例如 lab3 会让你实现 FFT 算法，并和 Numpy 的官方实现进行性能对比；lab4 会通过分析手指头的影像数据推断心率；lab5 就更牛了……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n这门课最精华的部分就是 6 个超有趣的编程作业了，会让你用 Python 通过学习到的信号与系统的理论知识，解决各类实际问题。例如 lab3 会让你实现 FFT 算法，并和 Numpy 的官方实现进行性能对比；lab4 会通过分析手指头的影像数据推断心率；lab5 就更牛了，会让你给哈勃望远镜拍到的照片进行降噪处理，恢复绚烂清晰的星空；lab6 会让你构造一个反馈系统，平衡小车上的细杆。\n\n## 课程资源\n\n- 课程网站：<https://inst.eecs.berkeley.edu/~ee120/fa19/>\n- 课程教材：参见课程 notes\n- 课程作业：5 个书面作业 + 6 个编程作业\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/UCB-EE120 - GitHub](https://github.com/PKUFlyingPig/UCB-EE120) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%94%B5%E5%AD%90%E5%9F%BA%E7%A1%80/signal/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://inst.eecs.berkeley.edu/~ee120/fa19/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Signal and Systems"
+}

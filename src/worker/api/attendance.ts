@@ -21,7 +21,7 @@ import { setSetting } from "../db";
 import { MAX_PHOTO_BYTES, decodeBase64, getFile, putFile, sniffImage } from "../files";
 import { HttpError, type Router, json } from "../http";
 import { clientIp, requireSecret } from "../session";
-import { DAY_RE, isAdmin, memberId, requireAdmin } from "./common";
+import { DAY_RE, isAdmin, memberId, requireAdmin, requireCampus } from "./common";
 
 const PhotoBody = z.object({ photo: z.string().min(100).max(1_000_000) });
 
@@ -49,7 +49,7 @@ function attendanceError(err: unknown): never {
 export function attendanceRoutes(api: Router) {
   /** 签到页的状态：今天有没有晚自习、现在能不能签到、我有没有进行中的签到。 */
   api.get("/api/attendance", async (c) => {
-    const uid = memberId(c);
+    const uid = requireCampus(c);
     const rule = await loadRule(c.env.DB);
     const now = Date.now();
     await autoClose(c.env.DB, rule, now, uid);
@@ -73,7 +73,7 @@ export function attendanceRoutes(api: Router) {
   });
 
   api.post("/api/attendance/in", async (c) => {
-    const uid = memberId(c);
+    const uid = requireCampus(c);
     const body = PhotoBody.extend({ kind: z.enum(["evening", "venue"]), code: z.string().trim().max(8).optional() }).parse(await c.body());
     const rule = await loadRule(c.env.DB);
     // 先检查能不能签到，再存照片，免得存下没用的照片
@@ -93,7 +93,7 @@ export function attendanceRoutes(api: Router) {
   });
 
   api.post("/api/attendance/out", async (c) => {
-    const uid = memberId(c);
+    const uid = requireCampus(c);
     const body = PhotoBody.parse(await c.body());
     const rule = await loadRule(c.env.DB);
     await autoClose(c.env.DB, rule, Date.now(), uid);

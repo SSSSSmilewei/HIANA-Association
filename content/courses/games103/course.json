@@ -1,0 +1,52 @@
+{
+ "format": "hiana-course@1",
+ "slug": "games103",
+ "title": "GAMES103",
+ "category": "计算机图形学",
+ "provider": "Style3D/OSU",
+ "instructors": [],
+ "language": "C#",
+ "prerequisites": "线性代数，高等数学，大学物理，编程能力，基本图形知识",
+ "difficulty": 4,
+ "hours": "50 小时",
+ "summary": "官方介绍：",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n官方介绍：\n\n> 本课程将作为基于物理的计算机动画技术入门，着重介绍各种基础的物理动画模拟技术。\n>\n> 该课程主要涵盖四个方向，分别为：1）刚体模拟；2）质点弹簧、约束与布料模拟；3）基于有限元的弹性体模拟；4）流体模拟。\n>\n> 本课程内容将不会涉及具体的物理模拟引擎，但会讨论各种引擎背后的技术，以及它们的优缺点等等。由于开发学习物理模拟需要一定的数学基础，课程初始阶段也会花一定的时间复习必备的数学知识。顺利完成课程之后，同学们应该会对基础的物理模拟技术有深入理解，对高级的模拟技术也会有部分接触。\n>\n\n图形学可粗略分为渲染、模拟、几何三个领域。GAMES101 和 GAMES202 主要以渲染为主，而对于物理模拟，GAMES103 则是很棒的学习资源。\n\n## 课程资源\n\n- 课程网站：[GAMES103](http://games-cn.org/games103/)\n- 课程视频：[bilibili](https://www.bilibili.com/video/BV12Q4y1S73g)\n- 参考资料：[课程PPT](https://www.aliyundrive.com/s/YGuzfDCzw4n/folder/61824d985307bbf3920044b4afd48abb633441f6)\n- 课程作业：共四次作业，可见官方BBS小程序或非官方的Repo：[GAMES103 HW](https://github.com/indevn/GAMES103/tree/main/HW)\n\n## 资源汇总\n\n@indevn 在学习这门课中用到的所有资源和作业要求都汇总在 [GAMES103 Unoffical](https://github.com/indevn/GAMES103) 中。对于作业的具体实现，在知乎上有很多相关文章进行了细致讲解可以参考。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/GAMES103/"
+  },
+  "official": "本课程是基于物理的计算机动画技术的入门课程，着重介绍各种基础的物理动画模拟技术，主要涵盖四个研究方向：刚体模拟、质点弹簧/约束与布料模拟、基于有限元的弹性体模拟和流体模拟。课程讨论各种引擎背后的技术及其优缺点，初期会复习必备的数学知识。完成课程后，学生应该能够对基础的物理模拟技术有深入理解，对高级的模拟技术也会有部分接触。",
+  "officialSource": {
+   "kind": "website",
+   "label": "games-cn.org",
+   "url": "http://games-cn.org/games103/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · GAMES103",
+   "url": "http://games-cn.org/games103/"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · bilibili",
+   "url": "https://www.bilibili.com/video/BV12Q4y1S73g"
+  },
+  {
+   "kind": "other",
+   "label": "PPT",
+   "url": "https://www.aliyundrive.com/s/YGuzfDCzw4n/folder/61824d985307bbf3920044b4afd48abb633441f6"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · GAMES103 HW",
+   "url": "https://github.com/indevn/GAMES103/tree/main/HW"
+  }
+ ],
+ "modules": []
+}

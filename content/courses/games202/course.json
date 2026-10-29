@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "games202",
+ "title": "GAMES202",
+ "category": "计算机图形学",
+ "provider": "UCSB",
+ "instructors": [],
+ "language": "C++",
+ "prerequisites": "线性代数，高等数学，C++，GAMES101",
+ "difficulty": 4,
+ "hours": "60 小时",
+ "summary": "官方介绍:",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n官方介绍:\n\n> 本课程将全面地介绍现代实时渲染中的关键问题与解决方法。由于实时渲染 (>30 FPS) 对速度要求极高，因此本课程的关注点将是在苛刻的时间限制下，人们如何打破速度与质量之间的权衡，同时保证实时的高速度与照片级的真实感。\n>\n> 本课程将以专题的形式呈现，课程内容会覆盖学术界与工业界的前沿内容，包括：（1）实时软阴影的渲染；（2）环境光照；（3）基于预计算或无预计算的全局光照；（4）基于物理的着色模型与方法；（5）实时光线追踪；（6）抗锯齿与超采样；以及一些常见的加速方式等等。\n>\n> 除了最新最全的内容之外，本课程与其它任何实时渲染的教程还有一个重要的区别，那就是本课程不会讲授任何与游戏引擎的使用相关的内容，并且不会特别强调具体的着色器实现技术，而主要讲授实时渲染背后的科学与知识。本课程的目标是在你学习完这门课的时候，你将有深厚的功底去开发一个属于你自己的实时渲染引擎。\n\n作为 GAMES101 的进阶课程，难度有一定的提升，但不会很大，相信完成了 GAMES101 的同学都有能力完成这门课程。每个 project 代码量都不会很多，但是都需要一定的思考。\n\n## 课程资源\n\n- 课程网站：[GAMES202](https://sites.cs.ucsb.edu/~lingqi/teaching/games202.html)\n- 课程视频：[bilibili](https://www.bilibili.com/video/BV1YK4y1T7yY)\n- 课程教材：Real-Time Rendering, 4th edition.\n- 课程作业：[5个project](http://games-cn.org/forums/topic/games202zuoyehuizong/)\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/GAMES202/"
+  },
+  "official": "本课程全面涵盖现代实时渲染中的关键问题和解决方案，强调在保持实时性能（>30 FPS）的同时实现照相逼真的质量。课程内容包括实时软阴影和阴影映射技术、环境光照、全局光照、基于物理的着色模型、实时光线追踪、抗锯齿和超采样方法以及工业加速技术。课程包含15个讲座（每个约1小时），并以5个编程任务和1个主要项目（可选）进行评估。",
+  "officialSource": {
+   "kind": "website",
+   "label": "sites.cs.ucsb.edu",
+   "url": "https://sites.cs.ucsb.edu/~lingqi/teaching/games202.html"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · GAMES202",
+   "url": "https://sites.cs.ucsb.edu/~lingqi/teaching/games202.html"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · bilibili",
+   "url": "https://www.bilibili.com/video/BV1YK4y1T7yY"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · 5个project",
+   "url": "http://games-cn.org/forums/topic/games202zuoyehuizong/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "High-Quality Real-Time Rendering"
+}

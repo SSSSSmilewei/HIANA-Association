@@ -1,103 +1,116 @@
-# 智慧网络算法协会 · 学习平台
+# 海纳协会 · 学习平台
 
-协会的学习辅助站：CS50x 为主线，配开发者素养（Git、命令行、Agent 使用）；学员看本周任务、晚自习打卡、在统一热力图上看到自己在协会平台和各学习平台上的记录；会长在后台管理成员、展示现场口令、导出打卡表格、看谁最近卡住了。
+海纳协会（智慧网络算法协会）的学习平台，网址是 <https://study.shanmoew-denied.win>。四件事：
 
-线上地址：<https://study.shanmoew-denied.win>
+- **导学**：选课一样挑课，课程介绍、资源、讲义、练手题都在站内。
+- **管理**：晚自习和场地签到，拍照为证。
+- **交流**：公告、比赛报名组队。
+- **规划**：还在做。
 
-从 [Math-Teach-Job](https://github.com/SSSSSmilewei/Math-Teach-Job) 的工程骨架改出来，运行在 Cloudflare Workers + D1 上，免费额度足够协会使用。
+网站跑在 Cloudflare Workers + D1 上，另有学员端手机 App（`app/`）。
 
-## 现在有的功能
+> 做到哪了、还差什么、接手要遵守的约定，见 [AGENTS.md](AGENTS.md)。
 
-**学员**
-- 首页：本周主线（CS50x 第几周）、路线进度、本周任务、今晚打卡、最近 17 周热力图
-- 晚自习打卡：每晚一次；会长可以开启“现场口令”（每天自动换的 4 位数）防止代签。不统计连续天数，没有断签
-- 我的热力图：协会平台的学习记录 + 绑定的平台，按“写代码 / 刷题 / 英语”分组；每晚 23:30 自动同步
+## 功能
 
-**会长后台**（`/admin`）
-- 今晚的现场口令和到场人数，打卡时间段设置
-- 最近 7 天没有任何记录的成员（站内和外部平台都算）
-- 从 Excel 粘贴“学号、姓名、班级”导入成员，自动生成口令（只显示一次）；重置口令、停用
-- 按日期导出打卡表格（带 BOM 的 CSV，Excel 直接打开）
+### 课程
+- 118 门课，按分类浏览、搜索。目录和介绍来自 [csdiy.wiki](https://csdiy.wiki/)，大部分课补了官方介绍的中文翻译。
+- “CSDIY 的一切”：csdiy 的前言、使用指南、学习规划、必学工具、书单，合成一门课，适合入门前先读。
+- 站内全文：CS50x（0–10 周讲义、AI 专题、全部习题、期末项目）、Missing Semester 2026 / 2020，都是中文，每个条目都有练手题。
+- 练手题在浏览器里判：选择、填空、代码（Python、SQL、JavaScript）。作业和实验最后仍按原课程要求，在 GitHub、submit50 等处提交。
+- 进度按条目记，完成的条目和做对的题计入热力图。
+- **课程包**：每门课是一个 JSON 文件（格式 `hiana-course@1`）。
+  - 谁都能导入到自己设备上学，管理员可以发布给所有人，每门课都能导出。
+  - `/courses/format` 有格式说明、示例，以及给 AI 用的整理提示词：把一门公开课的资料交给 AI，整理成课程包就能学。
 
-**热力图支持的平台**
+### 账号
+- 注册要邀请码（管理员在后台生成，一次性，可设有效期）。
+- **校内账号**：学号 + 真名，学号登录，能签到。
+- **校外账号**：用户名 + 昵称，邮箱、学校/单位选填，用户名或邮箱登录。不签到，看不到成员真名，能报名比赛，能被设为管理员。
+- 忘记密码：管理员生成重置码，在登录页设新密码。改密码后其他设备自动退出。
+- 不登录也能看首页、课程、公告。
 
-| 平台 | 方式 | 说明 |
-|---|---|---|
-| GitHub | 官方 GraphQL | 需要在 Worker 设置里填 `GITHUB_TOKEN`（只读公开信息即可） |
-| Codeforces | 官方 API | 不需要 key |
-| 力扣、LeetCode 国际站 | 网页接口（非官方） | 上线后要实测 |
-| AtCoder | 第三方 AtCoder Problems | |
-| 墨墨背单词 | 官方开放 API | 学员在 App 里复制令牌；只有当天数据，平台每晚攒历史 |
-| 不背单词 | 网页接口（非官方） | 只有最近几天，平台每晚攒历史 |
-| 多邻国 | 网页接口（非官方） | 是否需要登录待实测 |
-| Gitee、洛谷、扇贝、WakaTime | 暂不支持 | 接口还在测试 |
+### 签到与管理
+- 晚自习签到：默认周一、二、四 19:00–20:40，后台可改；可开“现场口令”防代签。
+- 场地签到：平时用场地时签到、签退，都要拍照。
+- 管理后台（`/admin`）：今日签到和照片、成员管理、邀请码、按日期导出签到表（CSV）、最近没动静的成员。
+
+### 公告与比赛
+- 比赛描述、官方文档、群聊信息、报名组队、重要公告的阅读确认。
+
+### 热力图
+站内学习记录，加上绑定的外部平台（GitHub、Codeforces、力扣、AtCoder、墨墨背单词等），每晚自动同步。
+
+### 外观
+- 两套风格：液态玻璃、经典直角；深浅色跟随系统。
+- 11 套配色，也能导入 base16、VS Code 主题等。
+- 默认字体更纱黑体，可以换。
 
 ## 手机 App
 
-`app/` 是学员端的手机 App（Flutter + flutter_miuix，HyperOS 风格），说明见 [app/README.md](app/README.md)。它和网页共用同一套接口，另外用到：
+`app/` 是 Flutter 写的学员端（HyperOS 风格），说明见 [app/README.md](app/README.md)。改动推到 `main` 后，GitHub Actions 自动打包 APK 并发布到 Releases。
 
-- 登录、激活时请求头带 `X-Hiana-Client: app`，返回体里多一个 `token`；之后请求带 `Authorization: Bearer <token>`。网页端不带这个头，行为不变。
-- `GET /api/course`：主线课程周次（数据在 `src/shared/content.ts`，网页和 App 共用）
-- `GET /api/app/version`：App 检查更新，读 `settings` 表里的 `app_latest_version`、`app_min_version`、`app_apk_url`
+App 和网站共用接口，另外用到：
 
-成员被停用后，网页和 App 的旧会话都会立即失效。
-
-## 部署
-
-数据库已经建好（`hiana-association-db`，亚太区），`wrangler.jsonc` 里写好了数据库和自定义域名 `study.shanmoew-denied.win`。
-
-### 1. 连接 GitHub 自动构建
-Cloudflare → **Workers 和 Pages** → **创建** → **导入存储库** → 选 `SSSSSmilewei/HIANA-Association`，生产分支选 `main`：
-- 构建命令：`npm install && npm run build`
-- 部署命令：`npx wrangler deploy`
-
-部署时会自动把 `study.shanmoew-denied.win` 绑到这个 Worker（DNS 记录和证书由 Cloudflare 生成）。如果这个子域名已经有一条 CNAME 记录，要先在 DNS 里删掉。
-
-### 2. 设置密钥（可选）
-Worker → **设置** → **变量和机密**，类型选“密钥”：
-
-| 名称 | 作用 |
-|---|---|
-| `ADMIN_PASSWORD` | 会长后台密码。不填时用数据库里存的密码摘要（已经设置好一个） |
-| `GITHUB_TOKEN` | 热力图读 GitHub 贡献日历 |
-| `AI_API_KEY` | 以后的 Agent 用 |
-| `WXPUSHER_SPT` | 微信通知 |
-
-`SESSION_SECRET` 不用填，第一次访问时自动生成并存进数据库。
-
-### 3. 开始使用
-打开 `/admin`，用会长密码登录 → 导入成员 → 把口令发给大家。
+- 请求头带 `X-Hiana-Client: app` 时，登录接口在返回体里给 `token`，之后用 `Authorization: Bearer <token>`。
+- `GET /learn/<课>/course.json`、`GET /learn/<课>/<页>.md`：课程包和讲义原文（发布的课程包走 `GET /api/packages/<课>`）。
+- `GET /api/association`：协会介绍和学生成就。
+- `GET /api/app/version`：检查更新。
 
 ## 本地开发
 
 ```bash
 npm install
-npm run dev:bun     # 构建前端，用 bun:sqlite 模拟 D1，在 http://localhost:8787 运行
-npm test            # bun test：热力图、打卡、成员、接口
-npm run typecheck   # 后端类型检查
+npm run dev:bun     # 构建前端，用 bun:sqlite 模拟 D1，http://localhost:8787
+npm test            # bun test
+npx tsc --noEmit -p .
+npm run build
 ```
 
-本地可以用环境变量 `HW_ADMIN_PASSWORD`、`HW_SESSION_SECRET` 代替 `.dev.vars`。
+App：
 
-## 结构
+```bash
+cd app
+flutter test
+flutter analyze
+bash tool/check_no_material.sh
+```
+
+## 目录
 
 ```
-src/
-  shared/heatmap.ts      热力图合并与分档（北京时间、周一开头），前后端共用
-  worker/
-    http.ts              很小的路由层（不依赖框架）
-    api.ts               全部接口
-    session.ts           签名 Cookie 会话、登录限流
-    members.ts           成员导入、口令、没动静名单
-    checkin.ts           晚自习打卡、现场口令、导出表格
-    activity.ts          站内学习记录
-    heatmap/             各平台数据源、同步、存储
-    secret-box.ts        学员令牌加密
-    db.ts                数据库结构（启动时自动建表）
-  client/                React 页面
-tests/                   bun test
+content/courses/<slug>/   课程源文件：course.json（正文留空）+ 每页一个 .md；顺序在 order.json
+content/schema/           课程包 JSON Schema（由 scripts/schema.ts 生成）
+scripts/build.mjs         构建：前端打包、课程目录、课程包、讲义
+src/shared/               前后端共用：课程包格式（package.ts）、课程目录（courses.ts、light.ts）、热力图
+src/worker/               接口：账号、签到、课程、公告、热力图；db.ts 是数据库结构（启动时自动迁移）
+src/client/               网页（React）；practice/ 是练手题判题，styles/ 是设计变量和两套皮肤
+app/                      手机 App（Flutter）
+tests/                    bun test
 ```
+
+## 部署
+
+`main` 分支连着 Cloudflare 自动构建（构建命令 `npm install && npm run build`，部署命令 `npx wrangler deploy`），**推到 `main` 就会上线**。
+
+Worker 的密钥（Cloudflare → Workers → 设置 → 变量和机密）：
+
+| 名称 | 作用 |
+|---|---|
+| `FIRST_ADMIN_CODE` | 系统里还没有管理员时，学号 `254030411` 用它代替邀请码注册成管理员 |
+| `GITHUB_TOKEN` | 热力图读 GitHub 贡献日历 |
+| `AI_API_KEY` | 以后的 Agent 用 |
+| `WXPUSHER_SPT` | 微信通知 |
+
+`SESSION_SECRET` 不用填，第一次访问时自动生成。
 
 ## 许可
 
-代码使用 MIT 许可。课程内容改写自哈佛 CS50x，遵循 CC BY-NC-SA 4.0，仅供协会学习使用。
+代码使用 MIT 许可。课程内容：
+
+- 课程目录与介绍：[csdiy.wiki](https://github.com/PKUFlyingPig/cs-self-learning)，MIT 许可。
+- CS50x 讲义与习题：© Harvard CS50，CC BY-NC-SA 4.0；中文翻译同协议。
+- Missing Semester：© MIT，CC BY-NC-SA 4.0；中文翻译与习题解答来自 [missing-semester-cn](https://github.com/missing-semester-cn)，同协议。
+- 更纱黑体 [Sarasa Gothic](https://github.com/be5invis/Sarasa-Gothic)：SIL OFL 1.1。
+
+非商业使用，仅供协会学习。

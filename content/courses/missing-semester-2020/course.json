@@ -1,0 +1,1597 @@
+{
+ "format": "hiana-course@1",
+ "slug": "missing-semester-2020",
+ "title": "MIT Missing Semester（2020 版）",
+ "category": "编程入门",
+ "provider": "MIT",
+ "instructors": [
+  "Anish Athalye",
+  "Jon Gjengset",
+  "Jose Javier Gonzalez Ortiz"
+ ],
+ "language": "Shell",
+ "prerequisites": "无",
+ "difficulty": 1,
+ "hours": "20 小时",
+ "summary": "2020 年的 11 讲：Shell、Vim、数据整理、命令行环境、Git、调试与性能分析、元编程、安全与密码学……每讲附中文习题解答。",
+ "tags": [],
+ "license": "© MIT Missing Semester，CC BY-NC-SA 4.0；中文翻译与习题解答 missing-semester-cn，同协议",
+ "intro": {
+  "community": "## 课程简介\n\n正如课程名字所言：“计算机教学中消失的一个学期”，这门课将会教会你许多大学的课堂上不会涉及但却对每个 CSer 无比重要的工具或者知识点。例如 Shell 编程、命令行配置、Git、Vim、`tmux`、`ssh` 等等。如果你是一个计算机小白，那么我非常建议你学习一下这门课，因为它基本涉及了本书必学工具中的绝大部分内容。\n\n除了 MIT 官方的学习资料外，北京大学图灵班开设的前沿计算实践中也开设了相关课程，资料位于[这个网站](http://vcl.pku.edu.cn/course/PFCII/2021-spring/index.html)下，供大家参考。\n\n## 课程资源\n\n- 课程网站：<https://missing.csail.mit.edu/>\n- 课程中文网站: <https://missing-semester-cn.github.io/>\n- 课程视频：[IAP 2020](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J), [IAP 2026](https://www.youtube.com/playlist?list=PLyzOVJj3bHQunmnnTXrNbZnBaCA-ieK4L) in YouTube\n- 课程中文字幕视频：\n    - Missing_Semi_中译组（未完结）：<https://space.bilibili.com/1010983811?spm_id_from=333.337.search-card.all.click>\n    - 刘黑黑a（已完结）：<https://space.bilibili.com/518734451?spm_id_from=333.337.search-card.all.click>\n- 课程作业：一些随堂小练习，具体见课程网站。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/"
+  },
+  "official": "在传统的计算机科学课程中，从操作系统、编程语言到机器学习，这些高大上课程和主题已经非常多了。\n然而有一个至关重要的主题却很少被专门讲授，而是留给学生们自己去探索。 这部分内容就是：精通工具。\n\n这些年，我们在麻省理工学院参与了许多课程的助教活动，过程当中愈发意识到很多学生对于工具的了解知之甚少。\n计算机设计的初衷就是任务自动化，然而学生们却常常陷在大量的重复任务中，或者无法完全发挥出诸如版本控制、文本编辑器等工具的强大作用。效率低下和浪费时间还是其次，更糟糕的是，这还可能导致数据丢失或无法完成某些特定任务。\n\n这些主题不是大学课程的一部分：学生一直都不知道如何使用这些工具，或者说，至少是不知道如何高效地使用，因此浪费了时间和精力在本来可以更简单的任务上。标准的计算机科学课程缺少了这门能让计算变得更简捷的关键课程。\n\n# The missing semester of your CS education\n\n为了解决这个问题，我们开设了一个课程，涵盖各项对成为高效率计算机科学家或程序员至关重要的\n主题。这个课程实用且具有很强的实践性，提供了各种能够立即广泛应用解决问题的趁手工具指导。\n该课在 2020 年 1 月“独立活动期”开设，为期一个月，是学生开办的短期课程。虽然该课程针对\n麻省理工学院，但我们公开提供了全部课程的录制视频与相关资料。\n\n如果该课程适合你，那么以下还有一些具体的课程示例：\n\n## 命令行与 shell 工具\n\n如何使用别名、脚本和构建系统来自动化执行通用重复的任务。不再总是从文档中拷贝粘贴\n命令。不要再“逐个执行这 15 个命令”，不要再“你忘了执行这个命令”、“你忘了传那个\n参数”，类似的对话不要再有了。\n\n例如，快速搜索历史记录可以节省大量时间。在下面这个示例中，我们展示了如何通过`convert`命令\n在历史记录中跳转的一些技巧。\n\n<video autoplay=\"autoplay\" loop=\"loop\" controls muted playsinline  oncontextmenu=\"return false;\"  preload=\"auto\"  class=\"demo\">\n  <source src=\"https://missing-semester-cn.github.io/static/media/demos/history.mp4\" type=\"video/mp4\">\n</video>\n\n## 版本控制\n\n如何<strong>正确地</strong>使用版本控制，利用它避免尴尬的情况发生。与他人协作，并且能够快速定位\n有问题的提交\n不再大量注释代码。不再为解决 bug 而找遍所有代码。不再“我去，刚才是删了有用的代码？！”。\n我们将教你如何通过拉取请求来为他人的项目贡献代码。\n\n下面这个示例中，我们使用`git bisect`来定位哪个提交破坏了单元测试，并且通过`git revert`来进行修复。\n\n<video autoplay=\"autoplay\" loop=\"loop\" controls muted playsinline  oncontextmenu=\"return false;\"  preload=\"auto\"  class=\"demo\">\n  <source src=\"https://missing-semester-cn.github.io/static/media/demos/git.mp4\" type=\"video/mp4\">\n</video>\n\n## 文本编辑\n\n不论是本地还是远程，如何通过命令行高效地编辑文件，并且充分利用编辑器特性。不再来回复制文件。不再重复编辑文件。\n\nVim 的宏是它最好的特性之一，在下面这个示例中，我们使用嵌套的 Vim 宏快速地将 html 表格转换成了 csv 格式。\n\n<video autoplay=\"autoplay\" loop=\"loop\" controls muted playsinline  oncontextmenu=\"return false;\"  preload=\"auto\"  class=\"demo\">\n  <source src=\"https://missing-semester-cn.github.io/static/media/demos/vim.mp4\" type=\"video/mp4\">\n</video>\n\n## 远程服务器\n\n使用 SSH 密钥连接远程机器进行工作时如何保持连接，并且让终端能够复用。不再为了仅执行个别命令\n总是打开许多命令行终端。不再每次连接都总输入密码。不再因为网络断开或必须重启笔记本时\n就丢失全部上下文。\n\n以下示例，我们使用`tmux`来保持远程服务器的会话存在，并使用`mosh`来支持网络漫游和断开连接。\n\n<video autoplay=\"autoplay\" loop=\"loop\" controls muted playsinline  oncontextmenu=\"return false;\"  preload=\"auto\"  class=\"demo\">\n  <source src=\"https://missing-semester-cn.github.io/static/media/demos/ssh.mp4\" type=\"video/mp4\">\n</video>\n\n## 查找文件\n\n如何快速查找你需要的文件。不再挨个点击项目中的文件，直到找到你所需的代码。\n\n以下示例，我们通过`fd`快速查找文件，通过`rg`找代码片段。我们也用到了`fasd`快速`cd`并`vim`最近/常用的文件/文件夹。\n\n<video autoplay=\"autoplay\" loop=\"loop\" controls muted playsinline  oncontextmenu=\"return false;\"  preload=\"auto\"  class=\"demo\">\n  <source src=\"https://missing-semester-cn.github.io/static/media/demos/find.mp4\" type=\"video/mp4\">\n</video>\n\n## 数据处理\n\n如何通过命令行直接轻松快速地修改、查看、解析、绘制和计算数据和文件。不再从日志文件拷贝\n粘贴。不再手动统计数据。不再用电子表格画图。\n\n## 虚拟机\n\n如何使用虚拟机尝试新操作系统，隔离无关的项目，并且保持宿主机整洁。不再因为做安全实验而\n意外损坏你的计算机。不再有大量随机安装的不同版本软件包。\n\n## 安全\n\n如何在不泄露隐私的情况下畅游互联网。不再抓破脑袋想符合自己疯狂规则的密码。不再连接不安全的开放 WiFi 网络。不再传输未加密的信息。\n\n# 结论\n\n这 12 节课将包括但不限于以上内容，同时每堂课都提供了能帮助你熟悉这些工具的练手小测验。如果不能\n等到一月，你也可以看下[黑客工具](https://hacker-tools.github.io/lectures/)，这是我们去年的\n试讲。它是本课程的前身，包含许多相同的主题。\n\n无论面对面还是远程在线，欢迎你的参与。\n\nHappy hacking,<br>\nAnish, Jose, and Jon\n"
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "https://missing-semester-cn.github.io/2020/"
+  },
+  {
+   "kind": "translation",
+   "label": "missing-semester-cn",
+   "url": "https://missing-semester-cn.github.io/"
+  }
+ ],
+ "modules": [
+  {
+   "id": "lectures",
+   "title": "讲座",
+   "items": [
+    {
+     "id": "course-shell",
+     "kind": "lecture",
+     "title": "第 1 讲：课程概览与 shell",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "course-shell",
+       "title": "课程概览与 shell"
+      },
+      {
+       "id": "course-shell-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=Z56Jmr9Z34Q"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-path",
+       "type": "choice",
+       "prompt": "当你输入一个并非 shell 内置关键字的命令（如 `date`）时，shell 通过什么来决定去哪里找对应程序？",
+       "options": [
+        "环境变量 `$PATH`",
+        "环境变量 `$HOME`",
+        "当前目录下的 `man` 文件",
+        "`/sys` 目录"
+       ],
+       "answer": 0,
+       "explain": "shell 会咨询 `$PATH`，它是以 `:` 分隔的一系列目录，shell 依次在其中搜索同名的可执行程序。"
+      },
+      {
+       "id": "q-which",
+       "type": "text",
+       "prompt": "想知道 `echo` 这个命令实际对应哪个程序文件，应使用命令 `___ echo`。",
+       "answer": [
+        "which"
+       ],
+       "explain": "`which echo` 会输出 `/bin/echo` 之类的路径。"
+      },
+      {
+       "id": "q-perm",
+       "type": "choice",
+       "prompt": "`ls -l` 输出的权限串 `drwxr-xr-x` 中，第一个字符 `d` 与后九个字符分别代表什么？",
+       "options": [
+        "`d` 表示目录；九个字符依次是所有者、用户组、其他人的 rwx 权限",
+        "`d` 表示删除；九个字符是三个用户的密码",
+        "`d` 表示设备文件；九个字符是文件大小",
+        "`d` 表示默认；九个字符是修改时间"
+       ],
+       "answer": 0,
+       "explain": "第一个字符 `d` 表示这是目录，后面每三个字符一组，分别对应所有者、用户组、其他所有人的读(r)、写(w)、执行(x)权限。"
+      },
+      {
+       "id": "q-dirx",
+       "type": "choice",
+       "prompt": "对于一个目录，权限 `x`（可执行）的含义是？",
+       "options": [
+        "可以删除该目录",
+        "可以进入（搜索）该目录",
+        "可以列出其内容",
+        "可以重命名该目录"
+       ],
+       "answer": 1,
+       "explain": "进入目录需要该目录及其父目录的“搜索”权限，即 `x`；列出内容需要的是读权限 `r`。"
+      },
+      {
+       "id": "q-sudo-redirect",
+       "type": "choice",
+       "prompt": "执行 `sudo echo 3 > brightness` 提示权限不足，原因是？",
+       "options": [
+        "echo 不支持写文件",
+        "sudo 只对管道生效",
+        "重定向 `>` 由当前（非 root）用户的 shell 来完成，打开文件时就被拒绝了",
+        "brightness 文件不存在"
+       ],
+       "answer": 2,
+       "explain": "`|`、`>`、`<` 是由 shell 执行的，而不是 echo 程序。shell 以当前用户权限尝试打开文件，因此被拒绝。"
+      },
+      {
+       "id": "q-tee",
+       "type": "text",
+       "prompt": "为了以 root 权限把 3 写入 `brightness` 文件，课程给出的写法是 `echo 3 | sudo ___ brightness`。",
+       "answer": [
+        "tee"
+       ],
+       "explain": "此时打开文件的是以 root 运行的 `tee` 程序，所以可以成功写入。"
+      },
+      {
+       "id": "q-shebang",
+       "type": "choice",
+       "prompt": "脚本第一行 `#!/bin/sh` 的作用是？",
+       "options": [
+        "注释掉这个脚本",
+        "指定用哪个解释器来执行该文件（shebang）",
+        "给文件添加执行权限",
+        "声明文件编码"
+       ],
+       "answer": 1,
+       "explain": "shebang 告诉系统用哪个解释器执行脚本；还需要用 `chmod +x` 赋予执行权限，才能 `./semester` 直接运行。"
+      },
+      {
+       "id": "q-pipe-py",
+       "type": "code",
+       "lang": "python",
+       "title": "模拟 tail -n1",
+       "prompt": "模拟 `ls -l / | tail -n1`：先读入一个整数 n，再读入 n 行文本，输出最后一行。若 n 为 0，不输出任何内容。\n\n示例输入：\n```\n3\nbin\nboot\ndev\n```\n输出：\n```\ndev\n```",
+       "starter": "n = int(input())\n",
+       "tests": [
+        {
+         "name": "三行",
+         "stdin": "3\nbin\nboot\ndev\n",
+         "stdout": "dev\n"
+        },
+        {
+         "name": "一行",
+         "stdin": "1\nhello\n",
+         "stdout": "hello\n"
+        },
+        {
+         "name": "零行",
+         "stdin": "0\n",
+         "stdout": ""
+        },
+        {
+         "name": "含空格",
+         "stdin": "2\na b\nc d e\n",
+         "stdout": "c d e\n"
+        }
+       ],
+       "solution": "n = int(input())\nlines = [input() for _ in range(n)]\nif lines:\n    print(lines[-1])\n"
+      }
+     ]
+    },
+    {
+     "id": "shell-tools",
+     "kind": "lecture",
+     "title": "第 2 讲：Shell 工具和脚本",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "shell-tools",
+       "title": "Shell 工具和脚本"
+      },
+      {
+       "id": "shell-tools-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=kgII-YWo3Zw"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-assign",
+       "type": "choice",
+       "prompt": "在 bash 中，下面哪种写法能正确给变量赋值？",
+       "options": [
+        "`foo = bar`",
+        "`foo=bar`",
+        "`$foo=bar`",
+        "`set foo = bar`"
+       ],
+       "answer": 1,
+       "explain": "赋值时等号两边不能有空格。`foo = bar` 会被解释为调用程序 `foo`，并把 `=` 和 `bar` 作为参数。"
+      },
+      {
+       "id": "q-quotes",
+       "type": "choice",
+       "prompt": "执行 `foo=bar; echo '$foo'` 会打印什么？",
+       "options": [
+        "bar",
+        "$foo",
+        "空行",
+        "报错"
+       ],
+       "answer": 1,
+       "explain": "单引号定义原义字符串，变量不会被替换；双引号 `\"$foo\"` 才会打印 bar。"
+      },
+      {
+       "id": "q-special",
+       "type": "text",
+       "prompt": "bash 中表示“前一个命令的返回值”的特殊变量是 `___`（写出含 $ 的形式）。",
+       "answer": [
+        "$?"
+       ],
+       "explain": "`$?` 保存上一条命令的退出码；0 表示正常，非 0 表示出错。"
+      },
+      {
+       "id": "q-andor",
+       "type": "choice",
+       "prompt": "下面命令哪一个会打印 `Things went well`，且不会打印其他内容？",
+       "options": [
+        "`false && echo \"Things went well\"`",
+        "`true || echo \"Things went well\"`",
+        "`true && echo \"Things went well\"`",
+        "`false ; echo \"Things\"`"
+       ],
+       "answer": 2,
+       "explain": "`&&` 在前一个命令返回 0 时才执行后面的；`||` 在前一个命令失败时才执行后面的。`true` 返回 0，`false` 返回 1。"
+      },
+      {
+       "id": "q-func-script",
+       "type": "choice",
+       "prompt": "关于 shell 函数与脚本的区别，哪项正确？",
+       "options": [
+        "脚本可以改变当前 shell 的工作目录，函数不行",
+        "函数在当前 shell 环境中执行，所以可以修改当前工作目录",
+        "函数可以用任意语言编写",
+        "脚本只在定义时被加载一次"
+       ],
+       "answer": 1,
+       "explain": "函数在当前 shell 环境中执行，因此能 `cd`、改环境变量；脚本在单独进程中运行，不能。脚本可用任意语言（靠 shebang）。"
+      },
+      {
+       "id": "q-brace",
+       "type": "text",
+       "prompt": "花括号展开：`convert image.{png,jpg}` 会展开为 `convert image.png ___`。",
+       "answer": [
+        "image.jpg"
+       ],
+       "explain": "花括号用于展开共同子串，`image.{png,jpg}` 等价于 `image.png image.jpg`。"
+      },
+      {
+       "id": "q-find",
+       "type": "choice",
+       "prompt": "想按文件大小、修改时间等属性查找文件，应使用哪个工具？而 `locate` 的局限是什么？",
+       "options": [
+        "`find`；`locate` 只能按文件名，且依赖定期更新的数据库",
+        "`grep`；`locate` 只能搜索代码",
+        "`locate`；`find` 只能按文件名",
+        "`history`；`locate` 速度太慢"
+       ],
+       "answer": 0,
+       "explain": "`find` 可以按名称、大小、修改时间、权限等查找；`locate` 使用 `updatedb` 每日更新的数据库，速度快但只能按文件名，时效性差。"
+      },
+      {
+       "id": "q-history",
+       "type": "text",
+       "prompt": "在大多数 shell 中，按 ___ 可以对命令历史进行回溯搜索。（写出按键组合，例如 Ctrl+X 的形式）",
+       "answer": [
+        "Ctrl+R",
+        "ctrl-r",
+        "Ctrl-R",
+        "^R"
+       ],
+       "explain": "`Ctrl+R` 对历史命令做回溯搜索，可与 fzf 配合使用。"
+      },
+      {
+       "id": "q-argv-rev",
+       "type": "code",
+       "lang": "python",
+       "title": "参数倒序输出",
+       "prompt": "仿照讲义中把参数倒序打印的 Python 脚本：先读入一行，用空格分隔得到若干“参数”，按相反顺序每个一行打印。若输入为空行，则不输出。\n\n示例输入：`a b c`，输出：\n```\nc\nb\na\n```",
+       "starter": "args = input().split()\n",
+       "tests": [
+        {
+         "name": "三个",
+         "stdin": "a b c\n",
+         "stdout": "c\nb\na\n"
+        },
+        {
+         "name": "一个",
+         "stdin": "x\n",
+         "stdout": "x\n"
+        },
+        {
+         "name": "空行",
+         "stdin": "\n",
+         "stdout": ""
+        },
+        {
+         "name": "多空格",
+         "stdin": "1   2  3\n",
+         "stdout": "3\n2\n1\n"
+        }
+       ],
+       "solution": "args = input().split()\nfor a in reversed(args):\n    print(a)\n"
+      }
+     ]
+    },
+    {
+     "id": "editors",
+     "kind": "lecture",
+     "title": "第 3 讲：编辑器 (Vim)",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "editors",
+       "title": "编辑器 (Vim)"
+      },
+      {
+       "id": "editors-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=a6Q8Na575qc"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-modes",
+       "type": "choice",
+       "prompt": "Vim 启动时的默认模式是什么？",
+       "options": [
+        "插入模式",
+        "正常模式",
+        "命令模式",
+        "可视模式"
+       ],
+       "answer": 1,
+       "explain": "Vim 启动时处于正常模式，用于在文件中移动光标和修改；按 `<ESC>` 可从任何其他模式回到正常模式。"
+      },
+      {
+       "id": "q-enter-modes",
+       "type": "choice",
+       "prompt": "在正常模式下，哪个按键组合用于进入“可视（块）模式”？",
+       "options": [
+        "`v`",
+        "`V`",
+        "`Ctrl-v`",
+        "`R`"
+       ],
+       "answer": 2,
+       "explain": "`v` 是可视（一般）模式，`V` 是可视（行）模式，`<C-v>` 是可视（块）模式，`R` 是替换模式，`i` 是插入模式，`:` 是命令模式。"
+      },
+      {
+       "id": "q-save-quit",
+       "type": "text",
+       "prompt": "在 Vim 命令模式下，保存并退出的命令是 `:___`。",
+       "answer": [
+        "wq",
+        "x"
+       ],
+       "explain": "`:w` 保存，`:q` 退出，`:wq` 保存然后退出。"
+      },
+      {
+       "id": "q-buffer",
+       "type": "choice",
+       "prompt": "关于 Vim 的缓存（buffer）和窗口（window），哪项正确？",
+       "options": [
+        "缓存和窗口严格一一对应",
+        "窗口只是缓存的视图，一个缓存可以在多个窗口中打开",
+        "标签页等同于缓存",
+        "关闭窗口就会丢弃缓存中的修改"
+       ],
+       "answer": 1,
+       "explain": "缓存与窗口不是一一对应关系；窗口只是缓存的视图，同一个缓存可在多个窗口甚至同一标签页内的多个窗口中打开。"
+      },
+      {
+       "id": "q-move",
+       "type": "choice",
+       "prompt": "下面哪一项是“跳到行尾”的移动命令？",
+       "options": [
+        "`0`",
+        "`^`",
+        "`$`",
+        "`G`"
+       ],
+       "answer": 2,
+       "explain": "`0` 行初，`^` 第一个非空格字符，`$` 行尾，`G` 文件尾。"
+      },
+      {
+       "id": "q-dw",
+       "type": "text",
+       "prompt": "“删除一个词”的 Vim 命令是 `d` 加上移动命令 `w`，即 `___`。",
+       "answer": [
+        "dw"
+       ],
+       "explain": "编辑命令是“动词”，移动是“名词”，`dw` 删除词，`d$` 删除到行尾，`d0` 删除到行头。"
+      },
+      {
+       "id": "q-count",
+       "type": "text",
+       "prompt": "“删除 7 个词”可以用计数结合动词和名词写成 `___`。",
+       "answer": [
+        "7dw",
+        "d7w"
+       ],
+       "explain": "计数可以结合名词和动词，如 `3w` 向后移动三个词，`7dw` 删除 7 个词。"
+      },
+      {
+       "id": "q-modifier",
+       "type": "choice",
+       "prompt": "光标位于括号内时，`ci(` 的效果是？",
+       "options": [
+        "删除整个括号及其内容",
+        "改变（修改）括号内的内容",
+        "复制括号内的内容",
+        "在括号外插入文本"
+       ],
+       "answer": 1,
+       "explain": "修饰语 `i` 表示“内部”，`a` 表示“周围”。`ci(` 改变括号内的内容，`da'` 则删除单引号字符串及其周围的引号。"
+      },
+      {
+       "id": "q-fizz",
+       "type": "code",
+       "lang": "python",
+       "title": "修复 fizz buzz",
+       "prompt": "讲义演示了修复有问题的 fizz buzz。请写出正确版本：读入整数 limit，对 1 到 limit（含）的每个 i：能被 15 整除输出 `fizzbuzz`，能被 3 整除输出 `fizz`，能被 5 整除输出 `buzz`，否则输出 i。每个结果占一行。若 limit < 1 则不输出。",
+       "starter": "limit = int(input())\n",
+       "tests": [
+        {
+         "name": "10",
+         "stdin": "10\n",
+         "stdout": "1\n2\nfizz\n4\nbuzz\nfizz\n7\n8\nfizz\nbuzz\n"
+        },
+        {
+         "name": "15",
+         "stdin": "15\n",
+         "stdout": "1\n2\nfizz\n4\nbuzz\nfizz\n7\n8\nfizz\nbuzz\n11\nfizz\n13\n14\nfizzbuzz\n"
+        },
+        {
+         "name": "1",
+         "stdin": "1\n",
+         "stdout": "1\n"
+        },
+        {
+         "name": "0",
+         "stdin": "0\n",
+         "stdout": ""
+        }
+       ],
+       "solution": "limit = int(input())\nfor i in range(1, limit + 1):\n    if i % 15 == 0:\n        print('fizzbuzz')\n    elif i % 3 == 0:\n        print('fizz')\n    elif i % 5 == 0:\n        print('buzz')\n    else:\n        print(i)\n"
+      }
+     ]
+    },
+    {
+     "id": "data-wrangling",
+     "kind": "lecture",
+     "title": "第 4 讲：数据整理",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "data-wrangling",
+       "title": "数据整理"
+      },
+      {
+       "id": "data-wrangling-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=sz_dsktIjt4"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-sed-s",
+       "type": "choice",
+       "prompt": "`sed` 中最常用的 `s` 命令，其语法是？",
+       "options": [
+        "`s/REGEX/SUBSTITUTION/`",
+        "`s/SUBSTITUTION/REGEX/`",
+        "`s:REGEX`",
+        "`s(REGEX,SUBSTITUTION)`"
+       ],
+       "answer": 0,
+       "explain": "`s/REGEX/SUBSTITUTION/` 表示用 SUBSTITUTION 替换匹配 REGEX 的文本，与 Vim 的搜索替换语法相似。"
+      },
+      {
+       "id": "q-greedy",
+       "type": "choice",
+       "prompt": "正则中的 `*` 和 `+` 默认是“贪婪”的，意思是？",
+       "options": [
+        "尽可能少地匹配文本",
+        "尽可能多地匹配文本",
+        "只匹配一次",
+        "只匹配行首"
+       ],
+       "answer": 1,
+       "explain": "贪婪模式会尽可能多地匹配。`sed` 不支持用 `?` 后缀变非贪婪，可切换到 `perl -pe 's/.*?Disconnected from //'`。"
+      },
+      {
+       "id": "q-sed-e",
+       "type": "text",
+       "prompt": "`sed` 的正则需要在特殊符号前加 `\\` 才有特殊含义，也可以加选项 `___` 来直接使用扩展正则。",
+       "answer": [
+        "-E",
+        "-e"
+       ],
+       "explain": "加上 `-E` 选项即可支持 `(`、`+`、`|` 等扩展写法而不必转义。"
+      },
+      {
+       "id": "q-capture",
+       "type": "choice",
+       "prompt": "在 `sed -E 's/.*user (.*) port .*/\\1/'` 中，`\\1` 的含义是？",
+       "options": [
+        "第一个捕获组匹配到的文本",
+        "第一行",
+        "字符 1",
+        "第一个文件"
+       ],
+       "answer": 0,
+       "explain": "被圆括号括起来的正则匹配到的文本会存入编号的捕获组，替换串中可用 `\\1`、`\\2` 等引用。"
+      },
+      {
+       "id": "q-uniq",
+       "type": "choice",
+       "prompt": "`sort | uniq -c` 的作用是？",
+       "options": [
+        "删除所有重复行且不计数",
+        "把连续重复的行折叠为一行，并以出现次数为前缀",
+        "只输出出现一次的行",
+        "按数字大小倒序排序"
+       ],
+       "answer": 1,
+       "explain": "`uniq -c` 把连续出现的相同行折叠并在前面给出次数，所以通常要先 `sort`。"
+      },
+      {
+       "id": "q-sort-nk",
+       "type": "choice",
+       "prompt": "`sort -nk1,1` 中 `-n` 与 `-k1,1` 分别表示？",
+       "options": [
+        "按数字顺序排序；仅基于以空格分割的第一列排序",
+        "按字典序排序；基于最后一列排序",
+        "倒序；基于整行",
+        "去重；基于第一列"
+       ],
+       "answer": 0,
+       "explain": "`-n` 按数值排序（默认字典序），`-k1,1` 表示仅基于第一列。要倒序可用 `-r`。"
+      },
+      {
+       "id": "q-awk",
+       "type": "text",
+       "prompt": "`awk '{print $2}'` 对每一行打印第 ___ 个域（写数字）。如果想让 awk 以逗号分隔域，需要加选项 `-F,`。",
+       "answer": [
+        "2",
+        "二"
+       ],
+       "explain": "`$0` 是整行，`$1` 到 `$n` 是各个域，默认以空白分隔，可用 `-F` 修改分隔符。"
+      },
+      {
+       "id": "q-paste",
+       "type": "text",
+       "prompt": "把多行合并成用逗号分隔的一行，使用 `paste -sd___`。",
+       "answer": [
+        ",",
+        "\",\"",
+        "','"
+       ],
+       "explain": "`paste -s` 合并行，`-d` 指定分隔符，所以是 `paste -sd,`。"
+      },
+      {
+       "id": "q-count-users",
+       "type": "code",
+       "lang": "python",
+       "title": "登录次数统计",
+       "prompt": "仿照讲义 `sort | uniq -c | sort -nk1,1 | tail` 的流程：先读入整数 n，再读入 n 行用户名。按出现次数从多到少输出，每行格式为 `次数 用户名`（中间一个空格）；次数相同则按用户名字典序升序。n 为 0 时不输出。\n\n示例输入：\n```\n4\nroot\nadmin\nroot\nroot\n```\n输出：\n```\n3 root\n1 admin\n```",
+       "starter": "n = int(input())\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "4\nroot\nadmin\nroot\nroot\n",
+         "stdout": "3 root\n1 admin\n"
+        },
+        {
+         "name": "并列",
+         "stdin": "4\nb\na\nb\na\n",
+         "stdout": "2 a\n2 b\n"
+        },
+        {
+         "name": "单个",
+         "stdin": "1\nx\n",
+         "stdout": "1 x\n"
+        },
+        {
+         "name": "零行",
+         "stdin": "0\n",
+         "stdout": ""
+        }
+       ],
+       "solution": "n = int(input())\ncount = {}\nfor _ in range(n):\n    u = input()\n    count[u] = count.get(u, 0) + 1\nfor u, c in sorted(count.items(), key=lambda kv: (-kv[1], kv[0])):\n    print(c, u)\n"
+      }
+     ]
+    },
+    {
+     "id": "command-line",
+     "kind": "lecture",
+     "title": "第 5 讲：命令行环境",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "command-line",
+       "title": "命令行环境"
+      },
+      {
+       "id": "command-line-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=e8BO_dYxk5c"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-ctrlc",
+       "type": "choice",
+       "prompt": "在终端按下 `Ctrl-C` 时，shell 向进程发送的是哪个信号？",
+       "options": [
+        "SIGTERM",
+        "SIGINT",
+        "SIGQUIT",
+        "SIGHUP"
+       ],
+       "answer": 1,
+       "explain": "`Ctrl-C` 发送 `SIGINT`；`Ctrl-\\` 发送 `SIGQUIT`；`kill -TERM <PID>` 发送更通用、更优雅的 `SIGTERM`；关闭终端会发送 `SIGHUP`。"
+      },
+      {
+       "id": "q-bg",
+       "type": "choice",
+       "prompt": "想把一个正在前台运行的程序放到后台继续运行，应该怎么做？",
+       "options": [
+        "`Ctrl-C` 然后 `bg`",
+        "`Ctrl-Z` 然后 `bg`",
+        "`Ctrl-D` 然后 `fg`",
+        "`Ctrl-\\` 然后 `jobs`"
+       ],
+       "answer": 1,
+       "explain": "`Ctrl-Z` 发送 SIGTSTP 暂停进程，再用 `bg` 在后台继续；`fg` 则是在前台继续，`jobs` 列出当前会话的任务。"
+      },
+      {
+       "id": "q-nohup",
+       "type": "text",
+       "prompt": "后台进程在关闭终端（SIGHUP）后会被终止。为了让命令忽略 SIGHUP，可以在命令前加 `___`。",
+       "answer": [
+        "nohup"
+       ],
+       "explain": "`nohup` 是用来忽略 SIGHUP 的包装命令，如 `nohup sleep 2000 &`。"
+      },
+      {
+       "id": "q-tmux",
+       "type": "choice",
+       "prompt": "在 tmux 中，要分离（detach）当前会话并让它在后台保持运行，应使用？",
+       "options": [
+        "`tmux ls`",
+        "`<C-b> d`",
+        "`tmux a`",
+        "`tmux new -s NAME`"
+       ],
+       "answer": 1,
+       "explain": "`<C-b> d` 分离当前会话；`tmux a` 重新连接最后一个会话；`tmux ls` 列出会话；`tmux new -s NAME` 新建命名会话。"
+      },
+      {
+       "id": "q-alias",
+       "type": "choice",
+       "prompt": "下面哪个别名定义是正确的？",
+       "options": [
+        "`alias ll = \"ls -lh\"`",
+        "`alias ll=\"ls -lh\"`",
+        "`alias ll -> ls -lh`",
+        "`alias = ll \"ls -lh\"`"
+       ],
+       "answer": 1,
+       "explain": "`=` 两边不能有空格，因为 `alias` 只接受一个参数。可用 `unalias` 取消别名。"
+      },
+      {
+       "id": "q-sshconfig",
+       "type": "text",
+       "prompt": "用户级的 ssh 客户端配置文件路径是 `~/.ssh/___`。",
+       "answer": [
+        "config"
+       ],
+       "explain": "在 `~/.ssh/config` 里可用 Host、User、HostName、Port、IdentityFile、LocalForward 等给服务器起别名，`scp`、`rsync`、`mosh` 也会读取它。"
+      },
+      {
+       "id": "q-authkeys",
+       "type": "text",
+       "prompt": "ssh 服务器查询 `~/.ssh/___` 文件来确认哪些公钥可以登录。",
+       "answer": [
+        "authorized_keys"
+       ],
+       "explain": "公钥放在服务器的 `~/.ssh/authorized_keys`，可用 `ssh-copy-id` 简化操作。"
+      },
+      {
+       "id": "q-forward",
+       "type": "text",
+       "prompt": "远端服务器上 Jupyter 监听 8888 端口，想通过本地 9999 端口访问，应使用 `ssh ___ 9999:localhost:8888 foobar@remote_server`。",
+       "answer": [
+        "-L",
+        "-l"
+       ],
+       "explain": "`-L` 是本地端口转发：`ssh -L 9999:localhost:8888 foobar@remote_server`，然后访问本地 `localhost:9999`。"
+      }
+     ]
+    },
+    {
+     "id": "version-control",
+     "kind": "lecture",
+     "title": "第 6 讲：版本控制(Git)",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "version-control",
+       "title": "版本控制(Git)"
+      },
+      {
+       "id": "version-control-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=2sjqTHE0zok"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-blob-tree",
+       "type": "choice",
+       "prompt": "在 Git 的数据模型中，文件和目录分别对应什么对象？",
+       "options": [
+        "文件是 tree，目录是 blob",
+        "文件是 blob，目录是 tree",
+        "文件和目录都是 commit",
+        "文件是 commit，目录是 blob"
+       ],
+       "answer": 1,
+       "explain": "文件被称为 blob（数据对象），目录被称为 tree，它把名字映射到 blob 或其他 tree；快照是被追踪的最顶层的树。"
+      },
+      {
+       "id": "q-commit",
+       "type": "choice",
+       "prompt": "一个 commit 对象包含哪些内容？",
+       "options": [
+        "父提交、作者、提交信息、顶层树（快照）",
+        "仅文件内容",
+        "仅分支名",
+        "仅 SHA-1 值"
+       ],
+       "answer": 0,
+       "explain": "伪代码中 `commit = struct { parents, author, message, snapshot: tree }`。"
+      },
+      {
+       "id": "q-ref",
+       "type": "choice",
+       "prompt": "“引用（reference）”与对象的主要区别是？",
+       "options": [
+        "引用不可变，对象可变",
+        "引用是指向提交的可变指针，对象由哈希确定内容",
+        "引用保存文件内容",
+        "引用只能指向 blob"
+       ],
+       "answer": 1,
+       "explain": "引用是指向提交的指针，可以更新指向新的提交（如 `master`）；对象按哈希寻址。当前位置由特殊引用 `HEAD` 表示。"
+      },
+      {
+       "id": "q-staging",
+       "type": "choice",
+       "prompt": "Git 引入暂存区（staging area）的主要原因是？",
+       "options": [
+        "为了加快网络传输",
+        "让你选择下一次提交要包含哪些改动，例如把两个特性拆成两个提交",
+        "为了存放远端分支",
+        "为了代替 .git 目录"
+       ],
+       "answer": 1,
+       "explain": "暂存区让你指定下次快照包含哪些改动，比如只提交与 bug 修复相关的代码而丢弃调试打印语句。"
+      },
+      {
+       "id": "q-graph",
+       "type": "text",
+       "prompt": "可视化历史记录（有向无环图）的命令是 `git log --all --graph ___`。（填写另一个选项，课程中的写法）",
+       "answer": [
+        "--decorate",
+        "--decorate --oneline"
+       ],
+       "explain": "`git log --all --graph --decorate` 可视化历史；再加 `--oneline` 可以更简洁。"
+      },
+      {
+       "id": "q-pull",
+       "type": "text",
+       "prompt": "`git pull` 相当于 `git fetch; git ___`。",
+       "answer": [
+        "merge"
+       ],
+       "explain": "`git fetch` 从远端获取对象和引用，`git merge` 将其合并到当前分支。"
+      },
+      {
+       "id": "q-blame",
+       "type": "choice",
+       "prompt": "想知道某一行代码最后是谁修改的，应使用？",
+       "options": [
+        "`git stash`",
+        "`git bisect`",
+        "`git blame`",
+        "`git clone --depth=1`"
+       ],
+       "answer": 2,
+       "explain": "`git blame` 查看最后修改某行的人；`git bisect` 用二分查找历史；`git stash` 暂时移除工作目录改动。"
+      },
+      {
+       "id": "q-history-py",
+       "type": "code",
+       "lang": "python",
+       "title": "沿父提交回溯历史",
+       "prompt": "模拟只有单个父提交的线性历史。第一行输入整数 n（提交数），接下来 n 行，每行 `id parent`，其中根提交的 parent 为 `-`。最后一行输入起点 id（相当于 HEAD）。按从新到旧的顺序，每行打印一个提交 id，直到根提交。\n\n示例输入：\n```\n3\nc3 c2\nc2 c1\nc1 -\nc3\n```\n输出：\n```\nc3\nc2\nc1\n```",
+       "starter": "n = int(input())\nparent = {}\n",
+       "tests": [
+        {
+         "name": "线性",
+         "stdin": "3\nc3 c2\nc2 c1\nc1 -\nc3\n",
+         "stdout": "c3\nc2\nc1\n"
+        },
+        {
+         "name": "从中间",
+         "stdin": "3\nc3 c2\nc2 c1\nc1 -\nc2\n",
+         "stdout": "c2\nc1\n"
+        },
+        {
+         "name": "仅根",
+         "stdin": "1\na -\na\n",
+         "stdout": "a\n"
+        },
+        {
+         "name": "乱序输入",
+         "stdin": "3\nb a\nc b\na -\nc\n",
+         "stdout": "c\nb\na\n"
+        }
+       ],
+       "solution": "n = int(input())\nparent = {}\nfor _ in range(n):\n    c, p = input().split()\n    parent[c] = p\ncur = input().strip()\nwhile cur != '-':\n    print(cur)\n    cur = parent[cur]\n"
+      }
+     ]
+    },
+    {
+     "id": "debugging-profiling",
+     "kind": "lecture",
+     "title": "第 7 讲：调试及性能分析",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "debugging-profiling",
+       "title": "调试及性能分析"
+      },
+      {
+       "id": "debugging-profiling-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=l812pUnKxME"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-journalctl",
+       "type": "text",
+       "prompt": "在使用 systemd 的 Linux 系统上，用来查看系统日志的命令是 `___`。",
+       "answer": [
+        "journalctl"
+       ],
+       "explain": "systemd 把日志以特殊格式存放在 `/var/log/journal`，用 `journalctl` 查看；macOS 则使用 `log show`。"
+      },
+      {
+       "id": "q-pdb",
+       "type": "choice",
+       "prompt": "在 pdb 中，`s`(step) 和 `n`(next) 的区别是？",
+       "options": [
+        "`s` 会步入函数，`n` 执行到当前函数的下一行（步过函数）",
+        "`s` 退出调试器，`n` 设置断点",
+        "`s` 设置断点，`n` 打印变量",
+        "两者完全相同"
+       ],
+       "answer": 0,
+       "explain": "`s` 执行当前行并在第一个可能的时机停止（通常指步入函数）；`n` 继续执行到当前函数的下一行或函数返回（步过函数）。`b` 设置断点，`p` 打印表达式，`q` 退出。"
+      },
+      {
+       "id": "q-strace",
+       "type": "choice",
+       "prompt": "想追踪一个二进制黑盒程序执行的系统调用，在 Linux 上应使用？",
+       "options": [
+        "`pdb`",
+        "`strace`",
+        "`pyflakes`",
+        "`cProfile`"
+       ],
+       "answer": 1,
+       "explain": "Linux 用 `strace`，macOS 和 BSD 用 `dtruss`。网络问题则用 `tcpdump` 或 Wireshark 查看数据包。"
+      },
+      {
+       "id": "q-static",
+       "type": "choice",
+       "prompt": "关于静态分析工具（如 `pyflakes`、`mypy`、`shellcheck`），哪项正确？",
+       "options": [
+        "必须运行代码才能发现问题",
+        "可以在不运行代码的情况下发现问题",
+        "只能用于 C 语言",
+        "只能分析性能"
+       ],
+       "answer": 1,
+       "explain": "静态分析工具能在不运行代码的情况下发现未使用变量、类型不一致等问题；`mypy` 做类型检查，`shellcheck` 用于 shell 脚本。"
+      },
+      {
+       "id": "q-time",
+       "type": "choice",
+       "prompt": "`time curl ...` 输出 real 2.5s、user 0.015s、sys 0.012s，这说明？",
+       "options": [
+        "进程大部分时间在 CPU 上计算",
+        "进程大部分时间在等待网络，实际 CPU 用时（user+sys）很少",
+        "命令失败了",
+        "user 时间指网络用时"
+       ],
+       "answer": 1,
+       "explain": "real 是墙上时间，可能包含等待；user + sys 才代表进程在 CPU 上实际消耗的时间。"
+      },
+      {
+       "id": "q-cprofile",
+       "type": "text",
+       "prompt": "Python 中用来分析每次函数调用耗时的标准库模块是 `___`。（写模块名）",
+       "answer": [
+        "cProfile",
+        "cprofile"
+       ],
+       "explain": "用法：`python -m cProfile -s tottime grep.py ...`。要按行分析可用 `line_profiler`（`kernprof -l -v`）。"
+      },
+      {
+       "id": "q-valgrind",
+       "type": "choice",
+       "prompt": "检查 C/C++ 程序内存泄漏常用的工具是？",
+       "options": [
+        "Valgrind",
+        "pyflakes",
+        "lnav",
+        "tcpdump"
+       ],
+       "answer": 0,
+       "explain": "Valgrind 可用于检查内存泄漏；Python 里可用 `memory-profiler`。"
+      },
+      {
+       "id": "q-bubble",
+       "type": "code",
+       "lang": "python",
+       "title": "修复冒泡排序",
+       "prompt": "讲义用 pdb 调试一个有 bug 的冒泡排序（交换时丢失了值）。请写出正确版本：读入一行以空格分隔的整数，用冒泡排序升序排序，并在一行内用空格分隔输出。输入为空行时输出空行。\n\n示例：输入 `3 1 2`，输出 `1 2 3`。",
+       "starter": "arr = list(map(int, input().split()))\nn = len(arr)\nfor i in range(n):\n    for j in range(n - i - 1):\n        if arr[j] > arr[j + 1]:\n            arr[j] = arr[j + 1]\n            arr[j + 1] = arr[j]\nprint(*arr)\n",
+       "tests": [
+        {
+         "name": "基本",
+         "stdin": "3 1 2\n",
+         "stdout": "1 2 3\n"
+        },
+        {
+         "name": "重复",
+         "stdin": "5 2 5 1 2\n",
+         "stdout": "1 2 2 5 5\n"
+        },
+        {
+         "name": "单个",
+         "stdin": "7\n",
+         "stdout": "7\n"
+        },
+        {
+         "name": "空",
+         "stdin": "\n",
+         "stdout": ""
+        },
+        {
+         "name": "负数",
+         "stdin": "0 -1 4 -3\n",
+         "stdout": "-3 -1 0 4\n"
+        }
+       ],
+       "solution": "arr = list(map(int, input().split()))\nn = len(arr)\nfor i in range(n):\n    for j in range(n - i - 1):\n        if arr[j] > arr[j + 1]:\n            arr[j], arr[j + 1] = arr[j + 1], arr[j]\nprint(*arr)\n",
+       "hint": "交换时先覆盖了 arr[j]，导致 arr[j+1] 拿到的是新值。用元组交换。"
+      }
+     ]
+    },
+    {
+     "id": "metaprogramming",
+     "kind": "lecture",
+     "title": "第 8 讲：元编程",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "metaprogramming",
+       "title": "元编程"
+      },
+      {
+       "id": "metaprogramming-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=_Ms1Z4xfqv4"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-build",
+       "type": "choice",
+       "prompt": "构建系统需要你定义哪三样东西？",
+       "options": [
+        "依赖、目标和规则",
+        "分支、提交和标签",
+        "变量、函数和类",
+        "输入、输出和日志"
+       ],
+       "answer": 0,
+       "explain": "构建系统需要定义依赖、目标和规则；系统负责找到构建目标所需的依赖并按规则构建，若依赖没变则可复用之前的构建结果。"
+      },
+      {
+       "id": "q-makefile",
+       "type": "choice",
+       "prompt": "在 Makefile 规则 `paper.pdf: paper.tex plot-data.png` 中，冒号左右两侧分别是？",
+       "options": [
+        "左侧是构建目标，右侧是依赖",
+        "左侧是依赖，右侧是目标",
+        "左侧是命令，右侧是文件",
+        "左右都是目标"
+       ],
+       "answer": 0,
+       "explain": "冒号左侧是目标，右侧是依赖，缩进的部分是由依赖构建目标的命令。不带参数运行 `make` 时构建第一条规则的目标。"
+      },
+      {
+       "id": "q-semver",
+       "type": "text",
+       "prompt": "语义版本号格式为“主版本号.次版本号.补丁号”。如果你修改了 API 且不向后兼容，应该递增 ___ 版本号。",
+       "answer": [
+        "主",
+        "主版本",
+        "主版本号",
+        "major"
+       ],
+       "explain": "没改 API 递增补丁号；向后兼容地新增 API 递增次版本号；不兼容的修改递增主版本号。"
+      },
+      {
+       "id": "q-compat",
+       "type": "choice",
+       "prompt": "项目依赖版本 `1.3.7`。按课程所述的语义版本规则，下面哪个版本一定不能直接用？",
+       "options": [
+        "1.3.8",
+        "1.6.1",
+        "1.3.0",
+        "2.2.4"
+       ],
+       "answer": 3,
+       "explain": "只要主版本号没变、次版本号不低于之前使用的版本就是安全的；`2.2.4` 的主版本号增加了，API 可能不兼容。"
+      },
+      {
+       "id": "q-lock",
+       "type": "choice",
+       "prompt": "依赖管理中的“锁文件（lock file）”记录的是？",
+       "options": [
+        "每个依赖当前所对应的具体版本号",
+        "项目的源代码",
+        "测试结果",
+        "CI 的密码"
+       ],
+       "answer": 0,
+       "explain": "锁文件列出每个依赖的具体版本，可避免不必要的重新编译、创建可复现的版本、禁止自动升级到可能有 bug 的新版本。"
+      },
+      {
+       "id": "q-ci",
+       "type": "choice",
+       "prompt": "持续集成（CI）指的是？",
+       "options": [
+        "代码变动时自动运行的各种任务（如测试、构建、发布）",
+        "手动备份代码",
+        "一种编程语言",
+        "一种版本号格式"
+       ],
+       "answer": 0,
+       "explain": "CI 是涵盖“当代码变动时自动运行的东西”的雨伞术语，常见的有 Travis CI、Azure Pipelines、GitHub Actions。"
+      },
+      {
+       "id": "q-regression",
+       "type": "choice",
+       "prompt": "“保证之前引起问题的 bug 不会再次出现”的测试叫做？",
+       "options": [
+        "单元测试",
+        "集成测试",
+        "回归测试",
+        "模拟（Mocking）"
+       ],
+       "answer": 2,
+       "explain": "回归测试保证旧 bug 不再复现；单元测试测单个封装特性；集成测试测多个组件协同工作；Mocking 是用假实现替换不相关的部分。"
+      },
+      {
+       "id": "q-semver-py",
+       "type": "code",
+       "lang": "python",
+       "title": "语义版本兼容性",
+       "prompt": "按课程规则判断依赖是否可用：已有版本 `A`（如 `1.3.7`）和候选版本 `B`，B 可用当且仅当 B 的主版本号与 A 相同，且 B 的次版本号不低于 A 的次版本号（补丁号不作要求）。\n\n输入两行，依次为 A 和 B；可用输出 `yes`，否则输出 `no`。\n\n示例：`1.3.7` 与 `1.6.1` 输出 `yes`；`1.3.7` 与 `2.2.4` 输出 `no`。",
+       "starter": "a = input().strip()\nb = input().strip()\n",
+       "tests": [
+        {
+         "name": "补丁升级",
+         "stdin": "1.3.7\n1.3.8\n",
+         "stdout": "yes\n"
+        },
+        {
+         "name": "次版本升级",
+         "stdin": "1.3.7\n1.6.1\n",
+         "stdout": "yes\n"
+        },
+        {
+         "name": "补丁降低",
+         "stdin": "1.3.7\n1.3.0\n",
+         "stdout": "yes\n"
+        },
+        {
+         "name": "主版本变",
+         "stdin": "1.3.7\n2.2.4\n",
+         "stdout": "no\n"
+        },
+        {
+         "name": "次版本降低",
+         "stdin": "1.3.7\n1.2.9\n",
+         "stdout": "no\n"
+        }
+       ],
+       "solution": "a = list(map(int, input().strip().split('.')))\nb = list(map(int, input().strip().split('.')))\nprint('yes' if a[0] == b[0] and b[1] >= a[1] else 'no')\n"
+      }
+     ]
+    },
+    {
+     "id": "security",
+     "kind": "lecture",
+     "title": "第 9 讲：安全和密码学",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "security",
+       "title": "安全和密码学"
+      },
+      {
+       "id": "security-solution",
+       "title": "习题解答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=tjwobAmnKTo"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-entropy",
+       "type": "choice",
+       "prompt": "对于一个均匀分布的随机离散变量，有 n 种可能取值，其熵（单位：比特）等于？",
+       "options": [
+        "n",
+        "log_2(n)",
+        "n^2",
+        "2n"
+       ],
+       "answer": 1,
+       "explain": "熵等于 log_2(n)。扔一次硬币的熵是 1 比特，掷一次六面骰子约为 2.58 比特。"
+      },
+      {
+       "id": "q-entropy-40",
+       "type": "text",
+       "prompt": "课程提到，大约 ___ 比特的熵足以对抗在线穷举攻击。（填数字）",
+       "answer": [
+        "40"
+       ],
+       "explain": "在线穷举受限于网络速度和应用认证机制，约 40 比特的熵足够；具体多少取决于威胁模型。"
+      },
+      {
+       "id": "q-hash",
+       "type": "choice",
+       "prompt": "“碰撞抵抗性（强无碰撞）”指的是？",
+       "options": [
+        "给定 m_1，难以找到 m_2 使 hash(m_1)=hash(m_2)",
+        "难以找到任意一对满足 hash(m_1)=hash(m_2) 的输入 m_1, m_2",
+        "哈希值可以还原为原文",
+        "哈希值长度可变"
+       ],
+       "answer": 1,
+       "explain": "目标碰撞抵抗性是给定 m_1 难以找到 m_2；碰撞抵抗性是难以找到任意一对碰撞输入，且严格强于前者。"
+      },
+      {
+       "id": "q-salt",
+       "type": "text",
+       "prompt": "存储用户密码时，应为每个用户随机生成一个 ___（两个字），并存储它以及 `KDF(password + ___)` 的结果。",
+       "answer": [
+        "盐",
+        "salt"
+       ],
+       "explain": "登录验证时用输入的密码连接存储的盐重新计算 `KDF(input + salt)` 并与存储的哈希比较。"
+      },
+      {
+       "id": "q-aes",
+       "type": "choice",
+       "prompt": "AES 属于哪一类加密系统？",
+       "options": [
+        "对称加密",
+        "非对称加密",
+        "散列函数",
+        "数字签名"
+       ],
+       "answer": 0,
+       "explain": "AES 是现在常用的对称加密系统：加密与解密使用同一个密钥。"
+      },
+      {
+       "id": "q-asym",
+       "type": "choice",
+       "prompt": "在非对称加密中，要给你发送只有你能读的信息，对方应当？",
+       "options": [
+        "用你的私钥加密",
+        "用你的公钥加密，你用私钥解密",
+        "用共享密码加密",
+        "用自己的私钥签名"
+       ],
+       "answer": 1,
+       "explain": "信息用公钥加密，在不知道私钥的情况下很难得出明文；类比为把打开的挂锁（公钥）给别人，只有你有钥匙（私钥）。"
+      },
+      {
+       "id": "q-sign",
+       "type": "choice",
+       "prompt": "数字签名中，签名和验证分别用什么密钥？",
+       "options": [
+        "私钥签名，公钥验证",
+        "公钥签名，私钥验证",
+        "都用公钥",
+        "都用私钥"
+       ],
+       "answer": 0,
+       "explain": "用私钥对信息签名，任何人可用对应公钥验证。Git 支持用 GPG 对提交和标签签名。"
+      },
+      {
+       "id": "q-entropy-py",
+       "type": "code",
+       "lang": "python",
+       "title": "计算密码熵",
+       "prompt": "输入两个整数 n 和 k：每次从 n 个等概率的符号中独立随机选取，共选 k 次（如掷骰子或从词表选词）。输出总熵（比特）`k * log2(n)`，保留 2 位小数。\n\n示例：输入 `6 1`，输出 `2.58`；输入 `2 40`，输出 `40.00`。",
+       "starter": "import math\nn, k = map(int, input().split())\n",
+       "tests": [
+        {
+         "name": "硬币",
+         "stdin": "2 1\n",
+         "stdout": "1.00\n"
+        },
+        {
+         "name": "骰子",
+         "stdin": "6 1\n",
+         "stdout": "2.58\n"
+        },
+        {
+         "name": "40 次硬币",
+         "stdin": "2 40\n",
+         "stdout": "40.00\n"
+        },
+        {
+         "name": "只有一种",
+         "stdin": "1 5\n",
+         "stdout": "0.00\n"
+        },
+        {
+         "name": "词表",
+         "stdin": "2048 4\n",
+         "stdout": "44.00\n"
+        }
+       ],
+       "solution": "import math\nn, k = map(int, input().split())\nprint('%.2f' % (k * math.log2(n)))\n"
+      }
+     ]
+    },
+    {
+     "id": "potpourri",
+     "kind": "lecture",
+     "title": "第 10 讲：大杂烩",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "potpourri",
+       "title": "大杂烩"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=JZDt-PRq0uo"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-daemon",
+       "type": "choice",
+       "prompt": "关于守护进程（daemon），下列说法正确的是？",
+       "options": [
+        "在后台保持运行、无需用户手动交互的进程，名字常以 d 结尾（如 sshd）",
+        "必须由用户在图形界面中手动启动",
+        "只存在于 Windows",
+        "只能运行一次"
+       ],
+       "answer": 0,
+       "explain": "守护进程在后台运行，不需要用户交互；Linux 中常用 `systemd` 配置，用 `systemctl` 控制。"
+      },
+      {
+       "id": "q-systemctl",
+       "type": "text",
+       "prompt": "查看 systemd 管理的所有守护进程的命令是 `systemctl ___`。",
+       "answer": [
+        "status"
+       ],
+       "explain": "`systemctl status` 可以看到正在运行的所有守护进程；还可以 enable、disable、start、stop、restart 某个服务。"
+      },
+      {
+       "id": "q-fuse",
+       "type": "choice",
+       "prompt": "FUSE（用户空间文件系统）的作用是？",
+       "options": [
+        "允许运行在用户空间的程序实现文件系统调用，并与内核接口联系",
+        "加密整个磁盘",
+        "取代 SSH",
+        "管理窗口"
+       ],
+       "answer": 0,
+       "explain": "FUSE 让用户空间程序实现文件系统，如 `sshfs`（通过 SSH 挂载远程目录）、`rclone`（挂载云存储）、`gocryptfs`（加密文件系统）。"
+      },
+      {
+       "id": "q-api",
+       "type": "choice",
+       "prompt": "关于 OAuth 令牌，课程强调？",
+       "options": [
+        "可以公开分享",
+        "相当于以你本人身份发请求，必须保管好",
+        "只能用于本地",
+        "没有任何权限"
+       ],
+       "answer": 1,
+       "explain": "使用有效 OAuth 令牌的请求在 API 看来就是用户本人发出的，泄露后别人可冒用你的身份。"
+      },
+      {
+       "id": "q-flags",
+       "type": "choice",
+       "prompt": "想让 `rm` 删除一个名为 `-r` 的文件，应使用？",
+       "options": [
+        "`rm -r`",
+        "`rm -- -r`",
+        "`rm --r`",
+        "`rm -f -r`"
+       ],
+       "answer": 1,
+       "explain": "特殊参数 `--` 让程序停止处理其后的标志参数，所以 `rm -- -r` 把 `-r` 当作文件名。"
+      },
+      {
+       "id": "q-dryrun",
+       "type": "text",
+       "prompt": "会造成不可撤回操作的工具通常提供“空运行”标志，英文叫 dry run，常见写法是 `--___-run`。",
+       "answer": [
+        "dry"
+       ],
+       "explain": "dry run 让用户先确认工具真实运行时会做什么；也常有“交互式”标志在每次不可撤回操作前提示。"
+      },
+      {
+       "id": "q-vpn",
+       "type": "choice",
+       "prompt": "课程对 VPN 的看法是？",
+       "options": [
+        "VPN 最好的情况也只是换了一个网络供应商，信任从 ISP 转移到 VPN 供应商",
+        "VPN 一定比 ISP 安全",
+        "使用 VPN 后所有内容都对任何人不可见",
+        "VPN 不会记录任何流量"
+       ],
+       "answer": 0,
+       "explain": "ISP 能看到的 VPN 供应商也能看到；若不信任 VPN 供应商则价值不明确，且大部分敏感流量已被 HTTPS/TLS 加密。"
+      },
+      {
+       "id": "q-wm",
+       "type": "choice",
+       "prompt": "平铺式（tiling）窗口管理器的特点是？",
+       "options": [
+        "窗口堆叠在一起，可随意拖拽重叠",
+        "窗口像瓷砖一样平铺且不重叠，可纯键盘操作",
+        "只能显示一个窗口",
+        "只能在 macOS 使用"
+       ],
+       "answer": 1,
+       "explain": "平铺式管理器和 tmux 管理终端窗口的方式类似，可以不用鼠标切换、缩放、移动窗口。"
+      },
+      {
+       "id": "q-docker-vm",
+       "type": "choice",
+       "prompt": "Docker 容器和虚拟机最大的区别是？",
+       "options": [
+        "虚拟机共享主机内核，容器运行完整内核",
+        "容器与主机共享内核，不运行额外内核实例；虚拟机运行整个 OS 栈",
+        "两者没有区别",
+        "容器隔离性强于虚拟机"
+       ],
+       "answer": 1,
+       "explain": "容器开销更小但隔离较弱，并且要求主机内核相同；在 macOS 上运行 Docker 需要先启动 Linux 虚拟机。"
+      }
+     ]
+    },
+    {
+     "id": "qa",
+     "kind": "lecture",
+     "title": "第 11 讲：提问&回答",
+     "periods": 3,
+     "pages": [
+      {
+       "id": "qa",
+       "title": "提问&回答"
+      }
+     ],
+     "videos": [
+      {
+       "kind": "video",
+       "label": "YouTube 视频",
+       "url": "https://www.youtube.com/watch?v=Wz50FvGG6xU"
+      }
+     ],
+     "links": [],
+     "practice": [
+      {
+       "id": "q-source",
+       "type": "choice",
+       "prompt": "`source script.sh` 与 `./script.sh` 的区别是？",
+       "options": [
+        "`source` 在当前 bash 会话中执行，其对环境的更改（如 cd、定义函数）会保留；`./script.sh` 启动新会话执行",
+        "两者完全相同",
+        "`./script.sh` 在当前会话执行",
+        "`source` 会启动新的 bash 实例"
+       ],
+       "answer": 0,
+       "explain": "`./script.sh` 在新的 bash 实例中运行，退出后父会话仍在原目录；要在当前终端定义函数就需要 `source`。"
+      },
+      {
+       "id": "q-fn-source",
+       "type": "text",
+       "prompt": "如果脚本里定义了函数，想在当前终端里使用，需要用 ___ 命令加载脚本。",
+       "answer": [
+        "source",
+        "."
+       ],
+       "explain": "用 `source script.sh`，这样函数定义才留在当前 shell 里。"
+      },
+      {
+       "id": "q-pkg",
+       "type": "choice",
+       "prompt": "关于 `apt-get install` 与 `pip install`，课程的建议是？",
+       "options": [
+        "同时混用两者",
+        "尽可能使用特定语言的包管理器，并配合隔离环境（如 virtualenv）",
+        "永远只用系统包管理器",
+        "永远不用虚拟环境"
+       ],
+       "answer": 1,
+       "explain": "应只使用一种方案，避免冲突；推荐用语言包管理器并使用隔离环境（Python 用 virtualenv）。但在 ARM 等需要二进制/编译的场景，系统包管理器可能更好。"
+      },
+      {
+       "id": "q-docker",
+       "type": "choice",
+       "prompt": "默认情况下，Docker 容器在重启之间会有持久化存储吗？",
+       "options": [
+        "有，自动保存",
+        "没有，默认不会有任何形式的存储",
+        "只有在 macOS 上有",
+        "只有 root 用户有"
+       ],
+       "answer": 1,
+       "explain": "Docker 是为软件部署定制的，有些怪异之处，例如默认容器重启之间不保留存储。"
+      },
+      {
+       "id": "q-2fa",
+       "type": "choice",
+       "prompt": "双因子验证（2FA）的含义是？",
+       "options": [
+        "在密码之外，还需要证明可以访问某些硬件设备等额外因素",
+        "使用两个相同的密码",
+        "登录两次",
+        "用两个用户名"
+       ],
+       "answer": 0,
+       "explain": "2FA 在密码之上增加一层保护。短信 2FA 存在已知问题，推荐 YubiKey 之类的 U2F 设备。"
+      },
+      {
+       "id": "q-fhs",
+       "type": "choice",
+       "prompt": "本讲 Q&A 中 `/bin` 与 `/lib` 等目录主要放什么？",
+       "options": [
+        "`/bin` 存放程序可执行文件，`/lib` 存放库文件",
+        "`/bin` 存放日志，`/lib` 存放图片",
+        "都存放用户主目录",
+        "都存放临时文件"
+       ],
+       "answer": 0,
+       "explain": "`/bin` 是基本命令的可执行文件所在目录，`/lib` 是共享库所在目录，shell 通过 `$PATH` 来找到程序。"
+      },
+      {
+       "id": "q-which",
+       "type": "text",
+       "prompt": "想查看 shell 在哪个路径找到了 `ls` 这个程序，可以使用 `___ ls`（或 `type ls`）。",
+       "answer": [
+        "which",
+        "type"
+       ],
+       "explain": "`which`（或 `type`）会显示 shell 根据 `PATH` 环境变量找到的程序位置。"
+      },
+      {
+       "id": "q-bash-limit",
+       "type": "choice",
+       "prompt": "课程认为 Bash 不适合编写大型脚本，原因不包括下列哪一项？",
+       "options": [
+        "脚本参数中的空格容易导致出错",
+        "代码重用不友好，通常没有软件库的概念",
+        "依赖 `$?`、`$@` 等特殊字符指代特殊值",
+        "Bash 无法执行任何外部命令"
+       ],
+       "answer": 3,
+       "explain": "Bash 非常擅长调用外部命令，它的问题在于难以对所有输入都正确、不利于代码重用、依赖特殊字符。大型或复杂脚本推荐用 Python、Ruby 等。"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "titleEn": "The Missing Semester of Your CS Education (2020)"
+}

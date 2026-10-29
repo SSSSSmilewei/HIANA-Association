@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "information",
+ "title": "MIT6.050J: Information theory and Entropy",
+ "category": "数学基础",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "无",
+ "prerequisites": "无",
+ "difficulty": 3,
+ "hours": "100 小时",
+ "summary": "MIT 面向大一新生的信息论入门课程，Penfield 教授专门为这门课写了一本[教材][textbook]作为课程 notes，内容深入浅出，生动有趣。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nMIT 面向大一新生的信息论入门课程，Penfield 教授专门为这门课写了一本[教材][textbook]作为课程 notes，内容深入浅出，生动有趣。\n\n[textbook]: https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-050j-information-and-entropy-spring-2008/syllabus/MIT6_050JS08_textbook.pdf\n\n## 课程资源\n\n- 课程网站：[spring2008](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-050j-information-and-entropy-spring-2008/index.htm)\n- 课程教材：[Information and Entropy](https://ocw.mit.edu/courses/6-050j-information-and-entropy-spring-2008/resources/mit6_050js08_textbook/)\n- 课程作业：详见课程网站，包含书面作业与 Matlab 编程作业。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/information/"
+  },
+  "official": "这门 MIT 本科课程探索通信和计算的极限，强调信息及信息处理的物理本质。课程涵盖信息论和计算、数字信号、编码和数据压缩、信息的生物和计算表示、逻辑电路和计算机设计、噪声、概率和纠错、计算物理和量子系统、熵在信道容量和热力学中的应用。",
+  "officialSource": {
+   "kind": "website",
+   "label": "ocw.mit.edu",
+   "url": "https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-050j-information-and-entropy-spring-2008/index.htm"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · spring2008",
+   "url": "https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-050j-information-and-entropy-spring-2008/index.htm"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材 · Information and Entropy",
+   "url": "https://ocw.mit.edu/courses/6-050j-information-and-entropy-spring-2008/resources/mit6_050js08_textbook/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "MIT 6.050J: Information Theory and Entropy"
+}

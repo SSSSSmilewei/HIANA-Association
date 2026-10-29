@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "mlc",
+ "title": "Machine Learning Compilation",
+ "category": "机器学习系统",
+ "provider": "Bilibili 大学",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "机器学习/深度学习基础",
+ "difficulty": 3,
+ "hours": "30小时",
+ "summary": "这门课是机器学习编译领域的顶尖学者陈天奇在2022年暑期开设的一门在线课程。其实机器学习编译无论在工业界还是学术界仍然是一个非常前沿且快速更迭的领域，国内外此前还没有为这个方向专门开设的相关课程。因此如果对机器学习编译感兴趣想有个全貌性的感知的话，可以学习一下这门课。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n<!-- 用一两段话介绍这门课程，内容包括但不限于：\n    （1）课程覆盖的知识点范围\n    （2）与同类课程相比它的优势与特点\n    （3）学习这门课程的体验与感受\n    （4）自学这门课的注意点（踩过的坑、难度预警等等）\n    （5）... ...\n-->\n\n这门课是机器学习编译领域的顶尖学者陈天奇在2022年暑期开设的一门在线课程。其实机器学习编译无论在工业界还是学术界仍然是一个非常前沿且快速更迭的领域，国内外此前还没有为这个方向专门开设的相关课程。因此如果对机器学习编译感兴趣想有个全貌性的感知的话，可以学习一下这门课。\n\n本课程主要以 [Apache TVM](https://tvm.apache.org/) 这一主流的机器学习编译框架为例（陈天奇是这个框架的创始人之一），聚焦于如何将开发模式下（如 Tensorflow, Pytorch, Jax）的各类机器学习模型，通过一套普适的抽象和优化算法，变换为拥有更高性能并且适配各类底层硬件的部署模式。课程讲授的知识点都是相对 High-Level 的宏观概念，同时每节课都会有一个配套的 Jupyter Notebook 来通过具体的代码讲解知识点，因此如果从事 TVM 相关的编程开发的话，这门课有丰富且规范的代码示例以供参考。\n\n所有的课程资源全部开源并且有中文和英文两个版本，B站和油管分别有中文和英文的课程录影。\n\n## 课程资源\n\n- 课程网站：<https://mlc.ai/summer22-zh/>\n- 课程视频：[Bilibili][Bilibili_link]\n- 课程笔记：<https://mlc.ai/zh/index.html>\n- 课程作业：<https://github.com/mlc-ai/notebooks/blob/main/assignment>\n\n[Bilibili_link]: https://www.bilibili.com/video/BV15v4y1g7EU?spm_id_from=333.337.search-card.all.click&vd_source=a4d76d1247665a7e7bec15d15fd12349\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F/MLC/"
+  },
+  "official": "机器学习编译课程解决了在不同生产环境中部署尖端AI模型的挑战。课程系统地探索机器学习编译——一个新兴领域，结合了机器学习编程范式、基于学习的搜索算法、编译器优化和计算运行时。学生将学习表示ML程序的核心概念、自动优化技术以及优化环境依赖、内存使用和端到端机器学习部署性能的方法。",
+  "officialSource": {
+   "kind": "website",
+   "label": "mlc.ai",
+   "url": "https://mlc.ai/summer22-zh/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://mlc.ai/summer22-zh/"
+  },
+  {
+   "kind": "notes",
+   "label": "笔记",
+   "url": "https://mlc.ai/zh/index.html"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "https://github.com/mlc-ai/notebooks/blob/main/assignment"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Machine Learning Compilation"
+}

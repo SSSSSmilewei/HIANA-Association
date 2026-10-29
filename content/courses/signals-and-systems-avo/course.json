@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "signals-and-systems-avo",
+ "title": "MIT 6.007 Signals and Systems",
+ "category": "电子基础",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "Matlab Preferred",
+ "prerequisites": "Calculus, Linear Algebra",
+ "difficulty": 2,
+ "hours": "50-70 小时",
+ "summary": "看到课程老师的名字：Prof. Alan V. Oppenheim",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n看到课程老师的名字：Prof. Alan V. Oppenheim\n\n好的，上这门课的理由已经足够了。\n\n## 课程资源\n\n- 课程网站：<https://ocw.mit.edu/resources/res-6-007-signals-and-systems-spring-2011/index.htm>\n- 课程视频：<https://www.bilibili.com/video/BV1CZ4y1j7hs>\n- 课程教材：Signals and Systems, 2nd Edition\n- 课程作业：<https://ocw.mit.edu/resources/res-6-007-signals-and-systems-spring-2011/assignments>\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%94%B5%E5%AD%90%E5%9F%BA%E7%A1%80/Signals_and_Systems_AVO/"
+  },
+  "official": "信号与系统是模拟和数字信号处理的入门课程，这一主题在地震数据处理、通信、语音处理、图像处理、国防电子、消费类电子产品等多个领域的工程系统中构成了不可或缺的一部分。课程整合了连续时间和离散时间信号和系统的基本概念，在时域和频域中开发表示方法。关键主题包括傅里叶变换及其扩展、滤波与滤波器设计、调制、采样技术和反馈系统基础。",
+  "officialSource": {
+   "kind": "website",
+   "label": "ocw.mit.edu",
+   "url": "https://ocw.mit.edu/resources/res-6-007-signals-and-systems-spring-2011/index.htm"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://ocw.mit.edu/resources/res-6-007-signals-and-systems-spring-2011/index.htm"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.bilibili.com/video/BV1CZ4y1j7hs"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "https://ocw.mit.edu/resources/res-6-007-signals-and-systems-spring-2011/assignments"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Signals and Systems"
+}

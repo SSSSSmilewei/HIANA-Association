@@ -1,14 +1,25 @@
-import type { Course, Unit } from "../shared/courses";
+import type { CourseMeta, MetaItem, Progress } from "../shared/courses";
 import type { SourceSeries } from "../shared/heatmap";
 
 /** 网页用到的接口返回类型（和 src/worker/api/* 对应）。 */
 
+/** 当前是谁。role 为 null 是游客（没登录）；管理员也是 member，isAdmin 为 true。 */
 export interface Me {
-  role: "member" | "admin" | null;
+  role: "member" | null;
   isAdmin?: boolean;
-  bootstrap?: boolean; // 用 ADMIN_PASSWORD 登录的初始化会话，没有成员账号
-  needsPassword?: boolean;
-  member?: { id: string; studentNo: string; name: string; className?: string | null };
+  /** displayName 只用于首页欢迎语；null 表示用真名 name */
+  /** kind：campus 校内（学号登录、能签到）/ external 校外（用户名或邮箱登录）；校外账号 studentNo 是空字符串，name 是昵称 */
+  member?: {
+    id: string;
+    kind?: "campus" | "external";
+    studentNo: string;
+    username?: string | null;
+    email?: string | null;
+    org?: string | null;
+    name: string;
+    displayName?: string | null;
+    className?: string | null;
+  };
 }
 
 export interface Calendar {
@@ -38,36 +49,32 @@ export interface AttendanceState {
   totals: { evening: number; venue: number };
 }
 
-export interface Progress {
-  doneUnits: number;
-  units: number;
-  donePeriods: number;
-  totalPeriods: number;
-  ratio: number;
-}
+export type { Progress };
 
 export type EnrollStatus = "active" | "paused" | "done" | "dropped";
 
-export type CourseSummary = Omit<Course, "units"> & {
-  unitCount: number;
+export type CourseSummary = Omit<CourseMeta, "modules" | "links"> & {
+  itemCount: number;
   learners: number;
   enrollment: { status: EnrollStatus; startedAt: number } | null;
   progress: Progress;
 };
 
 export interface CourseDetail {
-  course: Course;
+  course: CourseMeta;
   enrollment: { status: EnrollStatus; startedAt: number } | null;
   done: Record<string, number>;
   progress: Progress;
   peers: string[];
+  /** 条目 id → 做对的练手题 id */
+  solved: Record<string, string[]>;
 }
 
 export interface NextItem {
   slug: string;
   title: string;
-  area: string;
-  next: Unit | null;
+  provider: string;
+  next: MetaItem | null;
   progress: Progress;
 }
 
@@ -84,8 +91,12 @@ export interface Notice {
   author: string | null;
   createdAt: number;
   updatedAt: number;
+  /** 报名名单；游客看不到（为空），人数看 entryCount */
   entries: { name: string; team: string | null; contact: string | null }[];
+  entryCount: number;
   joined: boolean;
+  /** 当前账号是否已确认阅读（游客恒为 false） */
+  confirmed: boolean;
 }
 
 export interface ProviderInfo {
@@ -116,7 +127,12 @@ export interface HeatmapPayload {
 
 export interface AdminMember {
   id: string;
+  kind: "campus" | "external";
+  /** 校外账号是空字符串 */
   studentNo: string;
+  username: string | null;
+  email: string | null;
+  org: string | null;
   name: string;
   className: string | null;
   status: "active" | "archived";
@@ -144,8 +160,16 @@ export interface AdminToday {
   }[];
 }
 
-export interface ImportResult {
-  created: { studentNo: string; name: string; passcode: string }[];
-  updated: number;
-  errors: string[];
+export interface Invite {
+  id: string;
+  kind: "campus" | "external";
+  hint: string;
+  note: string | null;
+  createdAt: number;
+  expiresAt: number | null;
+  usedAt: number | null;
+  /** studentNo：校内是学号，校外是用户名 */
+  usedBy: { name: string; studentNo: string } | null;
+  revokedAt: number | null;
+  state: "unused" | "used" | "expired" | "revoked";
 }

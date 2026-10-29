@@ -1,0 +1,42 @@
+{
+ "format": "hiana-course@1",
+ "slug": "topdown-ustc",
+ "title": "USTC Computer Networking:A Top-Down Approach",
+ "category": "计算机网络",
+ "provider": "中国科学技术大学",
+ "instructors": [],
+ "language": "无",
+ "prerequisites": "操作系统（非必需）",
+ "difficulty": 3,
+ "hours": "40 小时",
+ "summary": "这门课应该是中文互联网上比较火的计算机网络课了，教材采用神书计算机网络（自顶向下方法），授课风格更偏向实际而非纯理论（强烈建议先阅读教材预习再看课，否则上课时可能会有些懵圈）。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n- 授课教师：郑烇、杨坚\n\n这门课应该是中文互联网上比较火的计算机网络课了，教材采用神书计算机网络（自顶向下方法），授课风格更偏向实际而非纯理论（<strong>强烈建议</strong>先阅读教材预习再看课，否则上课时<em>可能</em>会有些懵圈）。\n\n课程内容包括<strong>大部分</strong>自顶向下方法里的内容，同时<strong>涵盖</strong>考试内容，可放心观看。\n\n课程视频是郑烇老师本人在哔哩哔哩上上传的，且从2020年至今一直坚持在评论区答疑，属实负责且认真。\n\n## 课程资源\n\n- 课程网站：<http://staff.ustc.edu.cn/~qzheng/teaching.html>\n- 课程视频：<https://www.bilibili.com/video/BV1JV411t7ow/>\n- 课程课件：<http://staff.ustc.edu.cn/~qzheng/cn.zip>\n- 课程教材：计算机网络（自顶向下方法 第7版），机械工业出版社，2016\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/topdown_ustc/"
+  },
+  "official": "中国科学技术大学的计算机网络课程，采用自顶向下方法教材，授课风格偏向实际而非纯理论。课程内容涵盖自顶向下方法里的大部分内容，同时覆盖考试内容。课程视频由郑烇老师在哔哩哔哩上传，并长期在评论区答疑。"
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://staff.ustc.edu.cn/~qzheng/teaching.html"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.bilibili.com/video/BV1JV411t7ow/"
+  },
+  {
+   "kind": "notes",
+   "label": "课件",
+   "url": "http://staff.ustc.edu.cn/~qzheng/cn.zip"
+  }
+ ],
+ "modules": []
+}

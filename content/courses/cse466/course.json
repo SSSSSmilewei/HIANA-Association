@@ -1,0 +1,32 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cse466",
+ "title": "ASU CSE466: Computer Systems Security",
+ "category": "计算机系统安全",
+ "provider": "Arizona State University",
+ "instructors": [],
+ "language": "C, Python, x86 assembly",
+ "prerequisites": "无",
+ "difficulty": 5,
+ "hours": "因人而异",
+ "summary": "亚利桑那州立大学系统安全的核心课，课程以模块化的形式构成，主要包含以下方面：",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n亚利桑那州立大学系统安全的核心课，课程以模块化的形式构成，主要包含以下方面：\n\n- Linux commandline: Program misuse, program interaction\n- Shellcoding: Assembly, shellcode injection, prevention\n- Reverse Engineering: Function frame, static/dynamic reversing tools\n- Program Exploitation: Hijacking to shellcode, JIT spray\n- System Exploitation: Kernel modules, privilege escalation\n- Miscellaneous: Sandboxing, Memory Errors, Race conditions\n\n与 CSE365 相同，课程以 Challenge 为主，Lectures and Reading 为辅。Challenge 中的习题以 CTF 的形式展开，难度依次递增。\n\n习题质量挺高的，但某些模块难度较大，尤其是涉及到内核的部分，有的时候一天都写不出一道题。如果在解题过程中遇到困难，可以在首页 Chat 栏目中给出的 Discord Server 寻求帮助。\n\n## 课程资源\n\n- 课程网站：<https://dojo.pwn.college/cse466/>\n- 课程视频：参见课程网站\n- 课程教材：无\n- 课程作业：13 个模块（358 个 challenge）\n\n## 资源汇总\n\n- Lectures on YouTube: <https://youtube.com/pwncollege>\n- Live Broadcasts on Twitch: <https://twitch.tv/pwncollege>\n- Chat on Discord: <https://pwn.college/discord>\n- Open Source on GitHub: <https://github.com/pwncollege>\n- Contact us via Email: <pwn-college@asu.edu>\n\n另外，出于评定 ASU 学生课程成绩的重要因素，官方不鼓励上传解题思路，每个模块的前两题与逆向部分的 16 题除外。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/CSE466/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://dojo.pwn.college/cse466/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "CSE466: Computer Systems Security"
+}

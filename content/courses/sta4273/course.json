@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "sta4273",
+ "title": "STA 4273 Winter 2021: Minimizing Expectations",
+ "category": "机器学习进阶",
+ "provider": "U Toronto",
+ "instructors": [],
+ "language": "",
+ "prerequisites": "Bayesian Inference, Reinforcement Learning",
+ "difficulty": 5,
+ "hours": "",
+ "summary": "这是一门较为进阶的 Ph.D. 研究课程，核心内容是 inference 和 control 之间的关系。授课老师为 Chris Maddison (AlphaGo founding member, NeurIPS 14 best paper)。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n- 课程网站：<https://www.cs.toronto.edu/~cmaddis/courses/sta4273_w21/>\n\n这是一门较为进阶的 Ph.D. 研究课程，核心内容是 inference 和 control 之间的关系。授课老师为 Chris Maddison (AlphaGo founding member, NeurIPS 14 best paper)。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%BF%9B%E9%98%B6/STA4273/"
+  },
+  "official": "研讨课程探讨了最小化预期成本这一基础问题——这在统计学、经济学、运筹学和计算机科学中都是一个根本性挑战。课程使用餐厅选择困境作为说明性例子：在信任的最爱和冒险的新选项之间决策代表\"不确定性下的决策制定\"。课程重点关注\"最小化预期成本（或最大化预期奖励）\"问题，涵盖梯度估计、变分目标、政策优化和搜索算法等内容。",
+  "officialSource": {
+   "kind": "website",
+   "label": "www.cs.toronto.edu",
+   "url": "https://www.cs.toronto.edu/~cmaddis/courses/sta4273_w21/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "https://www.cs.toronto.edu/~cmaddis/courses/sta4273_w21/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Minimizing Expectations"
+}

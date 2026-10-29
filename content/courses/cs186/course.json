@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs186",
+ "title": "UCB CS186: Introduction to Database System",
+ "category": "数据库系统",
+ "provider": "UC Berkeley",
+ "instructors": [],
+ "language": "Java",
+ "prerequisites": "CS61A, CS61B, CS61C",
+ "difficulty": 5,
+ "hours": "150 小时",
+ "summary": "如何编写 SQL 查询？SQL 命令是如何被一步步拆解、优化、转变为一个个磁盘查询指令的？如何实现高并发的数据库？如何实现数据库的故障恢复？什么又是非关系型数据库？这门课会带你深入理解关系型数据库的内部细节，并在掌握理论知识之后……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n如何编写 SQL 查询？SQL 命令是如何被一步步拆解、优化、转变为一个个磁盘查询指令的？如何实现高并发的数据库？如何实现数据库的故障恢复？什么又是非关系型数据库？这门课会带你深入理解关系型数据库的内部细节，并在掌握理论知识之后，动手用 Java 实现一个支持 SQL 并发查询、B+ 树 Index 和故障恢复的关系型数据库。\n\n从实用角度来说，这门课还会在编程作业中锻炼你编写 SQL 查询以及 NoSQL 查询的能力，对于构建一些全栈的工程项目很有帮助。\n\n## 课程资源\n\n- 课程网站：<https://cs186berkeley.net/>\n- 课程视频：<https://www.bilibili.com/video/BV13a411c7Qo>\n- 课程教材：无\n- 课程作业：6 个 Project\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/CS186 - GitHub](https://github.com/PKUFlyingPig/CS186) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F/CS186/"
+  },
+  "official": "数据库系统基础课程。涵盖SQL、索引结构（B+树）、查询优化、事务、并发控制、恢复机制和分布式系统主题。",
+  "officialSource": {
+   "kind": "website",
+   "label": "cs186berkeley.net",
+   "url": "https://cs186berkeley.net/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://cs186berkeley.net/"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.bilibili.com/video/BV13a411c7Qo"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Introduction to Database Systems"
+}

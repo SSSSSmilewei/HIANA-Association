@@ -1,0 +1,42 @@
+{
+ "format": "hiana-course@1",
+ "slug": "fullstackopen",
+ "title": "University of Helsinki: Full Stack open 2022",
+ "category": "Web开发",
+ "provider": "University of Helsinki",
+ "instructors": [],
+ "language": "JavaScript/HTML/CSS/NoSQL/SQL",
+ "prerequisites": "具备良好的编程技能、基本的网络编程和数据库知识，并且了解使用 Git 这个版本控制系统的基础知识。",
+ "difficulty": 2,
+ "hours": "因人而异",
+ "summary": "本课程是介绍如何使用 JavaScript 开发现代Web应用程序。 课程的重点是使用 ReactJS 构建单页面应用程序（SPA），并使用由 Node.js 构建 REST API。该课程还包含介绍 GraphQL 的部分，这是 REST API 的现代替代方案。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n本课程是介绍如何使用 JavaScript 开发现代Web应用程序。 课程的重点是使用 ReactJS 构建单页面应用程序（SPA），并使用由 Node.js 构建 REST API。该课程还包含介绍 GraphQL 的部分，这是 REST API 的现代替代方案。\n\n课程还包括测试、配置和环境管理，以及使用 MongoDB 来存储应用的数据。\n\n## 课程资源\n\n- 课程网站：<https://fullstackopen.com/zh/>\n- 课程作业：参见课程网站\n- 课程 Discord 群组：<https://study.cs.helsinki.fi/discord/join/fullstack/>\n- 课程 Telegram 群组：<https://t.me/fullstackcourse/>\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/Web%E5%BC%80%E5%8F%91/fullstackopen/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://fullstackopen.com/zh/"
+  },
+  {
+   "kind": "other",
+   "label": " Discord 群组",
+   "url": "https://study.cs.helsinki.fi/discord/join/fullstack/"
+  },
+  {
+   "kind": "other",
+   "label": " Telegram 群组",
+   "url": "https://t.me/fullstackcourse/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Full Stack open"
+}

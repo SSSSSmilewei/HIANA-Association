@@ -1,0 +1,42 @@
+{
+ "format": "hiana-course@1",
+ "slug": "15799",
+ "title": "CMU 15-799: Special Topics in Database Systems",
+ "category": "数据库系统",
+ "provider": "CMU",
+ "instructors": [],
+ "language": "C++",
+ "prerequisites": "CMU 15-445",
+ "difficulty": 3,
+ "hours": "80 小时",
+ "summary": "这门课目前只开了两次：fall2013 和 spring2022，讨论了数据库领域的一些前沿主题。fall2013 讨论了 Streaming、Graph DB、NVM 等，spring2022 主要讨论 Self-Driving DBMS，都提供有相关论文。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n    这门课目前只开了两次：fall2013 和 spring2022，讨论了数据库领域的一些前沿主题。fall2013 讨论了 Streaming、Graph DB、NVM 等，spring2022 主要讨论 Self-Driving DBMS，都提供有相关论文。\n\n    spring2022 版课程任务：\n\n    任务一：基于 `PostgreSQL` 进行手动性能调优；\n\n    任务二：基于 [NoisePage Pilot](https://github.com/cmu-db/noisepage-pilot) 改进 Self-Driving DBMS，不限特性。\n\n    授课更贴近讲座的形式，编程任务较少。对一般同学可以开拓一下视野，对专精数据库的同学可能帮助较大。\n\n## 课程资源\n\n- 课程主页\n  \n  - [CMU15-799 - Special Topics in Database Systems](https://15799.courses.cs.cmu.edu/fall2013)\n    \n  - [CMU15-799 - Special Topics: Self-Driving Database Management Systems](https://15799.courses.cs.cmu.edu/spring2022/)\n    \n- 课程视频：暂无\n  \n- 课程作业：2 Projects + 1 Group Project\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F/15799/"
+  },
+  "official": "这门课目前只开了两次：fall2013 和 spring2022，讨论了数据库领域的一些前沿主题。fall2013 讨论了 Streaming、Graph DB、NVM 等，spring2022 主要讨论 Self-Driving DBMS。",
+  "officialSource": {
+   "kind": "website",
+   "label": "15799.courses.cs.cmu.edu",
+   "url": "https://15799.courses.cs.cmu.edu/spring2022/"
+  }
+ },
+ "links": [
+  {
+   "kind": "other",
+   "label": "CMU15-799 - Special Topics in Database Systems",
+   "url": "https://15799.courses.cs.cmu.edu/fall2013"
+  },
+  {
+   "kind": "other",
+   "label": "CMU15-799 - Special Topics · CMU15-799 - Special Topics: Self-Driving Database M",
+   "url": "https://15799.courses.cs.cmu.edu/spring2022/"
+  }
+ ],
+ "modules": []
+}

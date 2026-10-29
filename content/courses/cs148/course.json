@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs148",
+ "title": "Stanford CS148",
+ "category": "计算机图形学",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "线性代数，高等数学，Python",
+ "difficulty": 3,
+ "hours": "40 小时",
+ "summary": "官方介绍:",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n官方介绍:\n\n这是一门计算机图形学的入门课程，这门课的一开始使用 Blender 去生成图像，并且理解底层的数学知识，包括三角形、法向量、插值、纹理映射、凹凸贴图等等。之后会介绍光线和颜色以及它们如何影响计算机的显示和打印。同时也会介绍 BRDF 以及一些基本的光照和着色模型。课程的最后，会涉及到光线追踪、反走样、加速结构等内容。\n\n具体课程信息可以查看[课程网站](https://web.stanford.edu/class/cs148/index.html)。\n\n这门课程比起 GAMES101 浅一些，编程语言使用的是 Python，对于不熟悉 C++ 的同学比较友好。\n\n## 课程资源\n\n- 课程网站：[CS148](https://web.stanford.edu/class/cs148/index.html)\n- 课程视频：无，直接看[lecture](https://web.stanford.edu/class/cs148/lectures.html)就可以了，也可以参考 GAMES101 视频\n- 课程教材：Fundamentals of Computer Graphics\n- 课程作业：[8 个 hw, 1 个 final project](https://web.stanford.edu/class/cs148/assignments.html)\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/CS148/"
+  },
+  "official": "这是一门计算机图形学入门课程，教学生如何创建合成计算机生成的图像。课程涵盖扫描线渲染、光栅化、变换、着色、纹理、色彩理论、摄像机、显示器、BRDF 模型、全局光照、光线追踪、加速结构等主题。课程强调创意和视觉输出效果，期末项目要求学生构建光线追踪器来创建具有视觉吸引力的图像。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "https://web.stanford.edu/class/cs148/index.html"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · CS148",
+   "url": "https://web.stanford.edu/class/cs148/index.html"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · lecture",
+   "url": "https://web.stanford.edu/class/cs148/lectures.html"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · 8 个 hw, 1 个 final project",
+   "url": "https://web.stanford.edu/class/cs148/assignments.html"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Stanford CS148: Introduction to Computer Graphics and Imaging"
+}

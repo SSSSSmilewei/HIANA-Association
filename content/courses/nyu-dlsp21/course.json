@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "nyu-dlsp21",
+ "title": "NYU DLSP21: NYU Deep Learning Spring 2021",
+ "category": "深度学习",
+ "provider": "NYU",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "线性代数、概率论、Python 编程",
+ "difficulty": 4,
+ "hours": "80 小时",
+ "summary": "这门课最具辨识度的亮点是由 Yann LeCun 亲自授课。对很多同学而言，这是极少见的公开系统课程资源：可以完整地听到顶级学者从一线研究者视角讲解深度学习。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n这门课最具辨识度的亮点是由 Yann LeCun 亲自授课。对很多同学而言，这是极少见的公开系统课程资源：可以完整地听到顶级学者从一线研究者视角讲解深度学习。\n\n课程讲解兼顾理论与直觉，整体偏研究导向，适合已完成入门课后继续提升“问题意识”和“建模品味”。把它作为主线课程之外的高质量补充，会非常有价值。\n\n## 课程资源\n\n- 课程网站：<https://atcold.github.io/NYU-DLSP21/>\n- 课程视频：课程网站提供完整 Lecture 视频\n- 课程教材：Lecture Notes / Slides\n- 课程作业：课程网站提供作业与实验材料\n\n## 资源汇总\n\n暂未提供公开的个人课程笔记与作业仓库。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/NYU-DLSP21/"
+  },
+  "official": "这是纽约大学数据科学中心提供的研究生级别深度学习课程（DS-GA 1008），由 Yann LeCun 和 Alfredo Canziani 授课。课程包含八个主要主题：反向传播和神经网络基础、参数共享（递归和卷积神经网络）、基于能量的模型（基础和高级）、联想记忆（注意机制和 Transformer）、图神经网络、控制和规划系统以及优化算法。提供视频讲座、幻灯片、讲座笔记和 Jupyter 笔记本。",
+  "officialSource": {
+   "kind": "website",
+   "label": "atcold.github.io",
+   "url": "https://atcold.github.io/NYU-DLSP21/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://atcold.github.io/NYU-DLSP21/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "NYU DLSP21: Deep Learning"
+}

@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs346",
+ "title": "Stanford CS 346: Database System Implementation",
+ "category": "数据库系统",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "C++",
+ "prerequisites": "无",
+ "difficulty": 5,
+ "hours": "150 小时",
+ "summary": "RedBase 是 cs346 的一个项目，实现了一个简易的数据库系统，项目是高度结构化的。整个项目能够被分为以下几个部分（同时也是 4 个需要完善的 lab）：",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nRedBase 是 cs346 的一个项目，实现了一个简易的数据库系统，项目是高度结构化的。整个项目能够被分为以下几个部分（同时也是 4 个需要完善的 lab）：\n\n1. The record management component：记录管理组件。\n\n2. The index component：B+ 索引管理。\n\n3. The System Management Component：ddl语句、命令行工具、数据加载命令、元数据管理。\n\n4. The Query Language Component：在这个部分需要实现 RQL Redbase 查询语言。RQL 要实现 select、insert、delete、update 语句。\n\n5. Extension Component：除了上述数据库系统的基本功能组件，还需要实现一个扩展组件，可以是 Blob 类型、 网络模块、连接算法、CBO 优化器、OLAP、事务等。\n\nRedBase 适合在学完 CMU 15-445 后继续学习数据库系统中的其他组件，因为其代码量不多，可以方便的根据需要扩展代码。同时代码完全由 C++ 编写，也可以用于练习 C++ 编程技巧。\n\n## 课程资源\n\n- 课程网站：<https://web.stanford.edu/class/cs346/2015/>\n- 课程代码：<https://github.com/junkumar/redbase.git>\n- 课程教材：无\n- 课程作业：4 Projects + 1 Extension\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F/CS346/"
+  },
+  "official": "这是斯坦福大学的数据库系统课程，学生需要从零开始构建完整的数据库管理系统，包括文件结构、记录管理、索引、系统管理和查询处理。课程包括个人扩展项目（每个学生设计和实现原始功能）、技术讲座、行业专家的观点分享和高级主题（恢复机制、成本建模、数据库分析方法）。课程主要用 C++ 编程，项目占成绩的 90%。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "https://web.stanford.edu/class/cs346/2015/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://web.stanford.edu/class/cs346/2015/"
+  },
+  {
+   "kind": "repo",
+   "label": "代码",
+   "url": "https://github.com/junkumar/redbase.git"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Stanford CS 346: Database System Implementation"
+}

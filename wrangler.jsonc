@@ -28,6 +28,8 @@
       "database_id": "bae83829-31fb-402a-869e-5b01507cdd30"
     }
   ],
+  // 公告配图图床：公开读的 R2 存储桶（在桶设置里绑定自定义域名）。启用时取消注释，并设置变量 IMAGE_BASE_URL=https://你的图床域名
+  // "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "你的桶名" }],
   // 每 5 分钟把攒下的通知合并成一条发到微信；每晚 23:30（北京时间，即 UTC 15:30）同步各平台热力图
   "triggers": { "crons": ["*/5 * * * *", "30 15 * * *"] },
   "vars": {
@@ -36,5 +38,6 @@
     "AI_MODEL": "deepseek-chat"
   }
   // 密钥用 `wrangler secret put` 或在 Cloudflare 面板里设置，不要写在这里：
-  // SESSION_SECRET, ADMIN_PASSWORD, AI_API_KEY, WXPUSHER_SPT, SERVERCHAN_KEY, SITE_URL, GITHUB_TOKEN
+  // SESSION_SECRET, FIRST_ADMIN_CODE, AI_API_KEY, WXPUSHER_SPT, SERVERCHAN_KEY, SITE_URL, GITHUB_TOKEN
+  // FIRST_ADMIN_CODE 只在系统里还没有管理员时有用：第一个管理员用它代替邀请码注册，之后可以删掉
 }

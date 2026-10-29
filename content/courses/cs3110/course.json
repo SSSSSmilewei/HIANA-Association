@@ -1,0 +1,42 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs3110",
+ "title": "CS3110：OCaml Programming Correct + Efficient + Beautiful",
+ "category": "编程入门",
+ "provider": "Cornell",
+ "instructors": [],
+ "language": "OCaml",
+ "prerequisites": "了解一门命令式编程语言，类C语言",
+ "difficulty": 3,
+ "hours": "40 小时",
+ "summary": "如果说编程入门的最好的课程是 SICP。在其之后，就是 CS3110。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n### 课程评价： modern SICP\n\n如果说编程入门的最好的课程是 SICP。在其之后，就是 CS3110。\n\n如果你不知道什么叫函数式编程语言，或者只是听过这个名词，那么这门课程，正如它的名字，会让你体会到什么叫正确，高效和美。\n\nCS3110 不仅局限于函数式编程，更是将理论和实用充分结合。课程内容更进一步，涵盖了 OCaml 语言基础，数据结构和算法，测试开发，形式证明，语言特性实现等诸多内容。而且内容之间并不割裂，而是递进和互补，非常值得学习。\n\n主讲老师 Michael Ryan Clarkson，浸淫编程多年，用词简单，表述清晰，内容环环相扣，剖析一针见血。课程视频甚至用来练听力，听不懂开英文字幕理解起来毫不费力。\n\n### 课程简史，摘自课程教材\n\nCS3110 是康奈尔大学打磨 20 余年的课程。最初发源于 MIT6.001 SICP，在其基础上增加更严格方法和材料，涵盖函数式编程，环境模型，数据结构，算法和语言实现。2008 年，正式名称改为 CS3110，改用 OCaml 语言。2018 年秋季，开始编写[课程教材](https://cs3110.github.io/textbook)。现任课程的主讲老师于 2021 年在 youtube 上公布了[课程视频](https://www.youtube.com/playlist?list=PLre5AT9JnKShBOPeuiD9b-I4XROIJhkIU)。\n\n## 课程资源\n\n- 课程视频油管: <https://www.youtube.com/playlist?list=PLre5AT9JnKShBOPeuiD9b-I4XROIJhkIU>\n- 课程视频B站: <https://www.bilibili.com/video/BV1dv4y127Ui/>\n- 课程教材：<https://cs3110.github.io/textbook>\n- 课程作业：课程教材中 exercises 自选，难度 1 至 4 星，注意 3 星至 4 星的难度跨越很大。\n\n## 资源汇总\n\n@featherwit001 在学习这门课中用到的所有资源和作业实现都汇总在 [featherwit001/CS3110_OCaml_Programming - GitHub](https://github.com/featherwit001/CS3110_OCaml_Programming) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/Functional/CS3110/"
+  },
+  "official": "CS3110 是康奈尔大学打磨 20 余年的课程。最初发源于 MIT6.001 SICP，在其基础上增加更严格方法和材料，涵盖函数式编程，环境模型，数据结构，算法和语言实现。2008 年，正式名称改为 CS3110，改用 OCaml 语言。现任课程的主讲老师于 2021 年在 youtube 上公布了课程视频。"
+ },
+ "links": [
+  {
+   "kind": "video",
+   "label": "视频油管",
+   "url": "https://www.youtube.com/playlist?list=PLre5AT9JnKShBOPeuiD9b-I4XROIJhkIU"
+  },
+  {
+   "kind": "video",
+   "label": "视频B站",
+   "url": "https://www.bilibili.com/video/BV1dv4y127Ui/"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材",
+   "url": "https://cs3110.github.io/textbook"
+  }
+ ],
+ "modules": []
+}

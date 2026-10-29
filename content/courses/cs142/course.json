@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs142",
+ "title": "Stanford CS142: Web Applications",
+ "category": "Web开发",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "JavaScript/HTML/CSS",
+ "prerequisites": "有一定的编程经验",
+ "difficulty": 4,
+ "hours": "100 小时",
+ "summary": "斯坦福的 Web 应用开发课程，内容覆盖了 HTML, CSS, JavaScript, ReactJs, NodeJS, ExpressJS, Web安全等等。8 个 Project 会让你在实战中锻炼自己的 Web 开发技巧。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n斯坦福的 Web 应用开发课程，内容覆盖了 HTML, CSS, JavaScript, ReactJs, NodeJS, ExpressJS, Web安全等等。8 个 Project 会让你在实战中锻炼自己的 Web 开发技巧。\n\n## 课程资源\n\n- 课程网站：<https://web.stanford.edu/class/cs142/index.html>\n- 课程视频：<https://web.stanford.edu/class/cs142/lectures.html>\n- 课程教材：无\n- 课程作业：<https://web.stanford.edu/class/cs142/projects.html>\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/Web%E5%BC%80%E5%8F%91/CS142/"
+  },
+  "official": "虽然万维网最初是作为传递文档的工具而被设想的，但现在它正被用作复杂交互式应用程序的平台，取代了可安装二进制文件的传统机制。本课程探讨了基于网络的应用程序如何通过即时访问、自动升级和大规模协作提供优势。学生通过整合多种技术（包括标记语言、脚本、网络协议、交互式图形、事件驱动编程和数据库）来获得构建网络应用程序的实践经验。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "https://web.stanford.edu/class/cs142/index.html"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://web.stanford.edu/class/cs142/index.html"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://web.stanford.edu/class/cs142/lectures.html"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "https://web.stanford.edu/class/cs142/projects.html"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Web Applications"
+}

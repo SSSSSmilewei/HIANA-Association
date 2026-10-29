@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs220",
+ "title": "CS220: Programming Principles",
+ "category": "编程入门",
+ "provider": "KAIST",
+ "instructors": [],
+ "language": "Rust",
+ "prerequisites": "其他任何一门编程语言",
+ "difficulty": 3,
+ "hours": "40 小时",
+ "summary": "来自 KAIST 的 Jeehoon Kang 以及他所领导的 Concurrency and Parallelism Laboratory 实验室似乎是 Rust 语言的忠实拥趸，csdiy 之中的 CS431 和 CS420 都是他们的杰作。自然……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n来自 KAIST 的 [Jeehoon Kang](https://cp.kaist.ac.kr/jeehoon.kang) 以及他所领导的 [Concurrency and Parallelism Laboratory](https://cp.kaist.ac.kr/) 实验室似乎是 Rust 语言的忠实拥趸，csdiy 之中的 [CS431](https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/Rust/cs431/) 和 [CS420](https://csdiy.wiki/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/CS420/) 都是他们的杰作。自然，他们肯定会开发一款针对 Rust 的入门课程，也就是本课程。课程涵盖了 Rust 入门所需的绝大多数知识点。\n\n本课没有指定官方教材，课程主页推荐采用 [Rust book](https://doc.rust-lang.org/book/) 学习，并在 [slides](https://docs.google.com/presentation/d/17G3SwkE_tq0H3lTt9N0ysIbHhqDZBfHkoWD5LwwAKSo/edit#slide=id.p) 之中规划了大致的学习线路。虽然没有公开课程教学视频，不过完善的测试系统仍然可以使这门课作为 Rust 习题课来练手，部分习题可以作为 [CS110L](https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/Rust/CS110L/) 的良好补充。如果在学习完 CS110L 之后仍然觉得需要更多练习，可以选择本课程。部分习题具有一定难度，Jeehoon Kang 对使用 AI 辅助编程持有鼓励态度，但是 AI 并不完美，核心工作仍需自己完成。\n\n## 课程资源\n\n- 课程网站：[Github 主页](https://github.com/kaist-cp/cs220)\n- 课程视频：无\n- 课程教材：[slides](https://docs.google.com/presentation/d/17G3SwkE_tq0H3lTt9N0ysIbHhqDZBfHkoWD5LwwAKSo/edit#slide=id.p)\n- 课程作业：[Github](https://github.com/kaist-cp/cs220/tree/main/src/assignments)\n\n## 资源汇总\n\n互联网上并没有公开的参考答案，也并不确定本课程主讲人是否赞同这种公开答案的行为。如果遇到困难，课程的 [ISSUE](https://github.com/kaist-cp/cs220/issues) 之中可以找到关于作业的讨论。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/Rust/cs220/"
+  },
+  "official": "本课程旨在教授学生编程原理，帮助学生有效地与计算机沟通。课程内容分为五个部分：\"通过Rust语言复习CS101基础\"、\"类型与正确性\"、\"引用与所有权\"、\"函数与迭代器\"以及\"并发与并行计算\"。该课程采用Rust编程语言作为主要教学工具，因为其所有权类型系统能够大幅简化大规模系统软件的开发。学生需要完成40%的编程作业和60%的期中期末考试。",
+  "officialSource": {
+   "kind": "website",
+   "label": "github.com",
+   "url": "https://github.com/kaist-cp/cs220"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · Github 主页",
+   "url": "https://github.com/kaist-cp/cs220"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材 · slides",
+   "url": "https://docs.google.com/presentation/d/17G3SwkE_tq0H3lTt9N0ysIbHhqDZBfHkoWD5LwwAKSo/edit#slide=id.p"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业 · Github",
+   "url": "https://github.com/kaist-cp/cs220/tree/main/src/assignments"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Programming Principles"
+}

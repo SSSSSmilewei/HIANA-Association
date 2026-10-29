@@ -1,0 +1,53 @@
+{
+ "format": "hiana-course@1",
+ "slug": "mit6092",
+ "title": "MIT 6.092: Introduction To Programming In Java",
+ "category": "编程入门",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "Java",
+ "prerequisites": "无",
+ "difficulty": 2,
+ "hours": "少于 15 小时",
+ "summary": "MIT 的 Java 入门课程，不需要有任何编程基础也可以开始学习。一节课是一小时 Lec （知识点讲解）+一小时 Lab （代码训练），整个课程是七节课。虽说是十四个小时的课时，真正学起来却很快，一天其实差不多就能结束。感觉是比较适合新手上手的强度。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nMIT 的 Java 入门课程，不需要有任何编程基础也可以开始学习。一节课是一小时 Lec （知识点讲解）+一小时 Lab （代码训练），整个课程是七节课。虽说是十四个小时的课时，真正学起来却很快，一天其实差不多就能结束。感觉是比较适合新手上手的强度。\n\n课程内容包括了：\n\n1. 快速入门 Java 所需的基础知识概念，如第一节课的 Java 编译原理、经典代码 \"Hello world\" 、八大基础类型等。\n2. 如何拥有良好的代码风格，如第三节课强调的命名规范、缩进、空格使用等。\n3. 如何 Debug ：第六节课的使用 Eclipse warning, Assertion 和第七节课的 Exception 等。\n\nLab 的 Assignment 倒不是很难，很多前一节课的 Assignment 后一节课 Lec 上就会讲到。唯一需要注意的就是代码是一个很注重实践的技能，新手入门写代码最重要的就是多写多练，无论是 Lec 还是 Lab 上的代码都不要偷懒不写。\n\n学完这门课想要进阶的可以学习 [MIT 6.005/6.031](/courses/6031) 。\n\n## 课程资源\n\n- 课程网站：[Winter 2010](https://ocw.mit.edu/courses/6-092-introduction-to-programming-in-java-january-iap-2010/pages/syllabus/)\n- 课程教材：[How to Think Like a Computer Scientist - 如何像计算机科学家一样思考](https://greenteapress.com/wp/think-java/)\n- 课程作业：<https://ocw.mit.edu/courses/6-092-introduction-to-programming-in-java-january-iap-2010/pages/assignments/>\n\n## 资源汇总\n\n@SinanTang 在学习这门课中用到的所有资源和作业实现都汇总在 [SinanTang/MIT6092-Introduction-to-Programming-in-Java_problem-sets - GitHub](https://github.com/SinanTang/MIT6092-Introduction-to-Programming-in-Java_problem-sets) 中。\n\n@sirrice 在学习这门课中用到的所有资源和作业实现都汇总在 [sirrice/6092 - GitHub](https://github.com/sirrice/6092) 中。\n\n@Harbour-z 在学习这门课中用到的所有资源和作业实现都汇总在 [Harbour-z/MIT6.092 - Github](https://github.com/Harbour-z/Course_learning/tree/main/MIT6.092) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/Java/MIT%206.092/"
+  },
+  "official": "本课程是使用Java™编程语言的软件工程入门课程。课程涵盖对6.005课程有用的各种概念，学生将学习Java的基础知识。该课程强调开发高质量、可工作的软件来解决实际问题。课程面向具有一定编程经验的学生，但即使没有编程基础但学习动力强的学生也能成功完成。",
+  "officialSource": {
+   "kind": "website",
+   "label": "ocw.mit.edu",
+   "url": "https://ocw.mit.edu/courses/6-092-introduction-to-programming-in-java-january-iap-2010/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "https://ocw.mit.edu/courses/6-092-introduction-to-programming-in-java-january-iap-2010/"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · Winter 2010",
+   "url": "https://ocw.mit.edu/courses/6-092-introduction-to-programming-in-java-january-iap-2010/pages/syllabus/"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材 · How to Think Like a Computer Scientist - 如何像计算机科学家一样思考",
+   "url": "https://greenteapress.com/wp/think-java/"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "https://ocw.mit.edu/courses/6-092-introduction-to-programming-in-java-january-iap-2010/pages/assignments/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Introduction To Programming In Java"
+}

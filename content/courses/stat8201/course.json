@@ -1,0 +1,32 @@
+{
+ "format": "hiana-course@1",
+ "slug": "stat8201",
+ "title": "Columbia STAT 8201: Deep Generative Models",
+ "category": "机器学习进阶",
+ "provider": "Columbia University",
+ "instructors": [],
+ "language": "",
+ "prerequisites": "Machine Learning, Deep Learning, Graphical Models",
+ "difficulty": 5,
+ "hours": "",
+ "summary": "这门课是一门 PhD 讨论班，每周的内容是展示 + 讨论论文，授课老师是 John Cunningham。Deep Generative Models （深度生成模型） 是图模型与神经网络的结合，也是现代机器学习最重要的方向之一。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n- 课程网站：<http://stat.columbia.edu/~cunningham/teaching/GR8201/>\n\n这门课是一门 PhD 讨论班，每周的内容是展示 + 讨论论文，授课老师是 John Cunningham。Deep Generative Models （深度生成模型） 是图模型与神经网络的结合，也是现代机器学习最重要的方向之一。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%BF%9B%E9%98%B6/STAT8201/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "课程网站",
+   "url": "http://stat.columbia.edu/~cunningham/teaching/GR8201/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Deep Generative Models"
+}

@@ -2,13 +2,12 @@ import type { Env, Session } from "./env";
 import { HttpError, serializeCookie } from "./http";
 
 /**
- * 登录会话：签名的 Cookie（HMAC-SHA256），不存服务器。
- * 成员 180 天，会长 30 天。
+ * 登录会话：签名的令牌（HMAC-SHA256），不存服务器。网页放在 Cookie 里，App 放在 Authorization 头里。
+ * 有效期 180 天。要让某人的旧令牌全部失效，把 users.session_version 加 1（见 index.ts）。
  */
 
 export const COOKIE = "hiana_s";
-const MEMBER_DAYS = 180;
-const ADMIN_DAYS = 30;
+export const SESSION_DAYS = 180;
 const enc = new TextEncoder();
 
 const keyCache = new Map<string, Promise<CryptoKey>>();
@@ -60,21 +59,16 @@ export async function verifySession(secret: string, token: string, now = Date.no
   }
 }
 
-type NewSession = { role: "member"; uid: string } | { role: "admin" };
 
 /**
  * 签发一次会话：同一个签名串既写进 Cookie（网页用），也可以原样交给手机 App
  * 放进 `Authorization: Bearer` 头。两者有效期相同，校验走同一个 verifySession。
  */
-export async function issueSession(env: Env, req: Request, session: NewSession): Promise<{ cookie: string; token: string }> {
-  const days = session.role === "admin" ? ADMIN_DAYS : MEMBER_DAYS;
-  const token = await signSession(requireSecret(env), { ...session, exp: Date.now() + days * 86_400_000 } as Session);
-  const cookie = serializeCookie(COOKIE, token, { maxAge: days * 86400, secure: new URL(req.url).protocol === "https:" });
+/** 签发令牌。version 是账号当前的 session_version。 */
+export async function issueSession(env: Env, req: Request, uid: string, version: number): Promise<{ cookie: string; token: string }> {
+  const token = await signSession(requireSecret(env), { role: "member", uid, sv: version, exp: Date.now() + SESSION_DAYS * 86_400_000 });
+  const cookie = serializeCookie(COOKIE, token, { maxAge: SESSION_DAYS * 86400, secure: new URL(req.url).protocol === "https:" });
   return { cookie, token };
-}
-
-export async function sessionCookie(env: Env, req: Request, session: NewSession): Promise<string> {
-  return (await issueSession(env, req, session)).cookie;
 }
 
 /** 手机 App 登录时在请求头带 `X-Hiana-Client: app`，只有这时才在返回体里给出令牌。 */

@@ -1,0 +1,402 @@
+/*
+ * 经典直角（叠在配色主题之上，颜色仍然来自 tokens / palettes）
+ *
+ * 颜色分工——强调色少用，才有重点：
+ *   结构    卡片、侧栏、分隔线、输入框：墨色细线（--edge / --edge-strong），不用强调色
+ *   层级    只有浮在页面上的东西（对话框、提示、主按钮）有硬阴影，阴影也是墨色
+ *   强调色  只给“能点的主操作”和“当前状态”：主按钮、选中的导航 / 标签页 / 分段、进度、在学标记
+ *   焦点    键盘焦点用 --focus 的实线框
+ *
+ * 动效：只回应操作（悬停、按下、切换），70–120ms 线性；不做进场动画、不做页面切换动画。
+ */
+
+:root[data-skin="classic"] {
+  --edge: color-mix(in srgb, var(--ink) 16%, var(--surface));
+  --edge-strong: color-mix(in srgb, var(--ink) 70%, var(--surface));
+  --shadow-ink: color-mix(in srgb, var(--ink) 88%, transparent);
+  --hard: 4px 4px 0 var(--shadow-ink);
+  --hard-sm: 2px 2px 0 var(--shadow-ink);
+  --r-cell: 0;
+  --r-xs: 0;
+  --r-sm: 0;
+  --r-ctl: 0;
+  --r-btn: 0;
+  --r-card: 0;
+  --r-panel: 0;
+  --r-hero: 0;
+  --r-pill: 0;
+}
+
+/* 去掉所有圆角（写死的也算）；只留真正该是圆的：状态小圆点、转圈、快门、进度环 */
+[data-skin="classic"] *:not(.live-dot, .nav-dot, .spin, .shutter, .shutter *, .badge-dot),
+[data-skin="classic"] *::before,
+[data-skin="classic"] *::after {
+  border-radius: 0 !important;
+}
+
+/* 图标：方头、尖角 */
+[data-skin="classic"] svg[stroke="currentColor"] {
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+/* 等宽字体只用在标题和导航这类“骨架”上，正文、卡片标题保持黑体好读 */
+[data-skin="classic"] .h1,
+[data-skin="classic"] .h2,
+[data-skin="classic"] .brand-name,
+[data-skin="classic"] .nav-label,
+[data-skin="classic"] .tabs,
+[data-skin="classic"] .page-tabs,
+[data-skin="classic"] .toc-label,
+[data-skin="classic"] .big-num,
+[data-skin="classic"] .stat-big,
+[data-skin="classic"] .practice-no,
+[data-skin="classic"] .option-mark,
+[data-skin="classic"] .prose h1,
+[data-skin="classic"] .prose h2 {
+  font-family: var(--font-mono);
+}
+[data-skin="classic"] .h1 {
+  letter-spacing: -0.4px;
+}
+[data-skin="classic"] .prose .anchor {
+  display: none;
+}
+
+/* ---------- 动效：关掉进场和页面切换 ---------- */
+
+[data-skin="classic"] .rise,
+[data-skin="classic"] .welcome-in {
+  animation: none;
+}
+[data-skin="classic"]::view-transition-old(root),
+[data-skin="classic"]::view-transition-new(root),
+[data-skin="classic"]::view-transition-group(*) {
+  animation: none;
+}
+
+/* ---------- 结构：墨色细线 ---------- */
+
+[data-skin="classic"] .card,
+[data-skin="classic"] .error-box,
+[data-skin="classic"] .practice,
+[data-skin="classic"] .res-box {
+  border: 1px solid var(--edge-strong);
+  box-shadow: none;
+}
+[data-skin="classic"] .card-flush {
+  box-shadow: none;
+}
+[data-skin="classic"] .catalog li + li,
+[data-skin="classic"] .field-table > div {
+  border-color: var(--edge);
+}
+[data-skin="classic"] .prose pre,
+[data-skin="classic"] pre.code,
+[data-skin="classic"] .prose blockquote,
+[data-skin="classic"] .prose details,
+[data-skin="classic"] .pager-link {
+  border: 1px solid var(--edge-strong);
+}
+[data-skin="classic"] .prose code {
+  background: var(--well);
+}
+[data-skin="classic"] .page-head {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--edge-strong);
+}
+[data-skin="classic"] .sidebar-inner {
+  border-right: 1px solid var(--edge-strong);
+}
+[data-skin="classic"] .nav-item {
+  border-bottom: 1px solid var(--edge);
+}
+@media (max-width: 899px) {
+  [data-skin="classic"] .tabbar {
+    border-top: 1px solid var(--edge-strong);
+  }
+}
+
+/* 能点的卡片：悬停时浮起一点（墨色硬阴影），这是唯一的“动” */
+[data-skin="classic"] a.card,
+[data-skin="classic"] .catalog-row,
+[data-skin="classic"] .pager-link {
+  transition:
+    transform 90ms linear,
+    box-shadow 90ms linear,
+    background 90ms linear;
+}
+[data-skin="classic"] a.card:hover,
+[data-skin="classic"] .pager-link:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--hard);
+  border-color: var(--ink);
+}
+[data-skin="classic"] .catalog-row:hover {
+  background: var(--well);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+/* ---------- 浮层：硬阴影 ---------- */
+
+[data-skin="classic"] .dialog,
+[data-skin="classic"] .login-card,
+[data-skin="classic"] .onb-card,
+[data-skin="classic"] .hero-card {
+  border: 1px solid var(--ink);
+  box-shadow: var(--hard);
+}
+[data-skin="classic"] .toast {
+  border: 1px solid var(--ink);
+  box-shadow: var(--hard-sm);
+}
+[data-skin="classic"] .dialog-head {
+  margin: -24px -24px 0;
+  padding: 10px 12px 10px 18px;
+  border-bottom: 1px solid var(--ink);
+  background: var(--well);
+  align-items: center;
+}
+[data-skin="classic"] .dialog-head .h2 {
+  font-size: var(--fs-body);
+}
+[data-skin="classic"] .dialog-head .icon-btn {
+  background: transparent !important;
+  border-color: transparent;
+  box-shadow: none;
+  width: 32px;
+  height: 32px;
+}
+
+/* ---------- 当前状态：强调色 ---------- */
+
+[data-skin="classic"] .nav-pill {
+  border-left: 4px solid var(--accent);
+  background: var(--well);
+}
+[data-skin="classic"] .nav-item[aria-current="page"] {
+  font-weight: 650;
+}
+[data-skin="classic"] .tabs {
+  border-bottom: 1px solid var(--edge-strong);
+}
+[data-skin="classic"] .tabs button[aria-selected="true"],
+[data-skin="classic"] .page-tabs a[aria-current="page"] {
+  border-bottom: 3px solid var(--accent);
+}
+[data-skin="classic"] .page-tabs {
+  border-bottom: 1px solid var(--edge-strong);
+}
+[data-skin="classic"] .chip[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--surface);
+}
+[data-skin="classic"] .check-btn {
+  border: 2px solid var(--edge-strong);
+}
+[data-skin="classic"] .check-btn[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+[data-skin="classic"] .unit.is-next {
+  background: var(--well);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+[data-skin="classic"] .option.is-on {
+  border-color: var(--ink);
+  background: var(--well);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+[data-skin="classic"] .verdict {
+  border: 1px solid var(--edge-strong);
+  border-left: 4px solid var(--accent);
+}
+[data-skin="classic"] .verdict.is-bad {
+  border-left-color: var(--bad-ink);
+}
+
+/* ---------- 按钮 ---------- */
+
+[data-skin="classic"] .btn,
+[data-skin="classic"] .icon-btn {
+  border: 1px solid var(--edge-strong);
+  border-radius: 0;
+  box-shadow: none;
+  font-weight: 600;
+  transition:
+    transform 70ms linear,
+    box-shadow 70ms linear,
+    background 90ms linear,
+    border-color 90ms linear;
+}
+[data-skin="classic"] .btn:hover:not(:disabled),
+[data-skin="classic"] .icon-btn:hover {
+  border-color: var(--ink);
+  background: var(--well);
+}
+[data-skin="classic"] .btn:active:not(:disabled),
+[data-skin="classic"] .icon-btn:active {
+  transform: translate(1px, 1px);
+}
+[data-skin="classic"] .btn:focus-visible,
+[data-skin="classic"] .icon-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+[data-skin="classic"] .btn:disabled {
+  opacity: 1;
+  background: var(--well);
+  color: var(--sub);
+  border-color: var(--edge);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+/* 主按钮：实心强调色 + 墨色硬阴影，按下压平 */
+[data-skin="classic"] .btn-primary {
+  background: var(--cta);
+  color: var(--cta-ink);
+  border-color: var(--ink);
+  box-shadow: var(--hard-sm);
+}
+[data-skin="classic"] .btn-primary:hover:not(:disabled) {
+  background: var(--cta);
+  border-color: var(--ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--shadow-ink);
+}
+[data-skin="classic"] .btn-primary:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--shadow-ink);
+}
+[data-skin="classic"] .btn-primary:disabled {
+  border-style: dashed;
+}
+[data-skin="classic"] .btn-soft,
+[data-skin="classic"] .btn-ghost {
+  background: var(--surface);
+  color: var(--ink);
+}
+[data-skin="classic"] .btn-quiet {
+  background: transparent;
+  color: var(--sub);
+  border-color: transparent;
+}
+[data-skin="classic"] .btn-quiet:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--edge);
+}
+[data-skin="classic"] .btn-ink {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+[data-skin="classic"] .btn-ink:hover:not(:disabled) {
+  background: var(--ink);
+}
+[data-skin="classic"] .btn-danger {
+  background: var(--surface);
+  color: var(--bad-ink);
+  border-color: var(--bad-ink);
+}
+[data-skin="classic"] .ext-link {
+  border: 1px solid var(--edge);
+  background: var(--surface);
+}
+[data-skin="classic"] .ext-link:hover {
+  border-color: var(--ink);
+}
+
+/* 分段选择：细框，选中项实心强调色 */
+[data-skin="classic"] .seg {
+  border: 1px solid var(--edge-strong);
+  background: var(--surface);
+}
+[data-skin="classic"] .seg button + button {
+  border-left: 1px solid var(--edge);
+}
+[data-skin="classic"] .seg button[aria-pressed="true"] {
+  color: var(--cta-ink);
+  font-weight: 650;
+}
+[data-skin="classic"] .seg-pill {
+  background: var(--cta);
+  box-shadow: none;
+  transition: transform 100ms linear;
+}
+
+/* ---------- 输入框、标签、开关、进度 ---------- */
+
+[data-skin="classic"] .input,
+[data-skin="classic"] .editor {
+  border: 1px solid var(--edge-strong);
+  border-radius: 0;
+  background: var(--surface);
+}
+[data-skin="classic"] .input:focus,
+[data-skin="classic"] .editor:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+[data-skin="classic"] .tag {
+  border: 1px solid var(--edge);
+  background: transparent;
+  color: var(--sub);
+}
+[data-skin="classic"] .tag-ok {
+  color: var(--ink);
+  border-color: var(--edge-strong);
+}
+[data-skin="classic"] .tag-solid,
+[data-skin="classic"] .tag-accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--cta-ink);
+  font-weight: 600;
+}
+[data-skin="classic"] .switch {
+  border: 1px solid var(--edge-strong);
+  background: var(--surface);
+  height: 30px;
+  width: 54px;
+}
+[data-skin="classic"] .switch::after {
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 0;
+  background: var(--edge-strong);
+  box-shadow: none;
+  transition: transform 100ms linear;
+}
+[data-skin="classic"] .switch[aria-checked="true"] {
+  background: var(--cta);
+  border-color: var(--cta);
+}
+[data-skin="classic"] .switch[aria-checked="true"]::after {
+  background: var(--cta-ink);
+  transform: translateX(24px);
+}
+[data-skin="classic"] .bar {
+  height: 8px;
+  background: var(--well);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+[data-skin="classic"] .bar > i {
+  background: var(--accent);
+}
+[data-skin="classic"] .pick-tile {
+  border-radius: 0 !important;
+}
+[data-skin="classic"] .pick-tile[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--ink);
+}
+[data-skin="classic"] .onb-bar {
+  border: 1px solid var(--edge-strong);
+  height: 10px;
+}
+[data-skin="classic"] .onb-bar i {
+  background: var(--accent);
+  transition: width 200ms linear;
+}

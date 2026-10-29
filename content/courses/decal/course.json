@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "decal",
+ "title": "UCB: Sysadmin DeCal",
+ "category": "编程入门",
+ "provider": "UCB",
+ "instructors": [],
+ "language": "shell",
+ "prerequisites": "无",
+ "difficulty": 3,
+ "hours": "20小时",
+ "summary": "来自 UCB 的一门讲解 Linux 的入门课程，比起定位相同的 MIT 的公开课 Missing Semester，Decal 讲解得更加系统、也更加清晰，这也是我推荐它的主要原因……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n来自 UCB 的一门讲解 Linux 的入门课程，比起定位相同的 MIT 的公开课 Missing Semester，Decal 讲解得更加系统、也更加清晰，这也是我推荐它的主要原因。比起 Missing Semester 更像是给已经开始编程但没有系统使用过这些工具的学生的查缺补漏，DeCal 更像是面向零基础的同学的课程。一共十二周的课程内容，包括 Linux 基础、shell 编程（还有tmux 、vim）、包管理、服务(Services)、基础计算机网络、网络服务、安全(密钥管理)、Git、Docker、Kubernetes、Puppet 和 CUDA。 十分适合新手了解和入门 Linux 环境相关内容。\n\n美中不足的是部分课程作业需要在远程服务器操作，比如关于 ssh 的练习，需要 UCB 内部账号访问。但是大部分作业可以通过自己搭建的虚拟机 + 使用 Xshell 等工具或者直接使用 Linux 桌面版来操作练习，在听完完整课程和做完作业后，相信已经对 Linux 有最基本的了解了。\n\n为弥补无法使用远程服务器的不足以及熟悉 linux 命令行的需求，在此推荐 [bandit](https://overthewire.org/wargames/bandit/) 。bandit 是一款来自OverTheWire 网站的 Wargame，为 CTF 爱好者提供免费的练习靶场。bandit 的前 15 个 level 都是基础的 linux 操作而不涉及任何 CTF 知识。这些练习也正好弥补了 DeCal 外校无法访问的部分（主要是远程链接、文件权限）等内容。\n\n## 课程资源\n\n- 课程网站：[官网](https://decal.ocf.berkeley.edu/)\n- 课程视频：原版视频见课程官网，[B站](https://space.bilibili.com/483435468/video)也有搬运。\n- 课程教材：无指定教材，但每一周的 labs 之中都有足够的阅读材料供你深入细节。\n- 课程作业：见课程官网\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/DeCal/"
+  },
+  "official": "一门系统管理课程，涵盖在生产级 Linux 服务器环境中设置和管理的基础知识。课程在 11 周内进行，从 Unix 基础和 Shell 脚本开始，逐步深入到网络、Web 服务器、安全、版本控制、Docker 容器化、Nix 包管理器和 Kubernetes 等主题。每周包括实践性实验任务。",
+  "officialSource": {
+   "kind": "website",
+   "label": "decal.ocf.berkeley.edu",
+   "url": "https://decal.ocf.berkeley.edu/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · 官网",
+   "url": "https://decal.ocf.berkeley.edu/"
+  },
+  {
+   "kind": "video",
+   "label": "视频 · B站",
+   "url": "https://space.bilibili.com/483435468/video"
+  }
+ ],
+ "modules": [],
+ "titleEn": "UCB: Sysadmin DeCal"
+}

@@ -1,0 +1,58 @@
+{
+ "format": "hiana-course@1",
+ "slug": "hitos",
+ "title": "HIT OS: Operating System",
+ "category": "操作系统",
+ "provider": "哈尔滨工业大学",
+ "instructors": [],
+ "language": "C 语言、汇编",
+ "prerequisites": "C 语言",
+ "difficulty": 4,
+ "hours": "100 小时+",
+ "summary": "如果你在知乎上搜索“操作系统如何自学”、“操作系统的公开课推荐”、“有哪些让你相见恨晚的计算机课程”等问题，哈工大李治军老师的操作系统课程大概率都会在某条高赞回答的推荐里。这是一门知名度较高、颇受欢迎的中文计算机课程。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n如果你在知乎上搜索“操作系统如何自学”、“操作系统的公开课推荐”、“有哪些让你相见恨晚的计算机课程”等问题，哈工大李治军老师的操作系统课程大概率都会在某条高赞回答的推荐里。这是一门知名度较高、颇受欢迎的中文计算机课程。\n\n这门课善于站在学生角度循循善诱。例如，课程从“弱弱地问，什么是操作系统”来“揭开操作系统钢琴的盖子”，从 CPU 的直观管理引出进程概念，从“那就首先让程序进入内存”引出内存管理。\n\n这门课注重理论和实践相结合。操作系统是看得见摸得着的东西，李老师反复强调一定要做实验，如果只看视频纸上谈兵，是学不好操作系统的。课程基于实际的 Linux 0.11 源码（总代码量约两万行）进行讲解和实验，共有八个小实验，四个大实验。\n\n当然，这门课也有一些瑕不掩瑜的地方。例如，Linux 0.11 是很早期工业界的代码，不是为了教学而设计的。因此在实验过程中会有一些避不开的晦涩难懂的原生代码，但它们对理解操作系统其实并没有太大帮助。\n\n## 课程资源\n\n- 课程网站：<https://www.icourse163.org/course/HIT-1002531008>\n- 课程视频：<https://www.bilibili.com/video/BV19r4y1b7Aw/?p=1>\n- 课程教材一：[《Linux 内核完全注释》](https://book.douban.com/subject/1231236//)\n- 课程教材二：[《操作系统原理、实现与实践》](https://book.douban.com/subject/30391722/)\n- 课程作业：<https://www.lanqiao.cn/courses/115>\n\n## 资源汇总\n\n@NaChen95 在学习这门课中的八个实验作业的原理分析和实现都汇总在 [NaChen95 / Linux0.11](https://github.com/NaChen95/Linux0.11) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/HITOS/"
+  },
+  "official": "本课程以\"如何为仅配备单核CPU、内存、磁盘、键盘和显示器的基础计算机配备功能完整的操作系统\"为中心问题。课程内容分为六个核心模块：CPU管理、内存管理、外部设备管理、磁盘管理和文件系统、用户界面以及启动模块。课程强调\"深入细致地原理教授、算法与数据结构设计\"，学生将基于开源Linux进行全面的代码实现，完成12个实验项目，涵盖进程设计、虚拟内存和设备驱动程序实现等内容。",
+  "officialSource": {
+   "kind": "website",
+   "label": "www.icourse163.org",
+   "url": "https://www.icourse163.org/course/HIT-1002531008"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://www.icourse163.org/course/HIT-1002531008"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.bilibili.com/video/BV19r4y1b7Aw/?p=1"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材一 · 《Linux 内核完全注释》",
+   "url": "https://book.douban.com/subject/1231236//"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材二 · 《操作系统原理、实现与实践》",
+   "url": "https://book.douban.com/subject/30391722/"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "https://www.lanqiao.cn/courses/115"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Operating System"
+}

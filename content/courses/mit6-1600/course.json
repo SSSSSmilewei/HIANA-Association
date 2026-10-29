@@ -1,0 +1,43 @@
+{
+ "format": "hiana-course@1",
+ "slug": "mit6-1600",
+ "title": "MIT6.1600: Foundations of Computer Security",
+ "category": "计算机系统安全",
+ "provider": "MIT",
+ "instructors": [],
+ "language": "Python3",
+ "prerequisites": "离散数学，编程基础，计算机系统基础",
+ "difficulty": 3,
+ "hours": "50小时",
+ "summary": "MIT 的计算机系统安全本科生课程，共分为 authentication, transport security, platform security, software security, 和 human/end-user security 五个模块……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\nMIT 的计算机系统安全本科生课程，共分为 authentication, transport security, platform security, software security, 和 human/end-user security 五个模块。课程组织还是相当清晰的：authentication 关注于认证安全，即如何证明计算机世界的“你”确实是“你”。接着讲解大家了解较多的通信安全，例如数据传输的加密解密，密钥的交换等。但传输是一方面，代码最终需要在终端上执行，这就涉及到运行代码的平台本身甚至软件代码本身的安全性。最后课程还会讲一些关于隐私安全的内容，上升到社会学的范畴去讨论群体信息安全。学完该课程，你将会掌握计算机安全的很多重要基本概念，例如公钥私钥加密算法、哈希算法、电子签名、密钥交换算法等等。除了稍显复杂枯燥的数学和定理证明外，课程中还会结合具体知识点讲解很多现实发生的安全漏洞，让你对这些安全概念有更感性的认识。此外，还有6个课程实验让你通过编程实现很多漏洞的利用，在实际中加深对知识的理解，个人感觉还是很有意思的。\n\n## 课程资源\n\n- 课程网站：[fall23](https://61600.csail.mit.edu/2023/), [fall22](https://61600.csail.mit.edu/2022/)\n- 课程视频：参见课程网站\n- 课程教材：没有指定教材，每节课有 notes\n- 课程作业：一共6个实验，难度适中\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/MIT6.1600 - GitHub](https://github.com/PKUFlyingPig/MIT6.1600) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/MIT6.1600/"
+  },
+  "official": "本课程从五个层次来讲授安全和密码学：身份验证、传输安全、平台安全、软件安全和用户安全。课程涵盖身份验证机制和密码学基础、公钥基础设施和数字签名、加密通信和传输协议、系统架构和隔离技术、硬件和软件安全、隐私概念（零知识证明、差分隐私）、真实案例研究和漏洞检测。课程包含 5 个实践实验、期中考试和期末考试。",
+  "officialSource": {
+   "kind": "website",
+   "label": "61600.csail.mit.edu",
+   "url": "https://61600.csail.mit.edu/2023/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · fall23",
+   "url": "https://61600.csail.mit.edu/2023/"
+  },
+  {
+   "kind": "website",
+   "label": "网站 · fall22",
+   "url": "https://61600.csail.mit.edu/2022/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "MIT 6.1600: Foundations of Computer Security"
+}

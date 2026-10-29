@@ -1,0 +1,612 @@
+{
+ "$id": "https://study.shanmoew-denied.win/schema/course-v1.json",
+ "title": "hiana-course@1 课程包",
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "type": "object",
+ "properties": {
+  "format": {
+   "type": "string",
+   "const": "hiana-course@1"
+  },
+  "slug": {
+   "type": "string",
+   "pattern": "^[a-z0-9][a-z0-9-]{1,47}$"
+  },
+  "title": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 100
+  },
+  "titleEn": {
+   "type": "string",
+   "maxLength": 160
+  },
+  "category": {
+   "default": "其他",
+   "type": "string",
+   "maxLength": 40
+  },
+  "provider": {
+   "default": "",
+   "type": "string",
+   "maxLength": 80
+  },
+  "instructors": {
+   "default": [],
+   "type": "array",
+   "items": {
+    "type": "string",
+    "maxLength": 60
+   }
+  },
+  "language": {
+   "default": "",
+   "type": "string",
+   "maxLength": 80
+  },
+  "prerequisites": {
+   "default": "",
+   "type": "string",
+   "maxLength": 200
+  },
+  "difficulty": {
+   "default": 0,
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 5
+  },
+  "hours": {
+   "default": "",
+   "type": "string",
+   "maxLength": 40
+  },
+  "summary": {
+   "default": "",
+   "type": "string",
+   "maxLength": 300
+  },
+  "tags": {
+   "default": [],
+   "type": "array",
+   "items": {
+    "type": "string",
+    "maxLength": 30
+   }
+  },
+  "license": {
+   "default": "",
+   "type": "string",
+   "maxLength": 300
+  },
+  "intro": {
+   "default": {},
+   "type": "object",
+   "properties": {
+    "community": {
+     "type": "string",
+     "maxLength": 400000
+    },
+    "communitySource": {
+     "type": "object",
+     "properties": {
+      "kind": {
+       "default": "other",
+       "type": "string",
+       "enum": [
+        "website",
+        "video",
+        "notes",
+        "slides",
+        "textbook",
+        "assignments",
+        "labs",
+        "exams",
+        "forum",
+        "repo",
+        "translation",
+        "other"
+       ]
+      },
+      "label": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 80
+      },
+      "url": {
+       "type": "string",
+       "pattern": "^(https?:\\/\\/|\\/)\\S+$"
+      }
+     },
+     "required": [
+      "label",
+      "url"
+     ]
+    },
+    "official": {
+     "type": "string",
+     "maxLength": 400000
+    },
+    "officialSource": {
+     "type": "object",
+     "properties": {
+      "kind": {
+       "default": "other",
+       "type": "string",
+       "enum": [
+        "website",
+        "video",
+        "notes",
+        "slides",
+        "textbook",
+        "assignments",
+        "labs",
+        "exams",
+        "forum",
+        "repo",
+        "translation",
+        "other"
+       ]
+      },
+      "label": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 80
+      },
+      "url": {
+       "type": "string",
+       "pattern": "^(https?:\\/\\/|\\/)\\S+$"
+      }
+     },
+     "required": [
+      "label",
+      "url"
+     ]
+    }
+   }
+  },
+  "links": {
+   "default": [],
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "kind": {
+      "default": "other",
+      "type": "string",
+      "enum": [
+       "website",
+       "video",
+       "notes",
+       "slides",
+       "textbook",
+       "assignments",
+       "labs",
+       "exams",
+       "forum",
+       "repo",
+       "translation",
+       "other"
+      ]
+     },
+     "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+     },
+     "url": {
+      "type": "string",
+      "pattern": "^(https?:\\/\\/|\\/)\\S+$"
+     }
+    },
+    "required": [
+     "label",
+     "url"
+    ]
+   }
+  },
+  "modules": {
+   "default": [],
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,47}$"
+     },
+     "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+     },
+     "summary": {
+      "type": "string",
+      "maxLength": 400
+     },
+     "items": {
+      "default": [],
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string",
+         "pattern": "^[a-z0-9][a-z0-9-]{0,47}$"
+        },
+        "kind": {
+         "type": "string",
+         "enum": [
+          "lecture",
+          "reading",
+          "video",
+          "assignment",
+          "lab",
+          "project",
+          "quiz",
+          "exam"
+         ]
+        },
+        "title": {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 100
+        },
+        "periods": {
+         "default": 2,
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 60
+        },
+        "pages": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,47}$"
+           },
+           "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+           },
+           "body": {
+            "type": "string",
+            "maxLength": 400000
+           }
+          },
+          "required": [
+           "id",
+           "title"
+          ]
+         }
+        },
+        "videos": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "kind": {
+            "default": "other",
+            "type": "string",
+            "enum": [
+             "website",
+             "video",
+             "notes",
+             "slides",
+             "textbook",
+             "assignments",
+             "labs",
+             "exams",
+             "forum",
+             "repo",
+             "translation",
+             "other"
+            ]
+           },
+           "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+           },
+           "url": {
+            "type": "string",
+            "pattern": "^(https?:\\/\\/|\\/)\\S+$"
+           }
+          },
+          "required": [
+           "label",
+           "url"
+          ]
+         }
+        },
+        "links": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "kind": {
+            "default": "other",
+            "type": "string",
+            "enum": [
+             "website",
+             "video",
+             "notes",
+             "slides",
+             "textbook",
+             "assignments",
+             "labs",
+             "exams",
+             "forum",
+             "repo",
+             "translation",
+             "other"
+            ]
+           },
+           "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+           },
+           "url": {
+            "type": "string",
+            "pattern": "^(https?:\\/\\/|\\/)\\S+$"
+           }
+          },
+          "required": [
+           "label",
+           "url"
+          ]
+         }
+        },
+        "submit": {
+         "type": "object",
+         "properties": {
+          "kind": {
+           "default": "other",
+           "type": "string",
+           "enum": [
+            "website",
+            "video",
+            "notes",
+            "slides",
+            "textbook",
+            "assignments",
+            "labs",
+            "exams",
+            "forum",
+            "repo",
+            "translation",
+            "other"
+           ]
+          },
+          "label": {
+           "type": "string",
+           "minLength": 1,
+           "maxLength": 80
+          },
+          "url": {
+           "type": "string",
+           "pattern": "^(https?:\\/\\/|\\/)\\S+$"
+          }
+         },
+         "required": [
+          "label",
+          "url"
+         ]
+        },
+        "practice": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "anyOf": [
+           {
+            "type": "object",
+            "properties": {
+             "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{0,47}$"
+             },
+             "title": {
+              "type": "string",
+              "maxLength": 80
+             },
+             "prompt": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 400000
+             },
+             "explain": {
+              "type": "string",
+              "maxLength": 400000
+             },
+             "type": {
+              "type": "string",
+              "const": "choice"
+             },
+             "options": {
+              "minItems": 2,
+              "maxItems": 10,
+              "type": "array",
+              "items": {
+               "type": "string",
+               "maxLength": 400000
+              }
+             },
+             "answer": {
+              "anyOf": [
+               {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+               },
+               {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                 "type": "integer",
+                 "minimum": 0,
+                 "maximum": 9007199254740991
+                }
+               }
+              ]
+             }
+            },
+            "required": [
+             "id",
+             "prompt",
+             "type",
+             "options",
+             "answer"
+            ]
+           },
+           {
+            "type": "object",
+            "properties": {
+             "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{0,47}$"
+             },
+             "title": {
+              "type": "string",
+              "maxLength": 80
+             },
+             "prompt": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 400000
+             },
+             "explain": {
+              "type": "string",
+              "maxLength": 400000
+             },
+             "type": {
+              "type": "string",
+              "const": "text"
+             },
+             "answer": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+               "type": "string",
+               "minLength": 1
+              }
+             }
+            },
+            "required": [
+             "id",
+             "prompt",
+             "type",
+             "answer"
+            ]
+           },
+           {
+            "type": "object",
+            "properties": {
+             "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{0,47}$"
+             },
+             "title": {
+              "type": "string",
+              "maxLength": 80
+             },
+             "prompt": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 400000
+             },
+             "explain": {
+              "type": "string",
+              "maxLength": 400000
+             },
+             "type": {
+              "type": "string",
+              "const": "code"
+             },
+             "lang": {
+              "type": "string",
+              "enum": [
+               "python",
+               "sql",
+               "javascript"
+              ]
+             },
+             "starter": {
+              "default": "",
+              "type": "string"
+             },
+             "tests": {
+              "default": [],
+              "type": "array",
+              "items": {
+               "type": "object",
+               "properties": {
+                "name": {
+                 "type": "string",
+                 "maxLength": 80
+                },
+                "stdin": {
+                 "default": "",
+                 "type": "string"
+                },
+                "stdout": {
+                 "default": "",
+                 "type": "string"
+                }
+               },
+               "required": [
+                "name"
+               ]
+              }
+             },
+             "setup": {
+              "type": "string"
+             },
+             "ordered": {
+              "type": "boolean"
+             },
+             "solution": {
+              "type": "string"
+             },
+             "hint": {
+              "type": "string",
+              "maxLength": 400000
+             }
+            },
+            "required": [
+             "id",
+             "prompt",
+             "type",
+             "lang"
+            ]
+           }
+          ]
+         }
+        }
+       },
+       "required": [
+        "id",
+        "kind",
+        "title"
+       ]
+      }
+     }
+    },
+    "required": [
+     "id",
+     "title"
+    ]
+   }
+  }
+ },
+ "required": [
+  "format",
+  "slug",
+  "title"
+ ]
+}

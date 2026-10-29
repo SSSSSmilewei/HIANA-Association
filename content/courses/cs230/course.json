@@ -1,0 +1,48 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs230",
+ "title": "Coursera: Deep Learning",
+ "category": "深度学习",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "机器学习基础 + Python",
+ "difficulty": 4,
+ "hours": "80 小时",
+ "summary": "吴恩达在 Coursera 开设的另一门网红课程，学习者无数，堪称圣经级的深度学习入门课。深入浅出的讲解，眼花缭乱的 Project。从最基础的神经网络，到 CNN, RNN，再到最近大热的 Transformer。学完这门课，你将初步掌握深度学习领域必备的知识和技能……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n吴恩达在 Coursera 开设的另一门网红课程，学习者无数，堪称圣经级的深度学习入门课。深入浅出的讲解，眼花缭乱的 Project。从最基础的神经网络，到 CNN, RNN，再到最近大热的 Transformer。学完这门课，你将初步掌握深度学习领域必备的知识和技能，并且可以在 [Kaggle](https://www.kaggle.com/) 中参加自己感兴趣的比赛，在实践中锻炼自己。\n\n## 课程资源\n\n- 课程网站：<https://www.coursera.org/specializations/deep-learning>\n- 课程视频：<https://www.coursera.org/specializations/deep-learning>，B站有搬运\n- 课程教材：无\n- 课程作业：<https://www.coursera.org/specializations/deep-learning>\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/CS230/"
+  },
+  "official": "深度学习专项课程是一个基础性项目，帮助学习者理解深度学习的能力、挑战和影响。学生将构建和训练神经网络架构，包括卷积神经网络、循环神经网络、LSTM和变压器模型。通过学习Dropout、批量归一化和Xavier/He初始化等策略来改进模型性能。课程运用Python和TensorFlow掌握理论概念及其行业应用。学习者将处理语音识别、音乐合成、聊天机器人、机器翻译和自然语言处理等真实案例。",
+  "officialSource": {
+   "kind": "website",
+   "label": "www.coursera.org",
+   "url": "https://www.coursera.org/specializations/deep-learning"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://www.coursera.org/specializations/deep-learning"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.coursera.org/specializations/deep-learning"
+  },
+  {
+   "kind": "assignments",
+   "label": "作业",
+   "url": "https://www.coursera.org/specializations/deep-learning"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Deep Learning"
+}

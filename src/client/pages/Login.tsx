@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { api, clearCache } from "../api";
+import { useState } from "react";
+import { api, clearCache, useApi } from "../api";
+import { markOnboarding } from "../components/Onboarding";
 import { BrandMark } from "../components/Shell";
-import { navigate } from "../router";
+import { Link, navigate, useLocation } from "../router";
+import { safeNext } from "../session";
 import type { Me } from "../types";
 import { Seg, Spinner, useTitle } from "../ui";
 
@@ -21,7 +23,7 @@ function DecorWall() {
   );
 }
 
-function LoginFrame({ children }: { children: React.ReactNode }) {
+function LoginFrame({ children, back }: { children: React.ReactNode; back?: string }) {
   return (
     <main className="login">
       <DecorWall />
@@ -29,142 +31,278 @@ function LoginFrame({ children }: { children: React.ReactNode }) {
         <div className="row" style={{ gap: 12 }}>
           <BrandMark />
           <span className="stack" style={{ gap: 0 }}>
-            <span className="brand-name">HIANA</span>
+            <span className="brand-name">海纳协会</span>
             <span className="brand-sub">智慧网络算法协会 · 学习平台</span>
           </span>
         </div>
         {children}
+        {back && (
+          <Link to={back} className="btn btn-quiet btn-block">
+            游客浏览
+          </Link>
+        )}
       </div>
     </main>
   );
 }
 
-type LoginMode = "password" | "activate" | "admin";
+type LoginMode = "login" | "register" | "reset";
+type Kind = "campus" | "external";
 
-export function LoginPage({ initialCode, initialMode, onLogin }: { initialCode?: string; initialMode?: LoginMode; onLogin: (me: Me) => void }) {
-  useTitle(initialMode === "admin" ? "会长登录" : "登录");
-  const [mode, setMode] = useState<LoginMode>(initialCode ? "activate" : (initialMode ?? "password"));
-  const [adminPassword, setAdminPassword] = useState("");
+/** 学号：9 位数字（和后端 STUDENT_NO_RE 一致；登录时不检查，兼容以前录入的账号） */
+const STUDENT_NO_RE = /^\d{9}$/;
+/** 校外账号的用户名（和后端 USERNAME_RE 一致） */
+const USERNAME_RE = /^[a-z][a-z0-9_-]{2,19}$/;
+
+function ErrorText({ error }: { error: string | null }) {
+  return error ? (
+    <span className="error-text" role="alert">
+      {error}
+    </span>
+  ) : null;
+}
+
+/**
+ * 登录页：登录、用邀请码注册（校内 / 校外）、用重置码找回密码。
+ * 地址参数：mode=register|reset，invite=邀请码（管理员可以发注册链接），kind=external（校外注册链接），code=重置码，next=登录后回到哪里。
+ */
+export function LoginPage({ onLogin }: { onLogin: (me: Me) => void }) {
+  const { search } = useLocation();
+  const q = new URLSearchParams(search);
+  const initial = q.get("mode");
+  const [mode, setMode] = useState<LoginMode>(initial === "register" || initial === "reset" ? initial : q.get("invite") ? "register" : "login");
+  useTitle(mode === "register" ? "注册" : mode === "reset" ? "找回密码" : "登录");
+  const options = useApi<{ registrationOpen: boolean }>("/api/auth/options");
+  const [kind, setKind] = useState<Kind>(q.get("kind") === "external" ? "external" : "campus");
+  const [account, setAccount] = useState("");
   const [studentNo, setStudentNo] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [org, setOrg] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [code, setCode] = useState(initialCode ?? "");
+  const [confirm, setConfirm] = useState("");
+  const [invite, setInvite] = useState(q.get("invite") ?? "");
+  const [code, setCode] = useState(q.get("code") ?? "");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const mismatch = confirm.length > 0 && confirm !== password;
+  const badNo = studentNo.length > 0 && !STUDENT_NO_RE.test(studentNo.trim());
+  const uname = username.trim().toLowerCase();
+  const badUser = uname.length > 0 && !USERNAME_RE.test(uname);
+  const closed = options.data?.registrationOpen === false;
 
-  const run = async (path: string, body: unknown, after: string) => {
+  const switchMode = (m: LoginMode) => {
+    setMode(m);
+    setError(null);
+  };
+
+  const run = async (path: string, body: unknown) => {
     setBusy(true);
     setError(null);
     try {
       const me = await api<Me>(path, { body });
       clearCache();
+      if (path === "/api/auth/register" && me.member) markOnboarding(me.member.id);
       onLogin(me);
-      navigate(after, { replace: true });
     } catch (e) {
       setError((e as Error).message);
       setBusy(false);
     }
   };
 
-  useEffect(() => {
-    if (initialCode) void run("/api/auth/activate", { code: initialCode }, "/password");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const accountField = (
+    <label className="field">
+      账号
+      <input className="input" value={account} onChange={(e) => setAccount(e.target.value)} autoFocus autoComplete="username" maxLength={100} autoCapitalize="off" spellCheck={false} />
+      <span className="hint xsmall">校内填学号，校外填用户名或邮箱</span>
+    </label>
+  );
+  const registerFields =
+    kind === "campus" ? (
+      <>
+        <label className="field">
+          学号
+          <input
+            className="input"
+            value={studentNo}
+            onChange={(e) => setStudentNo(e.target.value)}
+            autoComplete="username"
+            inputMode="numeric"
+            maxLength={9}
+            aria-invalid={badNo || undefined}
+          />
+          {badNo && <span className="error-text xsmall">学号为 9 位数字</span>}
+        </label>
+        <label className="field">
+          姓名
+          <input className="input" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" maxLength={20} />
+          <span className="hint xsmall">真实姓名</span>
+        </label>
+      </>
+    ) : (
+      <>
+        <label className="field">
+          用户名
+          <input
+            className="input"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+            maxLength={20}
+            autoCapitalize="off"
+            spellCheck={false}
+            aria-invalid={badUser || undefined}
+          />
+          <span className={badUser ? "error-text xsmall" : "hint xsmall"}>3–20 位，小写字母开头，可用小写字母、数字、_ 和 -</span>
+        </label>
+        <label className="field">
+          昵称
+          <input className="input" value={name} onChange={(e) => setName(e.target.value)} autoComplete="nickname" maxLength={20} />
+        </label>
+        <label className="field">
+          邮箱（选填）
+          <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" maxLength={100} />
+          <span className="hint xsmall">也可以用邮箱登录</span>
+        </label>
+        <label className="field">
+          学校 / 单位（选填）
+          <input className="input" value={org} onChange={(e) => setOrg(e.target.value)} autoComplete="organization" maxLength={40} />
+        </label>
+      </>
+    );
+  const newPasswordFields = (
+    <>
+      <label className="field">
+        {mode === "reset" ? "新密码" : "密码"}
+        <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+        <span className="hint xsmall">至少 8 个字符，不能和账号相同。</span>
+      </label>
+      <label className="field">
+        确认密码
+        <input className="input" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" />
+        {mismatch && <span className="error-text xsmall">两次输入不一致</span>}
+      </label>
+    </>
+  );
+  const pwReady = password.length >= 8 && confirm === password;
 
   return (
-    <LoginFrame>
-      <Seg
-        label="登录方式"
-        flat
-        value={mode}
-        onChange={(m) => {
-          setMode(m);
-          setError(null);
-        }}
-        options={[
-          { value: "password", label: "学号登录" },
-          { value: "activate", label: "第一次使用" },
-          { value: "admin", label: "会长" },
-        ]}
-      />
-      {mode === "admin" ? (
+    <LoginFrame back={safeNext(q.get("next"))}>
+      {mode === "reset" ? (
+        <h1 className="h2">重置密码</h1>
+      ) : (
+        <Seg
+          label="登录方式"
+          flat
+          value={mode}
+          onChange={(m) => {
+            setMode(m);
+            setError(null);
+          }}
+          options={[
+            { value: "login" as const, label: "登录" },
+            { value: "register" as const, label: "注册" },
+          ]}
+        />
+      )}
+      {mode === "login" ? (
         <form
           className="form"
           onSubmit={(e) => {
             e.preventDefault();
-            void run("/api/auth/admin", { password: adminPassword }, "/admin");
+            void run("/api/auth/member", { account: account.trim(), password });
           }}
         >
-          <label className="field">
-            后台密码
-            <input className="input" type="password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} autoFocus autoComplete="current-password" />
-          </label>
-          {error && (
-            <span className="error-text" role="alert">
-              {error}
-            </span>
-          )}
-          <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || !adminPassword}>
-            {busy ? <Spinner /> : "进入后台"}
-          </button>
-          <p className="xsmall sub pretty">用后台密码进管理后台：管成员、发口令、开签到、发公告。如果你在「成员」里把自己的账号设成了管理员，也可以直接用学号登录，学习和管理在一个账号里。</p>
-        </form>
-      ) : mode === "password" ? (
-        <form
-          className="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void run("/api/auth/member", { studentNo, password }, "/");
-          }}
-        >
-          <label className="field">
-            学号
-            <input className="input" value={studentNo} onChange={(e) => setStudentNo(e.target.value)} autoFocus autoComplete="username" inputMode="numeric" />
-          </label>
+          {accountField}
           <label className="field">
             密码
             <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />
           </label>
-          {error && (
-            <span className="error-text" role="alert">
-              {error}
-            </span>
-          )}
-          <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || !studentNo.trim() || !password}>
+          <ErrorText error={error} />
+          <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || !account.trim() || !password}>
             {busy ? <Spinner /> : "登录"}
           </button>
-          <p className="xsmall sub pretty">忘了密码就找会长重置，会给你一个新口令，用它重新激活账号。</p>
+          <button type="button" className="btn btn-quiet btn-sm" style={{ alignSelf: "center" }} onClick={() => switchMode("reset")}>
+            忘记密码？
+          </button>
         </form>
+      ) : mode === "register" ? (
+        closed ? (
+          <p className="small sub">当前未开放注册。</p>
+        ) : (
+          <form
+            className="form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void run(
+                "/api/auth/register",
+                kind === "campus"
+                  ? { kind, studentNo: studentNo.trim(), name, password, confirm, invite: invite.trim() }
+                  : { kind, username: uname, email: email.trim(), org: org.trim(), name, password, confirm, invite: invite.trim() },
+              );
+            }}
+          >
+            <Seg
+              label="账号类型"
+              value={kind}
+              onChange={(k) => {
+                setKind(k);
+                setError(null);
+              }}
+              options={[
+                { value: "campus" as const, label: "校内" },
+                { value: "external" as const, label: "校外" },
+              ]}
+            />
+            <label className="field">
+              邀请码
+              <input className="input mono" value={invite} onChange={(e) => setInvite(e.target.value)} autoComplete="off" placeholder="xxxx-xxxx-xxxx" />
+              <span className="hint xsmall">{kind === "campus" ? "本校同学，用学号注册" : "外校同学和老师，用用户名注册"}</span>
+            </label>
+            {registerFields}
+            {newPasswordFields}
+            <ErrorText error={error} />
+            <button
+              className="btn btn-primary btn-lg btn-block"
+              type="submit"
+              disabled={busy || (kind === "campus" ? !STUDENT_NO_RE.test(studentNo.trim()) : !USERNAME_RE.test(uname)) || !name.trim() || !invite.trim() || !pwReady}
+            >
+              {busy ? <Spinner /> : "注册并登录"}
+            </button>
+          </form>
+        )
       ) : (
         <form
           className="form"
           onSubmit={(e) => {
             e.preventDefault();
-            void run("/api/auth/activate", { code }, "/password");
+            void run("/api/auth/reset", { account: account.trim(), code: code.trim(), password, confirm });
           }}
         >
+          <p className="small sub">请输入管理员提供的重置码。</p>
+          {accountField}
           <label className="field">
-            会长发给你的口令
-            <input className="input mono" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" autoFocus placeholder="例如 abcd-efgh-jkmn" />
+            重置码
+            <input className="input mono" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" placeholder="xxxx-xxxx-xxxx" />
           </label>
-          {error && (
-            <span className="error-text" role="alert">
-              {error}
-            </span>
-          )}
-          <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || code.trim().length < 4}>
-            {busy ? <Spinner /> : "激活账号"}
+          {newPasswordFields}
+          <ErrorText error={error} />
+          <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || !account.trim() || code.trim().length < 4 || !pwReady}>
+            {busy ? <Spinner /> : "重置并登录"}
           </button>
-          <p className="xsmall sub pretty">口令只能用一次。激活后马上设一个自己的密码，以后用学号和密码登录。</p>
+          <button type="button" className="btn btn-quiet btn-sm" style={{ alignSelf: "center" }} onClick={() => switchMode("login")}>
+            返回登录
+          </button>
         </form>
       )}
     </LoginFrame>
   );
 }
 
-/** 设置密码（激活后必经）或修改密码（已经有密码时要先输当前密码）。 */
-export function PasswordPage({ me, onDone }: { me: Me; onDone: () => void }) {
-  const first = !!me.needsPassword;
-  useTitle(first ? "设置密码" : "修改密码");
+/** 修改密码：先输当前密码。改完后其他设备上的登录会失效。 */
+export function PasswordPage({ me }: { me: Me }) {
+  useTitle("修改密码");
   const [current, setCurrent] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -177,18 +315,11 @@ export function PasswordPage({ me, onDone }: { me: Me; onDone: () => void }) {
     return (
       <LoginFrame>
         <div className="stack" style={{ gap: 6 }}>
-          <h1 className="h2">{first ? "账号已激活" : "密码已修改"}</h1>
-          <p className="small sub">以后用学号 {me.member?.studentNo} 和这个密码登录，换手机、换电脑都可以。</p>
+          <h1 className="h2">密码已修改</h1>
+          <p className="small sub">其他设备已退出登录</p>
         </div>
-        <button
-          className="btn btn-primary btn-lg btn-block"
-          type="button"
-          onClick={() => {
-            onDone();
-            navigate("/", { replace: true });
-          }}
-        >
-          进入学习平台
+        <button className="btn btn-primary btn-lg btn-block" type="button" onClick={() => navigate("/me", { replace: true })}>
+          回到“我的”
         </button>
       </LoginFrame>
     );
@@ -196,10 +327,7 @@ export function PasswordPage({ me, onDone }: { me: Me; onDone: () => void }) {
   return (
     <LoginFrame>
       <div className="stack" style={{ gap: 6 }}>
-        <h1 className="h2">{first ? "设置你的密码" : "修改密码"}</h1>
-        <p className="small sub pretty">
-          {first ? `${me.member?.name ?? ""}，口令已经用掉了。设一个自己的密码，以后用学号和密码登录。` : "先输当前密码，再把新密码输两次。"}
-        </p>
+        <h1 className="h2">修改密码</h1>
       </div>
       <form
         className="form"
@@ -208,7 +336,7 @@ export function PasswordPage({ me, onDone }: { me: Me; onDone: () => void }) {
           setBusy(true);
           setError(null);
           try {
-            await api("/api/auth/password", { body: { password, confirm, current: first ? undefined : current } });
+            await api("/api/auth/password", { body: { password, confirm, current } });
             setDone(true);
           } catch (err) {
             setError((err as Error).message);
@@ -217,36 +345,28 @@ export function PasswordPage({ me, onDone }: { me: Me; onDone: () => void }) {
           }
         }}
       >
-        <input type="text" autoComplete="username" value={me.member?.studentNo ?? ""} readOnly hidden />
-        {!first && (
-          <label className="field">
-            当前密码
-            <input className="input" type="password" value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" autoFocus />
-          </label>
-        )}
+        <input type="text" autoComplete="username" value={(me.member?.kind === "external" ? me.member.username : me.member?.studentNo) ?? ""} readOnly hidden />
+        <label className="field">
+          当前密码
+          <input className="input" type="password" value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" autoFocus />
+        </label>
         <label className="field">
           新密码
-          <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" autoFocus={first} />
-          <span className="hint xsmall">至少 8 个字符，不能和学号一样。</span>
+          <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+          <span className="hint xsmall">至少 8 个字符，不能和账号相同。</span>
         </label>
         <label className="field">
-          再输一次新密码
+          确认新密码
           <input className="input" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" />
-          {mismatch && <span className="error-text xsmall">两次输入的不一样</span>}
+          {mismatch && <span className="error-text xsmall">两次输入不一致</span>}
         </label>
-        {error && (
-          <span className="error-text" role="alert">
-            {error}
-          </span>
-        )}
-        <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || password.length < 8 || confirm !== password || (!first && !current)}>
-          {busy ? <Spinner /> : first ? "设置密码并进入" : "保存新密码"}
+        <ErrorText error={error} />
+        <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={busy || password.length < 8 || confirm !== password || !current}>
+          {busy ? <Spinner /> : "保存新密码"}
         </button>
-        {!first && (
-          <button className="btn btn-quiet btn-block" type="button" onClick={() => history.back()}>
-            取消
-          </button>
-        )}
+        <button className="btn btn-quiet btn-block" type="button" onClick={() => history.back()}>
+          取消
+        </button>
       </form>
     </LoginFrame>
   );

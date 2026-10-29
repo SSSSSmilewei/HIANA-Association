@@ -8,7 +8,14 @@ import 'hx_icons.dart';
 
 /// 液态玻璃：背景模糊 + 半透明白 + 一圈亮边。只用在导航、标签栏和浮在内容上的控件。
 class Glass extends StatelessWidget {
-  const Glass({super.key, required this.child, this.radius = 24, this.padding = EdgeInsets.zero, this.strong = false, this.shadow = true});
+  const Glass({
+    super.key,
+    required this.child,
+    this.radius = 24,
+    this.padding = EdgeInsets.zero,
+    this.strong = false,
+    this.shadow = true,
+  });
   final Widget child;
   final double radius;
   final EdgeInsets padding;
@@ -22,7 +29,15 @@ class Glass extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: r,
-        boxShadow: shadow ? [BoxShadow(color: h.glassShadow, blurRadius: 32, offset: const Offset(0, 12))] : null,
+        boxShadow: shadow
+            ? [
+                BoxShadow(
+                  color: h.glassShadow,
+                  blurRadius: 32,
+                  offset: const Offset(0, 12),
+                ),
+              ]
+            : null,
       ),
       child: ClipRRect(
         borderRadius: r,
@@ -36,7 +51,10 @@ class Glass extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.center,
-                colors: [h.glassHi.withValues(alpha: h.dark ? 0.06 : 0.35), const Color(0x00FFFFFF)],
+                colors: [
+                  h.glassHi.withValues(alpha: h.dark ? 0.06 : 0.35),
+                  const Color(0x00FFFFFF),
+                ],
               ),
             ),
             child: Padding(padding: padding, child: child),
@@ -49,7 +67,14 @@ class Glass extends StatelessWidget {
 
 /// 实心卡片：内容都放在这里，读起来不累。
 class HxCard extends StatelessWidget {
-  const HxCard({super.key, required this.child, this.padding = const EdgeInsets.all(18), this.radius = 22, this.color, this.onTap});
+  const HxCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(18),
+    this.radius = 22,
+    this.color,
+    this.onTap,
+  });
   final Widget child;
   final EdgeInsets padding;
   final double radius;
@@ -60,7 +85,11 @@ class HxCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final h = Hx.of(context);
     final box = DecoratedBox(
-      decoration: BoxDecoration(color: color ?? h.surface, borderRadius: BorderRadius.circular(radius), border: Border.all(color: h.line)),
+      decoration: BoxDecoration(
+        color: color ?? h.surface,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: h.line),
+      ),
       child: Padding(padding: padding, child: child),
     );
     if (onTap == null) return box;
@@ -70,7 +99,14 @@ class HxCard extends StatelessWidget {
 
 /// 按下缩到 0.97，松手弹回；所有能点的大块都用它。
 class Pressable extends StatefulWidget {
-  const Pressable({super.key, required this.child, required this.onTap, this.scale = 0.97, this.enabled = true, this.semanticLabel});
+  const Pressable({
+    super.key,
+    required this.child,
+    required this.onTap,
+    this.scale = 0.97,
+    this.enabled = true,
+    this.semanticLabel,
+  });
   final Widget child;
   final VoidCallback onTap;
   final double scale;
@@ -100,7 +136,11 @@ class _PressableState extends State<Pressable> {
           scale: _down ? widget.scale : 1,
           duration: _down ? HxMotion.fast : const Duration(milliseconds: 420),
           curve: _down ? HxMotion.ease : Curves.elasticOut,
-          child: AnimatedOpacity(opacity: widget.enabled ? 1 : 0.5, duration: HxMotion.mid, child: widget.child),
+          child: AnimatedOpacity(
+            opacity: widget.enabled ? 1 : 0.5,
+            duration: HxMotion.mid,
+            child: widget.child,
+          ),
         ),
       ),
     );
@@ -138,7 +178,11 @@ class HxButton extends StatelessWidget {
       HxButtonKind.primary => (h.cta, const Color(0xFFFFFFFF), null),
       HxButtonKind.soft => (h.tint, h.accentText, null),
       HxButtonKind.ghost => (h.surface, h.ink, Border.all(color: h.line)),
-      HxButtonKind.quiet => (const Color(0x00000000), h.sub, Border.all(color: h.line)),
+      HxButtonKind.quiet => (
+        const Color(0x00000000),
+        h.sub,
+        Border.all(color: h.line),
+      ),
       HxButtonKind.ink => (h.ink, h.bg, null),
     };
     final content = Row(
@@ -146,10 +190,24 @@ class HxButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (busy)
-          SizedBox(width: 18, height: 18, child: MiuixCircularProgressIndicator(size: 18, strokeWidth: 2.2))
+          SizedBox(
+            width: 18,
+            height: 18,
+            child: MiuixCircularProgressIndicator(size: 18, strokeWidth: 2.2),
+          )
         else ...[
-          if (icon != null) ...[HxIconView(icon!, size: height >= 52 ? 22 : 19, color: fg), const SizedBox(width: 8)],
-          Text(text, style: TextStyle(color: fg, fontSize: height >= 52 ? 17 : 15, fontWeight: FontWeight.w600)),
+          if (icon != null) ...[
+            HxIconView(icon!, size: height >= 52 ? 22 : 19, color: fg),
+            const SizedBox(width: 8),
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              color: fg,
+              fontSize: height >= 52 ? 17 : 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ],
     );
@@ -164,7 +222,15 @@ class HxButton extends StatelessWidget {
           color: bg,
           borderRadius: BorderRadius.circular(height >= 52 ? 18 : 16),
           border: border,
-          boxShadow: kind == HxButtonKind.primary ? [BoxShadow(color: h.ctaShadow, blurRadius: 20, offset: const Offset(0, 8))] : null,
+          boxShadow: kind == HxButtonKind.primary
+              ? [
+                  BoxShadow(
+                    color: h.ctaShadow,
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
         ),
         child: ExcludeSemantics(child: content),
       ),
@@ -174,7 +240,14 @@ class HxButton extends StatelessWidget {
 
 /// 圆形图标按钮（44×44 起）。
 class HxIconButton extends StatelessWidget {
-  const HxIconButton({super.key, required this.icon, required this.onTap, required this.label, this.size = 44, this.glass = false});
+  const HxIconButton({
+    super.key,
+    required this.icon,
+    required this.onTap,
+    required this.label,
+    this.size = 44,
+    this.glass = false,
+  });
   final HxIcon icon;
   final VoidCallback onTap;
   final String label;
@@ -184,7 +257,11 @@ class HxIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final h = Hx.of(context);
-    final inner = SizedBox(width: size, height: size, child: Center(child: HxIconView(icon, size: 20, color: h.ink)));
+    final inner = SizedBox(
+      width: size,
+      height: size,
+      child: Center(child: HxIconView(icon, size: 20, color: h.ink)),
+    );
     return Pressable(
       onTap: onTap,
       scale: 0.92,
@@ -192,7 +269,11 @@ class HxIconButton extends StatelessWidget {
       child: glass
           ? Glass(radius: size / 2, shadow: false, child: inner)
           : DecoratedBox(
-              decoration: BoxDecoration(color: h.surface, shape: BoxShape.circle, border: Border.all(color: h.line)),
+              decoration: BoxDecoration(
+                color: h.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: h.line),
+              ),
               child: inner,
             ),
     );
@@ -201,7 +282,14 @@ class HxIconButton extends StatelessWidget {
 
 /// 小标签。
 class HxTag extends StatelessWidget {
-  const HxTag(this.text, {super.key, this.bg, this.fg, this.dot, this.bold = false});
+  const HxTag(
+    this.text, {
+    super.key,
+    this.bg,
+    this.fg,
+    this.dot,
+    this.bold = false,
+  });
   final String text;
   final Color? bg;
   final Color? fg;
@@ -213,12 +301,23 @@ class HxTag extends StatelessWidget {
     final h = Hx.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-      decoration: BoxDecoration(color: bg ?? h.well, borderRadius: BorderRadius.circular(9)),
+      decoration: BoxDecoration(
+        color: bg ?? h.well,
+        borderRadius: BorderRadius.circular(9),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (dot != null) ...[LiveDot(color: dot!), const SizedBox(width: 6)],
-          Text(text, style: TextStyle(color: fg ?? h.sub, fontSize: 12, height: 1.4, fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
+          Text(
+            text,
+            style: TextStyle(
+              color: fg ?? h.sub,
+              fontSize: 12,
+              height: 1.4,
+              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
         ],
       ),
     );
@@ -236,7 +335,10 @@ class LiveDot extends StatefulWidget {
 }
 
 class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
-  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 2400))..repeat();
+  late final _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2400),
+  )..repeat();
 
   @override
   void dispose() {
@@ -258,7 +360,12 @@ class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
           decoration: BoxDecoration(
             color: widget.color,
             shape: BoxShape.circle,
-            boxShadow: [BoxShadow(color: widget.color.withValues(alpha: 0.45 * (1 - ring)), spreadRadius: 6 * ring)],
+            boxShadow: [
+              BoxShadow(
+                color: widget.color.withValues(alpha: 0.45 * (1 - ring)),
+                spreadRadius: 6 * ring,
+              ),
+            ],
           ),
         );
       },
@@ -286,7 +393,10 @@ class HxBar extends StatelessWidget {
               tween: Tween(begin: 0, end: ratio.clamp(0.0, 1.0)),
               duration: HxMotion.slow,
               curve: HxMotion.ease,
-              builder: (context, v, _) => FractionallySizedBox(widthFactor: v, child: ColoredBox(color: h.accent)),
+              builder: (context, v, _) => FractionallySizedBox(
+                widthFactor: v,
+                child: ColoredBox(color: h.accent),
+              ),
             ),
           ],
         ),
@@ -297,7 +407,13 @@ class HxBar extends StatelessWidget {
 
 /// 进度环。
 class HxRing extends StatelessWidget {
-  const HxRing({super.key, required this.ratio, this.size = 40, this.stroke = 4, this.child});
+  const HxRing({
+    super.key,
+    required this.ratio,
+    this.size = 40,
+    this.stroke = 4,
+    this.child,
+  });
   final double ratio;
   final double size;
   final double stroke;
@@ -313,7 +429,11 @@ class HxRing extends StatelessWidget {
       builder: (context, v, c) => CustomPaint(
         size: Size.square(size),
         painter: _RingPainter(v, h.track, h.accent, stroke),
-        child: SizedBox(width: size, height: size, child: Center(child: c)),
+        child: SizedBox(
+          width: size,
+          height: size,
+          child: Center(child: c),
+        ),
       ),
       child: child,
     );
@@ -329,22 +449,36 @@ class _RingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final rect = Rect.fromLTWH(stroke / 2, stroke / 2, size.width - stroke, size.height - stroke);
+    final rect = Rect.fromLTWH(
+      stroke / 2,
+      stroke / 2,
+      size.width - stroke,
+      size.height - stroke,
+    );
     final p = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round;
     canvas.drawArc(rect, 0, 6.2832, false, p..color = track);
-    if (v > 0) canvas.drawArc(rect, -1.5708, 6.2832 * v, false, p..color = color);
+    if (v > 0) {
+      canvas.drawArc(rect, -1.5708, 6.2832 * v, false, p..color = color);
+    }
   }
 
   @override
-  bool shouldRepaint(_RingPainter old) => old.v != v || old.color != color || old.track != track;
+  bool shouldRepaint(_RingPainter old) =>
+      old.v != v || old.color != color || old.track != track;
 }
 
 /// 分段选择：选中的胶囊滑过去。
 class HxSeg<T> extends StatelessWidget {
-  const HxSeg({super.key, required this.options, required this.value, required this.onChanged, this.flat = false});
+  const HxSeg({
+    super.key,
+    required this.options,
+    required this.value,
+    required this.onChanged,
+    this.flat = false,
+  });
   final List<(T, String)> options;
   final T value;
   final ValueChanged<T> onChanged;
@@ -373,7 +507,13 @@ class HxSeg<T> extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: flat ? h.surface : h.pill,
                     borderRadius: BorderRadius.circular(14),
-                    boxShadow: [BoxShadow(color: h.glassShadow, blurRadius: 10, offset: const Offset(0, 3))],
+                    boxShadow: [
+                      BoxShadow(
+                        color: h.glassShadow,
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -395,7 +535,9 @@ class HxSeg<T> extends StatelessWidget {
                               style: TextStyle(
                                 color: k == i ? h.ink : h.navIdle,
                                 fontSize: 14,
-                                fontWeight: k == i ? FontWeight.w600 : FontWeight.w400,
+                                fontWeight: k == i
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
                               ),
                               child: Text(options[k].$2),
                             ),
@@ -411,7 +553,13 @@ class HxSeg<T> extends StatelessWidget {
       },
     );
     if (flat) {
-      return DecoratedBox(decoration: BoxDecoration(color: h.well, borderRadius: BorderRadius.circular(18)), child: row);
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: h.well,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: row,
+      );
     }
     return Glass(radius: 18, shadow: false, child: row);
   }
@@ -428,8 +576,12 @@ class Skeleton extends StatefulWidget {
   State<Skeleton> createState() => _SkeletonState();
 }
 
-class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin {
-  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))..repeat();
+class _SkeletonState extends State<Skeleton>
+    with SingleTickerProviderStateMixin {
+  late final _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  )..repeat();
 
   @override
   void dispose() {
@@ -471,11 +623,23 @@ class ErrorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('没加载出来', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: h.ink)),
+          Text(
+            '没加载出来',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: h.ink,
+            ),
+          ),
           const SizedBox(height: 4),
           Text('$error', style: TextStyle(fontSize: 13, color: h.sub)),
           const SizedBox(height: 12),
-          HxButton('再试一次', onTap: onRetry, kind: HxButtonKind.ghost, height: 40),
+          HxButton(
+            '再试一次',
+            onTap: onRetry,
+            kind: HxButtonKind.ghost,
+            height: 40,
+          ),
         ],
       ),
     );
@@ -496,10 +660,21 @@ class EmptyCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
       child: Column(
         children: [
-          Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: h.ink)),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: h.ink,
+            ),
+          ),
           if (body != null) ...[
             const SizedBox(height: 6),
-            Text(body!, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: h.sub, height: 1.5)),
+            Text(
+              body!,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: h.sub, height: 1.5),
+            ),
           ],
           if (action != null) ...[const SizedBox(height: 14), action!],
         ],
@@ -521,7 +696,16 @@ class SectionHead extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 22, 16, 8),
       child: Row(
         children: [
-          Expanded(child: Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: h.ink))),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: h.ink,
+              ),
+            ),
+          ),
           if (trailing != null) trailing!,
         ],
       ),
@@ -541,8 +725,15 @@ class Rise extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: Duration(milliseconds: 420 + index * 40),
-      curve: Interval((index * 40) / (420 + index * 40), 1, curve: HxMotion.ease),
-      builder: (context, v, c) => Opacity(opacity: v, child: Transform.translate(offset: Offset(0, 12 * (1 - v)), child: c)),
+      curve: Interval(
+        (index * 40) / (420 + index * 40),
+        1,
+        curve: HxMotion.ease,
+      ),
+      builder: (context, v, c) => Opacity(
+        opacity: v,
+        child: Transform.translate(offset: Offset(0, 12 * (1 - v)), child: c),
+      ),
       child: child,
     );
   }
@@ -550,7 +741,10 @@ class Rise extends StatelessWidget {
 
 /* ---------- 时间 ---------- */
 
-DateTime _cn(int ms) => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true).add(const Duration(hours: 8));
+DateTime _cn(int ms) => DateTime.fromMillisecondsSinceEpoch(
+  ms,
+  isUtc: true,
+).add(const Duration(hours: 8));
 
 /// 毫秒时间戳 → "21:05"（北京时间）。
 String hhmm(int ms) {
@@ -560,7 +754,8 @@ String hhmm(int ms) {
 
 const _weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
 
-String weekdayOf(String day) => _weekdays[DateTime.parse('${day}T00:00:00Z').weekday - 1];
+String weekdayOf(String day) =>
+    _weekdays[DateTime.parse('${day}T00:00:00Z').weekday - 1];
 
 /// "2026-10-21" → "10 月 21 日 周三"
 String longDay(String day, {bool weekday = true}) {
@@ -571,9 +766,13 @@ String longDay(String day, {bool weekday = true}) {
 /// "2026-10-21" → "10/21"
 String shortDay(String day) => '${day.substring(5, 7)}/${day.substring(8, 10)}';
 
-int daysBetween(String from, String to) => DateTime.parse('${to}T00:00:00Z').difference(DateTime.parse('${from}T00:00:00Z')).inDays;
+int daysBetween(String from, String to) => DateTime.parse(
+  '${to}T00:00:00Z',
+).difference(DateTime.parse('${from}T00:00:00Z')).inDays;
 
-String cnToday() => _cn(DateTime.now().millisecondsSinceEpoch).toIso8601String().substring(0, 10);
+String cnToday() => _cn(
+  DateTime.now().millisecondsSinceEpoch,
+).toIso8601String().substring(0, 10);
 
 String greeting() {
   final h = _cn(DateTime.now().millisecondsSinceEpoch).hour;
@@ -602,10 +801,16 @@ void showHxToast(BuildContext context, String text, {bool error = false}) {
   if (overlay == null) return;
   _toastEntry?.remove();
   late OverlayEntry entry;
-  entry = OverlayEntry(builder: (context) => _Toast(text: text, error: error, onDone: () {
+  entry = OverlayEntry(
+    builder: (context) => _Toast(
+      text: text,
+      error: error,
+      onDone: () {
         if (_toastEntry == entry) _toastEntry = null;
         entry.remove();
-      }));
+      },
+    ),
+  );
   _toastEntry = entry;
   overlay.insert(entry);
 }
@@ -621,21 +826,28 @@ class _Toast extends StatefulWidget {
 }
 
 class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
-  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 360), reverseDuration: const Duration(milliseconds: 200));
+  late final _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 360),
+    reverseDuration: const Duration(milliseconds: 200),
+  );
   bool _removed = false;
 
   @override
   void initState() {
     super.initState();
     _c.forward();
-    Future.delayed(Duration(milliseconds: widget.error ? 4000 : 2600), () async {
-      if (!mounted) return;
-      await _c.reverse();
-      if (mounted && !_removed) {
-        _removed = true;
-        widget.onDone();
-      }
-    });
+    Future.delayed(
+      Duration(milliseconds: widget.error ? 4000 : 2600),
+      () async {
+        if (!mounted) return;
+        await _c.reverse();
+        if (mounted && !_removed) {
+          _removed = true;
+          widget.onDone();
+        }
+      },
+    );
   }
 
   @override
@@ -657,7 +869,13 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
           animation: _c,
           builder: (context, child) {
             final v = Curves.easeOutBack.transform(_c.value.clamp(0.0, 1.0));
-            return Opacity(opacity: _c.value, child: Transform.translate(offset: Offset(0, 14 * (1 - v)), child: child));
+            return Opacity(
+              opacity: _c.value,
+              child: Transform.translate(
+                offset: Offset(0, 14 * (1 - v)),
+                child: child,
+              ),
+            );
           },
           child: Center(
             child: Glass(
@@ -667,11 +885,24 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (!widget.error) ...[HxIconView(HxIcon.check, size: 18, color: h.accentText, stroke: 2.2), const SizedBox(width: 8)],
+                  if (!widget.error) ...[
+                    HxIconView(
+                      HxIcon.check,
+                      size: 18,
+                      color: h.accentText,
+                      stroke: 2.2,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   Flexible(
                     child: Text(
                       widget.text,
-                      style: TextStyle(fontSize: 14, color: widget.error ? h.badInk : h.ink, decoration: TextDecoration.none, fontWeight: FontWeight.w400),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: widget.error ? h.badInk : h.ink,
+                        decoration: TextDecoration.none,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],

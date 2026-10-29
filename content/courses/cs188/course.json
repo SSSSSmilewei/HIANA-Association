@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs188",
+ "title": "CS188: Introduction to Artificial Intelligence",
+ "category": "人工智能",
+ "provider": "UC Berkeley",
+ "instructors": [],
+ "language": "Python",
+ "prerequisites": "CS70",
+ "difficulty": 3,
+ "hours": "50 小时",
+ "summary": "伯克利的人工智能入门课，课程 notes 写得非常深入浅出，基本不需要观看课程视频。课程内容的安排基本按照人工智能的经典教材 Artificial intelligence: A Modern Approach 的章节顺序，覆盖了搜索剪枝、约束满足问题、马尔可夫决策过程……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n伯克利的人工智能入门课，课程 notes 写得非常深入浅出，基本不需要观看课程视频。课程内容的安排基本按照人工智能的经典教材 <em>Artificial intelligence: A Modern Approach</em> 的章节顺序，覆盖了搜索剪枝、约束满足问题、马尔可夫决策过程、强化学习、贝叶斯网络、隐马尔可夫模型以及基础的机器学习和神经网络的相关内容。\n\n目前Spring 2024是最新一期视频与资料完整、开放了旁听gradescope的版本，大家可以在线完成书面作业并实时得到测评结果。同时课程的 6 个 Project 也是质量爆炸，复现了经典的 Packman（吃豆人）小游戏，会让你利用学到的 AI 知识，去实现相关算法，让你的吃豆人在迷宫里自由穿梭，躲避鬼怪，收集豆子。\n\n## 课程资源\n\n- 课程网站：[Spring 2024](https://inst.eecs.berkeley.edu/~cs188/sp24/)\n- 课程视频：每节课的链接详见课程网站\n- 课程教材：Artificial intelligence: A Modern Approach\n- 课程作业：在线测评书面作业和 Projects，详见课程网站\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/CS188/"
+  },
+  "official": "人工智能课程涵盖搜索算法、游戏论和决策制定、逻辑和推理、概率和贝叶斯网络、隐马尔可夫模型、机器学习和神经网络、强化学习以及人工智能安全和大型语言模型等主题。课程包含27个讲座，展示了人工智能的多个关键领域。",
+  "officialSource": {
+   "kind": "website",
+   "label": "inst.eecs.berkeley.edu",
+   "url": "https://inst.eecs.berkeley.edu/~cs188/sp24/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站 · Spring 2024",
+   "url": "https://inst.eecs.berkeley.edu/~cs188/sp24/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Introduction to Artificial Intelligence"
+}

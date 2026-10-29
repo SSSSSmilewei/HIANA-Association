@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/hiana_page.dart';
@@ -9,7 +10,7 @@ import '../../data/providers.dart';
 import '../../widgets/ui.dart';
 import 'course_page.dart';
 
-/// 课程目录：先学三门必修，其余按兴趣选。选了的课会出现在首页“接下来”里。
+/// 课程目录：按分类浏览；有站内条目的课排最前。
 class CoursesPage extends ConsumerStatefulWidget {
   const CoursesPage({super.key});
 
@@ -18,62 +19,136 @@ class CoursesPage extends ConsumerStatefulWidget {
 }
 
 class _CoursesPageState extends ConsumerState<CoursesPage> {
-  String _area = 'all';
+  final _q = TextEditingController();
+  String? _cat;
+
+  @override
+  void initState() {
+    super.initState();
+    _q.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _q.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final h = Hx.of(context);
     final courses = ref.watch(coursesProvider);
+    final q = _q.text.trim();
     return HianaPage(
       title: '课程',
-      onRefresh: () => ref.refresh(coursesProvider.future).then((_) {}, onError: (_) {}),
+      onRefresh: () =>
+          ref.refresh(coursesProvider.future).then((_) {}, onError: (_) {}),
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(28, 0, 28, 14),
-          child: Text(
-            '先学三门必修：Missing Semester 打基础，Git 学会交作业，然后跟主线 CS50x。',
-            style: TextStyle(fontSize: 14, height: 1.5, color: h.sub),
-          ),
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            children: [
-              for (final a in kAreas)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: _Chip(label: a.$2, on: _area == a.$1, onTap: () => setState(() => _area = a.$1)),
-                ),
-            ],
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+          child: MiuixTextField(
+            controller: _q,
+            label: '搜索课程、学校、语言',
+            useLabelAsPlaceholder: true,
+            singleLine: true,
           ),
         ),
         ...courses.when(
           loading: () => [
-            for (var i = 0; i < 3; i++) const Padding(padding: EdgeInsets.fromLTRB(12, 12, 12, 0), child: Skeleton(height: 200, radius: 22)),
+            for (var i = 0; i < 3; i++)
+              const Padding(
+                padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
+                child: Skeleton(height: 120, radius: 22),
+              ),
           ],
-          error: (e, _) => [Padding(padding: const EdgeInsets.all(12), child: ErrorCard(error: e, onRetry: () => ref.invalidate(coursesProvider)))],
+          error: (e, _) => [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: ErrorCard(
+                error: e,
+                onRetry: () => ref.invalidate(coursesProvider),
+              ),
+            ),
+          ],
           data: (list) {
-            final shown = list.where((c) => _area == 'all' || c.area == _area).toList();
-            final req = shown.where((c) => c.required).toList();
-            final opt = shown.where((c) => !c.required).toList();
-            final allReq = list.where((c) => c.required).toList();
-            if (shown.isEmpty) {
-              return [const Padding(padding: EdgeInsets.all(12), child: EmptyCard(title: '这个方向还没有课', body: '想学什么，可以跟会长提。'))];
+            final cats = <String>[];
+            for (final c in list) {
+              if (!cats.contains(c.category)) cats.add(c.category);
             }
+            final browsing = q.isEmpty && _cat == null;
+            final shown = list
+                .where(
+                  (c) => c.matches(q) && (_cat == null || c.category == _cat),
+                )
+                .toList();
+            final hosted = browsing
+                ? shown.where((c) => c.hosted).toList()
+                : <CourseSummary>[];
+            final rest = browsing
+                ? shown.where((c) => !c.hosted).toList()
+                : shown;
+            Widget rows(List<CourseSummary> cs) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: HxCard(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    for (var i = 0; i < cs.length; i++) ...[
+                      if (i > 0) Container(height: 1, color: h.line),
+                      _CatalogRow(c: cs[i]),
+                    ],
+                  ],
+                ),
+              ),
+            );
             return [
-              if (req.isNotEmpty) const SectionHead('必修 · 按这个顺序学'),
-              for (var i = 0; i < req.length; i++)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
+                child: Row(
+                  children: [
+                    _Chip(
+                      label: '全部',
+                      on: _cat == null,
+                      onTap: () => setState(() => _cat = null),
+                    ),
+                    for (final c in cats)
+                      _Chip(
+                        label: c,
+                        on: _cat == c,
+                        onTap: () =>
+                            setState(() => _cat = _cat == c ? null : c),
+                      ),
+                  ],
+                ),
+              ),
+              if (shown.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: EmptyCard(title: q.isEmpty ? '没有课程' : '没有找到“$q”'),
+                ),
+              if (hosted.isNotEmpty) const SectionHead('站内学习'),
+              for (final c in hosted)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  child: Rise(index: i, child: CourseCard(c: req[i], step: (allReq.indexOf(req[i]) + 1).toString().padLeft(2, '0'))),
+                  child: CourseCard(c: c),
                 ),
-              if (opt.isNotEmpty) const SectionHead('选修'),
-              for (var i = 0; i < opt.length; i++)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  child: Rise(index: i + req.length, child: CourseCard(c: opt[i])),
-                ),
+              if (browsing) ...[
+                for (final cat in cats)
+                  if (rest.any((c) => c.category == cat)) ...[
+                    SectionHead(
+                      cat,
+                      trailing: Text(
+                        '${rest.where((c) => c.category == cat).length} 门',
+                        style: TextStyle(fontSize: 13, color: h.sub),
+                      ),
+                    ),
+                    rows(rest.where((c) => c.category == cat).toList()),
+                  ],
+              ] else if (rest.isNotEmpty) ...[
+                SectionHead('${rest.length} 门'),
+                rows(rest),
+              ],
             ];
           },
         ),
@@ -82,39 +157,66 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
   }
 }
 
-class _Chip extends StatelessWidget {
-  const _Chip({required this.label, required this.on, required this.onTap});
-  final String label;
-  final bool on;
-  final VoidCallback onTap;
+class _CatalogRow extends StatelessWidget {
+  const _CatalogRow({required this.c});
+  final CourseSummary c;
 
   @override
   Widget build(BuildContext context) {
     final h = Hx.of(context);
+    final meta = [
+      if (c.provider.isNotEmpty) c.provider,
+      if (c.difficulty > 0) stars(c.difficulty),
+    ].join('  ');
     return Pressable(
-      onTap: onTap,
-      semanticLabel: label,
-      child: AnimatedContainer(
-        duration: HxMotion.mid,
-        curve: HxMotion.ease,
-        height: 38,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: on ? h.ink : h.surface,
-          borderRadius: BorderRadius.circular(19),
-          border: Border.all(color: on ? h.ink : h.line),
+      onTap: () => context.pushPage(CoursePage(slug: c.slug)),
+      scale: 0.99,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    c.title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: h.ink,
+                    ),
+                  ),
+                ),
+                if (c.enrollStatus == 'done')
+                  HxTag('学完', bg: h.okBg, fg: h.okInk)
+                else if (c.enrollStatus == 'active')
+                  HxTag('在学', bg: h.tint, fg: h.accentText),
+              ],
+            ),
+            if (c.summary.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(
+                c.summary,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14, height: 1.55, color: h.sub),
+              ),
+            ],
+            if (meta.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(meta, style: TextStyle(fontSize: 13, color: h.sub)),
+            ],
+          ],
         ),
-        child: Text(label, style: TextStyle(fontSize: 14, color: on ? h.bg : h.navIdle, fontWeight: on ? FontWeight.w600 : FontWeight.w400)),
       ),
     );
   }
 }
 
 class CourseCard extends StatelessWidget {
-  const CourseCard({super.key, required this.c, this.step});
+  const CourseCard({super.key, required this.c});
   final CourseSummary c;
-  final String? step;
 
   @override
   Widget build(BuildContext context) {
@@ -128,61 +230,105 @@ class CourseCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Text(c.code, style: TextStyle(fontSize: 11, letterSpacing: 0.6, fontWeight: FontWeight.w500, color: h.sub, fontFamily: 'monospace'))),
-              if (step != null)
-                Text(step!, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: h.accentText, fontFamily: 'monospace'))
-              else if (c.learners > 0)
-                Text('${c.learners} 人在学', style: TextStyle(fontSize: 12, color: h.sub)),
+              Expanded(
+                child: Text(
+                  c.provider,
+                  style: TextStyle(fontSize: 14, color: h.sub),
+                ),
+              ),
+              if (c.learners > 0)
+                Text(
+                  '${c.learners} 人在学',
+                  style: TextStyle(fontSize: 13, color: h.sub),
+                ),
             ],
           ),
           const SizedBox(height: 8),
           Hero(
             tag: 'course-${c.slug}',
-            child: Text(c.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: h.ink, decoration: TextDecoration.none)),
+            child: Text(
+              c.title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: h.ink,
+                decoration: TextDecoration.none,
+              ),
+            ),
           ),
           const SizedBox(height: 6),
-          Text(c.summary, maxLines: 3, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, height: 1.55, color: h.sub)),
+          Text(
+            c.summary,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 14, height: 1.55, color: h.sub),
+          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 6,
             runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              HxTag('${c.progress.totalPeriods} 课时'),
-              HxTag(kDifficulty[c.difficulty.clamp(1, 5).toInt()]),
-              HxTag(kAccess[c.accessLevel] ?? ''),
+              HxTag('${c.itemCount} 项'),
+              if (c.hours.isNotEmpty) HxTag(c.hours),
+              if (c.difficulty > 0)
+                Text(
+                  stars(c.difficulty),
+                  style: TextStyle(fontSize: 13, color: h.accentText),
+                ),
             ],
           ),
-          const SizedBox(height: 14),
-          Container(height: 1, color: h.line),
-          const SizedBox(height: 12),
-          if (enrolled)
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${st == 'done' ? '学完了' : st == 'paused' ? '暂停中' : '已学'} ${c.progress.doneUnits} / ${c.progress.units} 单元',
-                        style: TextStyle(fontSize: 12, color: h.sub),
-                      ),
-                      const SizedBox(height: 6),
-                      HxBar(c.progress.ratio),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 14),
-                HxTag(st == 'done' ? '回顾' : '继续', bg: h.tint, fg: h.accentText, bold: true),
-              ],
-            )
-          else
-            Row(
-              children: [
-                Expanded(child: Text('先修：${c.prerequisites}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, color: h.sub))),
-                HxTag('看看', bg: h.tint, fg: h.accentText, bold: true),
-              ],
+          if (enrolled) ...[
+            const SizedBox(height: 12),
+            Text(
+              '${st == 'done'
+                  ? '学完了'
+                  : st == 'paused'
+                  ? '暂停中'
+                  : '已学'} ${c.progress.doneItems} / ${c.progress.items}',
+              style: TextStyle(fontSize: 13, color: h.sub),
             ),
+            const SizedBox(height: 6),
+            HxBar(c.progress.ratio),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+class _Chip extends StatelessWidget {
+  const _Chip({required this.label, required this.on, required this.onTap});
+  final String label;
+  final bool on;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final h = Hx.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: Pressable(
+        onTap: onTap,
+        semanticLabel: label,
+        child: AnimatedContainer(
+          duration: HxMotion.fast,
+          height: 34,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: on ? h.ink : h.well,
+            borderRadius: BorderRadius.circular(17),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: on ? FontWeight.w600 : FontWeight.w400,
+              color: on ? h.bg : h.ink,
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,0 +1,58 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cs106l",
+ "title": "CS106L: Standard C++ Programming",
+ "category": "编程入门",
+ "provider": "Stanford",
+ "instructors": [],
+ "language": "C++",
+ "prerequisites": "最好掌握至少一门编程语言",
+ "difficulty": 3,
+ "hours": "20 小时",
+ "summary": "我从大一开始一直都是写的 C++ 代码，直到学完这门课我才意识到，我写的 C++ 代码大概只是 C 语言 + cin/cout 而已。",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n我从大一开始一直都是写的 C++ 代码，直到学完这门课我才意识到，我写的 C++ 代码大概只是 C 语言 + `cin`/`cout` 而已。\n\n这门课会深入到很多标准 C++ 的特性和语法，让你编写出高质量的 C++ 代码。例如 auto binding, uniform initialization, lambda function, move semantics，RAII 等技巧都在我此后的代码生涯中被反复用到，非常实用。\n\n值得一提的是，这门课的作业里你会实现一个 HashMap（类似于 STL 中的 `unordered_map`), 这个作业几乎把整个课程串联了起来，非常考验代码能力。特别是 `iterator` 的实现，做完这个作业我开始理解为什么 Linus 对 C/C++ 嗤之以鼻了，因为真的很难写对。\n\n总的来讲这门课并不难，但是信息量很大，需要你在之后的开发实践中反复巩固。Stanford 之所以单开一门 C++ 的编程课，是因为它后续的很多 CS 课程 Project 都是基于 C++的。例如 CS144 计算机网络和 CS143 编译器。这两门课在本书中均有收录。\n\n## 课程资源\n\n- 课程网站：<http://web.stanford.edu/class/cs106l/>\n- 课程视频：<https://www.youtube.com/channel/UCSqr6y-eaQT_qZJVUm_4QxQ/playlists>\n- 课程教材：<http://web.stanford.edu/class/cs106l/full_course_reader.pdf>\n- Assignment1下载网址：<https://github.com/snme/cs106L-assignment1>\n- Assignment2下载网址：<https://github.com/snme/cs106L-assignment2>\n- 课程作业：具体内容见课程网站，我做的时候一共是两个：\n  1. 实现一个 WikiRacer 的小游戏\n  2. 实现一个类似 STL 库的 HashMap\n\n## 资源汇总\n\n@PKUFlyingPig 在学习这门课中用到的所有资源和作业实现都汇总在 [PKUFlyingPig/CS106L - GitHub](https://github.com/PKUFlyingPig/CS106L) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/cpp/CS106L/"
+  },
+  "official": "CS106L 是 Stanford 的 1 学分课程，深入探讨现代 C++ 编程。课程涵盖令人兴奋的 C++ 特性，包括现代模式（直到 C++26），欢迎完成 CS106B/X 或等效编程基础课程的学生。课程包含 14 个简短的课堂活动和 2 个较长的作业，无考试或论文。主题跨越类型、结构、初始化、引用、流、容器、迭代器、类、模板、lambda、操作符重载、移动语义和智能指针。",
+  "officialSource": {
+   "kind": "website",
+   "label": "web.stanford.edu",
+   "url": "http://web.stanford.edu/class/cs106l/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "http://web.stanford.edu/class/cs106l/"
+  },
+  {
+   "kind": "video",
+   "label": "视频",
+   "url": "https://www.youtube.com/channel/UCSqr6y-eaQT_qZJVUm_4QxQ/playlists"
+  },
+  {
+   "kind": "textbook",
+   "label": "教材",
+   "url": "http://web.stanford.edu/class/cs106l/full_course_reader.pdf"
+  },
+  {
+   "kind": "other",
+   "label": "Assignment1下载网址",
+   "url": "https://github.com/snme/cs106L-assignment1"
+  },
+  {
+   "kind": "other",
+   "label": "Assignment2下载网址",
+   "url": "https://github.com/snme/cs106L-assignment2"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Standard C++ Programming"
+}

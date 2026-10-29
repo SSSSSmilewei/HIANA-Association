@@ -6,7 +6,7 @@
  */
 export const MIGRATIONS: string[][] = [
   [
-    // 成员：学号 + 姓名 + 口令。会长用后台密码登录，不在这张表里。
+    // 成员：学号 + 姓名 + 口令（v2 起改为自己设密码，v5 起改为邀请码注册）
     `CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       student_no TEXT NOT NULL UNIQUE,
@@ -120,7 +120,7 @@ export const MIGRATIONS: string[][] = [
   ],
   // v3（技术方案阶段 0/1）：只做加法，main 上的旧代码照常能跑
   [
-    // 会长和老师都是 users 里 role = 'admin' 的账号；ADMIN_PASSWORD 只留作首次初始化
+    // 会长和老师都是 users 里 role = 'admin' 的账号
     `ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'member'`,
     // 统一事件表加分类：attendance（签到）/ reflection（晨思夜思）/ study（站内学习）
     `ALTER TABLE activity_events ADD COLUMN category TEXT`,
@@ -207,6 +207,73 @@ export const MIGRATIONS: string[][] = [
       updated_at INTEGER NOT NULL,
       PRIMARY KEY (user_id, day, slot)
     )`,
+  ],
+  // v5：账号改造 + 首页欢迎语。只做加法
+  [
+    // 显示名只用于首页欢迎语，为空时显示真名 name（真名成员自己不能改）
+    `ALTER TABLE users ADD COLUMN display_name TEXT`,
+    // 上次访问时间（毫秒），用来判断欢迎语的“初来”“久别”，最多每小时写一次
+    `ALTER TABLE users ADD COLUMN last_seen_at INTEGER`,
+    // 登录版本号：令牌里带着签发时的版本，和库里不一致就失效。重置密码、改密码时加 1，所有设备退出登录
+    `ALTER TABLE users ADD COLUMN session_version INTEGER NOT NULL DEFAULT 0`,
+    // 邀请码：注册必须用一个，一次性。passcode_hash 列从此只用作“重置码”（忘记密码）
+    `CREATE TABLE IF NOT EXISTS invite_codes (
+      id TEXT PRIMARY KEY,
+      code_hash TEXT NOT NULL UNIQUE,
+      hint TEXT NOT NULL,
+      note TEXT,
+      created_by TEXT,
+      created_at INTEGER NOT NULL,
+      expires_at INTEGER,
+      used_by TEXT,
+      used_at INTEGER,
+      revoked_at INTEGER
+    )`,
+    `CREATE INDEX IF NOT EXISTS invite_codes_by_time ON invite_codes(created_at)`,
+    // 不再有单独的“会长”登录；第一个管理员是这个学号（和 members.ts 里的 FIRST_ADMIN_STUDENT_NO 一致）
+    `UPDATE users SET role = 'admin' WHERE student_no = '254030411'`,
+    `DELETE FROM settings WHERE key = 'admin_password_sha256'`,
+  ],
+  // v6：公告阅读确认。只做加法
+  [
+    `CREATE TABLE IF NOT EXISTS notice_reads (
+      notice_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      confirmed_at INTEGER NOT NULL,
+      PRIMARY KEY (notice_id, user_id)
+    )`,
+  ],
+  // v7：课程包（hiana-course@1）。管理员发布的课程存整包 JSON；练手题做对的记录。只做加法
+  [
+    `CREATE TABLE IF NOT EXISTS course_packages (
+      slug TEXT PRIMARY KEY,
+      json TEXT NOT NULL,
+      meta TEXT NOT NULL,
+      published_by TEXT NOT NULL,
+      updated_at INTEGER NOT NULL
+    )`,
+    `CREATE TABLE IF NOT EXISTS practice_solved (
+      user_id TEXT NOT NULL,
+      course_slug TEXT NOT NULL,
+      item_id TEXT NOT NULL,
+      question_id TEXT NOT NULL,
+      solved_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, course_slug, item_id, question_id)
+    )`,
+  ],
+  // v8：校内 / 校外账号。只做加法
+  [
+    // campus = 校内（学号登录）；external = 校外（用户名或邮箱登录）。
+    // 校外账号没有学号，student_no 里放 "ext:<id>" 占位（这一列 NOT NULL UNIQUE，改不了表结构），界面上不显示
+    `ALTER TABLE users ADD COLUMN kind TEXT NOT NULL DEFAULT 'campus'`,
+    `ALTER TABLE users ADD COLUMN username TEXT`,
+    `ALTER TABLE users ADD COLUMN email TEXT`,
+    // 校外账号的学校 / 单位（选填）
+    `ALTER TABLE users ADD COLUMN org TEXT`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS users_by_username ON users(username) WHERE username IS NOT NULL`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS users_by_email ON users(email) WHERE email IS NOT NULL`,
+    // 邀请码决定注册出来的是哪种账号
+    `ALTER TABLE invite_codes ADD COLUMN kind TEXT NOT NULL DEFAULT 'campus'`,
   ],
 ];
 

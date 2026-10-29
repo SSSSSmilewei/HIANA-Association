@@ -1,0 +1,38 @@
+{
+ "format": "hiana-course@1",
+ "slug": "cmu15-442",
+ "title": "CMU 15-442/642: Machine Learning Systems",
+ "category": "机器学习系统",
+ "provider": "CMU",
+ "instructors": [],
+ "language": "Python, C++, CUDA(PTX), TIRx",
+ "prerequisites": "系统入门(eg.15-213)、深度学习入门、基本的数学知识",
+ "difficulty": 4,
+ "hours": "100小时+",
+ "summary": "随着大语言模型（LLM）的爆发，如何高效训练和部署这些庞然大物成为了当今 AI 领域最核心的挑战之一。如果你不满足于仅仅做一个调用 PyTorch API 的“炼丹侠”，而是十分好奇并且想探究 vLLM、SGLang 等顶尖推理框架的背后的底层原理……",
+ "tags": [],
+ "license": "介绍文字 © csdiy.wiki，MIT 许可",
+ "intro": {
+  "community": "## 课程简介\n\n<!-- 用一两段话介绍这门课程，内容包括但不限于：\n    （1）课程覆盖的知识点范围\n    （2）与同类课程相比它的优势与特点\n    （3）学习这门课程的体验与感受\n    （4）自学这门课的注意点（踩过的坑、难度预警等等）\n    （5）... ...\n-->\n\n随着大语言模型（LLM）的爆发，如何高效训练和部署这些庞然大物成为了当今 AI 领域最核心的挑战之一。如果你不满足于仅仅做一个调用 PyTorch API 的“炼丹侠”，而是十分好奇并且想探究 vLLM、SGLang 等顶尖推理框架的背后的底层原理，并且想亲自编写榨干现代 GPU 算力的底层算子，那么这门由 Tianqi Chen 和 Zhihao Jia 教授讲授的课程将是一个不错的入门途径。\n\n课程内容采用“模型、数据、系统、硬件”全栈协同的视角，构建了从底层物理硬件到上层分布式框架的完整知识地图。首先从自动微分等深度学习框架基石讲起，随后切入现代 GPU（如最新的Blackwell B200 架构）的底层硬件加速及编程。在打通单卡极致性能后，课程内容延伸至大模型的分布式训练，详细讲解 ZeRO 冗余优化器及张量与流水线等并行机制。最后，课程将目光聚焦于当下的 LLM 推理，深入剖析连续批处理、PagedAttention、投机解码等核心优化策略，并前瞻性地探讨了现代机器学习编译抽象以及巨型算子（Mega-Kernel）等内容。\n\n这门课最大的特色在于其具有挑战性且与工业界前沿接轨的编程作业。一共有三个作业：1. 第一个作业是实现一个扩展图的自动微分框架。2. 在分布式训练作业中，你需要使用 MPI 和 NumPy 实现 ZeRO Stage 3 的参数分片与张量模型并行的通信逻辑。3. 而在最硬核的 GPU 算子作业中，你将使用 TIRx DSL，针对最新的 NVIDIA Blackwell (B200) 架构，从零开始一步步手写并优化 FP16 矩阵乘法。你不仅需要处理 128B Swizzle 的内存错位排列来消除 Bank 冲突，还要手动下发 TMA（张量内存加速器）异步搬运指令，并设计 Warp Specialization 软流水线机制和 2-CTA 集群调度，最终将算力从最初的 0.02 TFLOP/s 飙升至媲美官方 cuBLAS 的 1300+ TFLOP/s。\n\n## 课程资源\n\n- 课程网站：<https://mlsyscourse.org/>\n- 课程视频：无\n- 课程作业：\n  1. <https://github.com/mlsyscourse/assignment1>\n  2. <https://github.com/mlsyscourse/assignment-distributed-training>\n  3. <https://github.com/mlsyscourse/assignment-tirx-gemm>\n\n## 资源汇总\n\n@RisingUppercut 在学习这门课中用到的所有资源和作业实现都汇总在 [RisingUppercut/CMU_15442_2026Spring](https://github.com/RisingUppercut/CMU_15442_2026Spring) 中。\n",
+  "communitySource": {
+   "kind": "website",
+   "label": "csdiy.wiki",
+   "url": "https://csdiy.wiki/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F/CMU15-442/"
+  },
+  "official": "本课程旨在让学生了解现代机器学习系统中的元素。课程涵盖当代ML框架设计原理、系统技术以实现扩展、内存减少和异构计算资源卸载、专注于大型语言模型（LLM）训练和服务系统的案例研究，以及追求ML系统研究或ML工程职业的学生所需的基础知识。",
+  "officialSource": {
+   "kind": "website",
+   "label": "mlsyscourse.org",
+   "url": "https://mlsyscourse.org/"
+  }
+ },
+ "links": [
+  {
+   "kind": "website",
+   "label": "网站",
+   "url": "https://mlsyscourse.org/"
+  }
+ ],
+ "modules": [],
+ "titleEn": "Machine Learning Systems"
+}
