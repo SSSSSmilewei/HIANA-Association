@@ -220,7 +220,7 @@ export async function listAttendance(db: D1Database, fromDay: string, toDay: str
 const KIND_LABEL: Record<AttendanceKind, string> = { evening: "晚自习", venue: "大创场地" };
 const STATUS_LABEL: Record<AttendanceStatus, string> = { open: "进行中", closed: "已签退", auto_closed: "未签退" };
 
-function csvCell(v: string): string {
+export function csvCell(v: string): string {
   // 防止 Excel 把 =、+、-、@ 开头的内容当公式
   const safe = /^[=+\-@]/.test(v) ? `'${v}` : v;
   return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;

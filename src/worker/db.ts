@@ -314,6 +314,37 @@ export const MIGRATIONS: string[][] = [
       PRIMARY KEY (pin_id, user_id)
     )`,
   ],
+  // v11：新生报名（开场动画里的报名表）。只有管理员能看；同一学号再交一次覆盖上一次
+  [
+    `CREATE TABLE IF NOT EXISTS applications (
+      id TEXT PRIMARY KEY,
+      student_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      class_name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      qq TEXT NOT NULL,
+      q1 TEXT,
+      q2 TEXT,
+      q3 TEXT,
+      q4 TEXT,
+      q5 TEXT,
+      status TEXT NOT NULL DEFAULT 'new',
+      admin_note TEXT,
+      submit_count INTEGER NOT NULL DEFAULT 1,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      handled_by TEXT,
+      handled_at INTEGER
+    )`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS applications_by_student ON applications(student_id)`,
+    `CREATE INDEX IF NOT EXISTS applications_by_time ON applications(created_at)`,
+    // 报名防刷：每个 IP 每小时最多交几次（和 login_failures 一样只存 IP 和时间）
+    `CREATE TABLE IF NOT EXISTS application_hits (
+      ip TEXT NOT NULL,
+      at INTEGER NOT NULL
+    )`,
+    `CREATE INDEX IF NOT EXISTS application_hits_by_ip ON application_hits(ip, at)`,
+  ],
 ];
 
 // 每个数据库连接只迁移一次（Worker 里通常只有一个；测试里每个用例一个内存库）

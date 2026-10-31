@@ -4403,3 +4403,152 @@ body.pin-mode .pin-board [data-anchor]:hover {
 [data-skin="classic"] .pin-hint {
   box-shadow: var(--hard-sm);
 }
+
+/* ---------- 管理后台：新生报名 ---------- */
+/* 六个状态标签：放不下就横着滑，不要挤在一起 */
+.seg-scroll > .seg {
+  max-width: none;
+  width: max-content;
+}
+.app-switch {
+  gap: 12px;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+.app-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.app-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.app-row:hover,
+.app-row[aria-current="true"] {
+  background: var(--well);
+}
+.app-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.app-detail {
+  position: sticky;
+  top: 20px;
+}
+.app-detail-card {
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+/* 侧栏窄：学号、手机号、QQ 的标签列收窄，号码不被挤出去 */
+.app-detail .field-table > div {
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+}
+.app-back {
+  display: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--fs-sm);
+}
+.app-answers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.app-answers li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.app-answers p {
+  margin: 4px 0 0;
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.copy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 2px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.copy-chip:hover {
+  border-color: var(--line-strong);
+}
+.nav-count {
+  margin-left: auto;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--tint);
+  color: var(--accent-text);
+  font-size: var(--fs-xs);
+  line-height: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+.tab .nav-count {
+  position: absolute;
+  top: 4px;
+  left: calc(50% + 6px);
+  margin: 0;
+  min-width: 18px;
+  padding: 0 4px;
+  line-height: 18px;
+}
+/* 窄屏：没点开时不占位置；点开后详情占满整屏 */
+@media (max-width: 899px) {
+  .app-detail:not(.open) {
+    display: none;
+  }
+  .app-detail.open {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    max-width: none;
+    overflow-y: auto;
+    background: var(--bg);
+    padding: max(12px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  }
+  .app-detail.open .app-detail-card {
+    max-height: none;
+    overflow: visible;
+    border: 0;
+    padding: 4px 0 0;
+    background: none;
+  }
+  .app-back {
+    display: inline-flex;
+  }
+  .app-close {
+    display: none;
+  }
+}

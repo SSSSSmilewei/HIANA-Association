@@ -134,7 +134,7 @@ async function pinRow(c: Ctx, id: string): Promise<PinRow> {
 export const AI_DAILY_LIMIT = 20;
 export const AI_PER_PIN = 3;
 
-const AI_SYSTEM = `你是海纳协会（智慧网络算法协会）学习平台上的助教，回答同学钉在课程讲义上的问题。
+const AI_SYSTEM = `你是海纳协会（智慧算法网络协会）学习平台上的助教，回答同学钉在课程讲义上的问题。
 要求：
 - 用简体中文，口语化，像学长学姐讲题；先直接回答，再用一两句解释为什么。
 - 只围绕讲义和这个问题，不扯远；能举一个很小的例子就举。

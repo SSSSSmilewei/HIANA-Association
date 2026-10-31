@@ -67,6 +67,7 @@ const PATHS: Record<string, React.ReactNode> = {
     </>
   ),
   plus: <path d="M12 5v14M5 12h14" />,
+  inbox: <path d="M4 13.5 6.5 5h11l2.5 8.5V19H4zM4 13.5h4.5l1 2h5l1-2H20" />,
   search: (
     <>
       <circle cx="11" cy="11" r="6" />

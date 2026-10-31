@@ -3,6 +3,7 @@ import { api } from "./api";
 import { BrandMark, Shell } from "./components/Shell";
 import { AdminMembersPage, AdminNoticesPage, AdminSettingsPage, AdminTodayPage } from "./pages/Admin";
 import { AboutPage } from "./pages/About";
+import { AdminApplicationsPage } from "./pages/AdminApplications";
 import { AdminPinsPage } from "./pages/AdminPins";
 import { AttendancePage } from "./pages/Attendance";
 import { BlockPage } from "./pages/Blocks";
@@ -17,6 +18,7 @@ import { NoticeGate } from "./components/NoticeGate";
 import { NoticesPage } from "./pages/Notices";
 import { ProfilePage } from "./pages/Profile";
 import { ReportPage } from "./pages/Report";
+import { shouldPlayIntro } from "./intro";
 import { matchPath, navigate, useLocation } from "./router";
 import { MeContext, loginHref, safeNext } from "./session";
 import type { Me } from "./types";
@@ -66,6 +68,12 @@ export function App() {
   };
   const next = safeNext(new URLSearchParams(search).get("next"));
 
+  // 游客第一次打开首页：先去看开场动画（只自动跳这一次；登录的成员不跳）
+  if (path === "/" && !me.role && shouldPlayIntro()) {
+    location.replace("/intro/");
+    return <Boot />;
+  }
+
   if (path === "/admin/login") return <Redirect to={me.role ? "/admin" : loginHref("/admin")} />;
   if (path === "/honors") return <Redirect to="/about#honors" />;
   if (path === "/login") {
@@ -90,6 +98,7 @@ export function App() {
     else if (path === "/admin/settings") page = <AdminSettingsPage />;
     else if (path === "/admin/report") page = <ReportPage />;
     else if (path === "/admin/pins") page = <AdminPinsPage />;
+    else if (path === "/admin/applications") page = <AdminApplicationsPage />;
     else page = <Redirect to="/admin" />;
   } else if (path === "/") page = <HomePage />;
   else if (path === "/about") page = <AboutPage />;

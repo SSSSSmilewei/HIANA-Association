@@ -56,10 +56,10 @@ function GuestHome() {
           </Link>
         </div>
         <div className="row wrap" style={{ gap: 16 }}>
-          <Link to="/about" className="more-link">
+          <a href="/intro/?view=map" className="more-link">
             协会介绍与学生成就
             <Icon name="arrowRight" size={16} stroke={2} />
-          </Link>
+          </a>
         </div>
       </section>
 
