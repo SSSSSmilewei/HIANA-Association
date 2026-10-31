@@ -1,0 +1,51 @@
+{
+  "format": "hiana-block@1",
+  "slug": "newbie",
+  "title": "新手知识块",
+  "summary": "零基础到能独立写完一个小项目",
+  "audience": "大一、没写过程序或只写过一点",
+  "intro": "先学会用电脑干活，再上一门完整的编程入门课，最后用数据结构把基础打牢。每一步都只挑一门，学完再去下一个知识块。\n\n不知道选哪门时：**CS50x** 最友好，讲义、练手题都在站内；**CS61A** 更硬核，适合想打牢编程思维的同学。",
+  "nodes": [
+    {
+      "title": "① 先读这个",
+      "children": [
+        { "course": "csdiy", "items": ["preface", "how-to-use", "cs-roadmap"], "note": "自学 CS 是怎么回事、这本书怎么用" }
+      ]
+    },
+    {
+      "title": "② 会用电脑写程序",
+      "note": "命令行、编辑器、Git：后面每门课都要用",
+      "children": [
+        { "course": "missing-semester", "items": ["course-shell", "command-line-environment", "development-environment", "version-control"], "note": "先学这四讲，其余的用到再回来看" },
+        { "course": "csdiy", "items": ["git", "github", "vim"], "optional": true, "note": "工具的中文介绍" }
+      ]
+    },
+    {
+      "title": "③ 第一门编程课",
+      "pick": 1,
+      "note": "三门选一门",
+      "children": [
+        { "course": "cs50x", "note": "推荐：站内全文 + 练手题，C → Python → SQL → Web" },
+        { "course": "cs61a", "note": "Python + 函数式思维，作业质量很高" },
+        { "course": "cs50p", "note": "只想先学 Python 的话" }
+      ]
+    },
+    {
+      "title": "④ 数据结构",
+      "pick": 1,
+      "children": [
+        { "course": "cs61b", "note": "Java，项目多" },
+        { "course": "algo", "note": "普林斯顿算法，Java" }
+      ]
+    },
+    {
+      "title": "顺手补的数学",
+      "optional": true,
+      "children": [
+        { "course": "mit-1801", "note": "高数课跟不上时看" },
+        { "course": "6-042j", "note": "离散数学：证明、计数、概率" }
+      ]
+    }
+  ],
+  "next": ["ai", "embedded", "kaoyan"]
+}

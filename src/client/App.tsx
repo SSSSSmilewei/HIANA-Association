@@ -3,7 +3,9 @@ import { api } from "./api";
 import { BrandMark, Shell } from "./components/Shell";
 import { AdminMembersPage, AdminNoticesPage, AdminSettingsPage, AdminTodayPage } from "./pages/Admin";
 import { AboutPage } from "./pages/About";
+import { AdminPinsPage } from "./pages/AdminPins";
 import { AttendancePage } from "./pages/Attendance";
+import { BlockPage } from "./pages/Blocks";
 import { CoursePage } from "./pages/Course";
 import { CoursesPage } from "./pages/Courses";
 import { FormatPage } from "./pages/Format";
@@ -14,6 +16,7 @@ import { Onboarding, needsOnboarding } from "./components/Onboarding";
 import { NoticeGate } from "./components/NoticeGate";
 import { NoticesPage } from "./pages/Notices";
 import { ProfilePage } from "./pages/Profile";
+import { ReportPage } from "./pages/Report";
 import { matchPath, navigate, useLocation } from "./router";
 import { MeContext, loginHref, safeNext } from "./session";
 import type { Me } from "./types";
@@ -34,7 +37,7 @@ function Redirect({ to }: { to: string }) {
 
 /** 游客也能看的页面；其余页面要登录。 */
 function guestCanSee(path: string): boolean {
-  return path === "/" || path === "/about" || path === "/honors" || path.startsWith("/courses") || path === "/notices";
+  return path === "/" || path === "/about" || path === "/honors" || path.startsWith("/courses") || path.startsWith("/blocks/") || path === "/notices";
 }
 
 export function App() {
@@ -78,17 +81,21 @@ export function App() {
   let page: React.ReactNode;
   const course = matchPath("/courses/:slug", path);
   const lesson = matchPath("/courses/:slug/learn/:page", path);
+  const block = matchPath("/blocks/:slug", path);
   if (path.startsWith("/admin")) {
     if (!isAdmin) page = <Empty title="这里需要管理员账号" />;
     else if (path === "/admin") page = <AdminTodayPage />;
     else if (path === "/admin/members") page = <AdminMembersPage selfId={me.member?.id ?? null} />;
     else if (path === "/admin/notices") page = <AdminNoticesPage />;
     else if (path === "/admin/settings") page = <AdminSettingsPage />;
+    else if (path === "/admin/report") page = <ReportPage />;
+    else if (path === "/admin/pins") page = <AdminPinsPage />;
     else page = <Redirect to="/admin" />;
   } else if (path === "/") page = <HomePage />;
   else if (path === "/about") page = <AboutPage />;
   else if (path === "/courses") page = <CoursesPage />;
   else if (path === "/courses/format") page = <FormatPage />;
+  else if (block) page = <BlockPage key={block.slug} slug={block.slug} />;
   else if (course) page = <CoursePage key={course.slug} slug={course.slug} />;
   else if (lesson) page = <LessonPage key={lesson.slug} slug={lesson.slug} page={lesson.page} />;
   else if (path === "/checkin") page = me.member?.kind === "external" ? <Empty title="校外账号不用签到" /> : <AttendancePage />;

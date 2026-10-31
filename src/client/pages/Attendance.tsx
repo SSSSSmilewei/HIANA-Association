@@ -3,6 +3,7 @@ import { addDays } from "../../shared/heatmap";
 import { api, clock, invalidate, longDay, minutesText, shortDay, useApi, weekday } from "../api";
 import { KIND_LABEL, daysText, phaseOf, venueEnd } from "../attendance";
 import { CameraSheet, DoneOverlay } from "../components/Camera";
+import { SignatureSheet } from "../components/Signature";
 import { Icon } from "../icons";
 import { navigate, useQuery } from "../router";
 import type { AttendanceKind, AttendanceState, HeatmapPayload } from "../types";
@@ -83,6 +84,8 @@ export function AttendancePage() {
   const [camera, setCamera] = useState<null | "in" | "out">(null);
   const [code, setCode] = useState("");
   const [done, setDone] = useState<null | { title: string; sub: string }>(null);
+  // 签到：先拍照，再手写签名，两样一起提交
+  const [pendingPhoto, setPendingPhoto] = useState<string | null>(null);
   const autoOpened = useRef(false);
 
   const p = data ? phaseOf(data, now) : null;
@@ -121,11 +124,20 @@ export function AttendancePage() {
       const r = await api<{ outAt: number }>("/api/attendance/out", { body: { photo } });
       setDone({ title: "签退成功", sub: `${clock(r.outAt)} · ${KIND_LABEL[scene]}` });
     } else {
-      const r = await api<{ inAt: number; kind: AttendanceKind }>("/api/attendance/in", { body: { photo, kind: scene, code: code || undefined } });
-      setDone({ title: "签到成功", sub: `${clock(r.inAt)} · ${KIND_LABEL[r.kind]}` });
-      setCode("");
+      setPendingPhoto(photo);
+      setCamera(null);
+      return;
     }
     setCamera(null);
+    invalidate("/api/attendance", "/api/heatmap");
+  };
+
+  const signAndSubmit = async (signature: string) => {
+    if (!pendingPhoto) return;
+    const r = await api<{ inAt: number; kind: AttendanceKind }>("/api/attendance/in", { body: { photo: pendingPhoto, signature, kind: scene, code: code || undefined } });
+    setPendingPhoto(null);
+    setDone({ title: "签到成功", sub: `${clock(r.inAt)} · ${KIND_LABEL[r.kind]}` });
+    setCode("");
     invalidate("/api/attendance", "/api/heatmap");
   };
 
@@ -252,6 +264,7 @@ export function AttendancePage() {
           onClose={() => setCamera(null)}
         />
       )}
+      {pendingPhoto && <SignatureSheet title={`${KIND_LABEL[scene]}签到 · 签名`} onSubmit={signAndSubmit} onClose={() => setPendingPhoto(null)} />}
       {done && <DoneOverlay title={done.title} sub={done.sub} week={week} onClose={() => setDone(null)} />}
     </div>
   );

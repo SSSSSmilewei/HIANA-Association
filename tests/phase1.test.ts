@@ -1,8 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, test } from "bun:test";
 import { memoryD1 } from "../scripts/local-d1";
+import { readBlocks, enrichBlock } from "../scripts/blocks.mjs";
 import { readCourses } from "../scripts/courses.mjs";
-import { itemOfPage, itemsOf, nextItem, progress, totalPeriods, weeksToFinish } from "../src/shared/courses";
+import { blockJsonSchema, parseBlock } from "../src/shared/blockSchema";
+import { blockCourses, blockPeriods, blockRatio, hoursOf, nextCourse, nodeRatio } from "../src/shared/blocks";
+import { itemOfPage, itemsOf, nextItem, planCards, progress, totalPeriods, weeksToFinish } from "../src/shared/courses";
 import { light } from "../src/shared/light";
 import { packageJsonSchema, parsePackage } from "../src/shared/package";
 import { BUILTIN } from "../src/worker/catalog";
@@ -43,7 +46,7 @@ function setup() {
     const list = await call("boot", "GET", "/api/admin/members");
     return list.data.find((m: { studentNo: string }) => m.studentNo === no).id as string;
   }
-  return { call, member };
+  return { call, member, env };
 }
 
 const PACKAGES = readCourses(".");
@@ -113,11 +116,70 @@ describe("课程包", () => {
     expect(nextItem(ms, new Set(items.map((u) => u.id)))).toBeNull();
   });
 
+  test("里课表卡片：没学完的条目一行一张，带节数", () => {
+    const cs = COURSES.find((c) => c.slug === "cs50x")!;
+    const items = itemsOf(cs);
+    const { group, lines } = planCards(cs, new Set([items[0].id]));
+    expect(group).toBe("CS50x");
+    expect(lines).toHaveLength(items.length - 1);
+    expect(lines[0]).toBe(`${items[1].title}（${items[1].periods} 节）`);
+  });
+
   test("教学周", () => {
     expect(teachingWeek("2026-09-07", "2026-09-07")).toBe(1);
     expect(teachingWeek("2026-09-07", "2026-10-21")).toBe(7);
     expect(teachingWeek("2026-09-07", "2026-09-01")).toBeNull();
     expect(teachingWeek(null, "2026-10-21")).toBeNull();
+  });
+});
+
+describe("知识块", () => {
+  const BLOCKS = readBlocks(".");
+
+  test("每个知识块都通过 hiana-block@1 校验，引用的课和条目都存在", () => {
+    expect(BLOCKS.map((b: { slug: string }) => b.slug)).toEqual(["newbie", "ai", "embedded", "kaoyan"]);
+    for (const raw of BLOCKS) {
+      const r = parseBlock(raw);
+      expect({ slug: raw.slug, errors: r.ok ? [] : r.errors }).toEqual({ slug: raw.slug, errors: [] });
+      const { problems } = enrichBlock(raw, COURSES);
+      expect(problems).toEqual([]);
+    }
+  });
+
+  test("JSON Schema 是最新的", () => {
+    const want = JSON.parse(readFileSync("content/schema/block-v1.json", "utf8"));
+    expect(JSON.parse(JSON.stringify(blockJsonSchema()))).toEqual(want);
+  });
+
+  test("格式错误给出中文提示", () => {
+    const bad = parseBlock({ format: "hiana-block@1", slug: "x-y", title: "t", nodes: [{ course: "cs50x", link: { label: "a", url: "https://a" } }, { title: "g", pick: 3, children: [{ course: "a" }] }] });
+    expect(bad.ok).toBe(false);
+    const errs = bad.ok ? [] : bad.errors.join("\n");
+    expect(errs).toContain("只能是一种");
+    expect(errs).toContain("pick");
+  });
+
+  test("课时、完成度、下一步", () => {
+    expect(hoursOf("50-70 小时")).toBe(50);
+    expect(hoursOf("100h+")).toBe(100);
+    expect(hoursOf("因人而异")).toBe(0);
+    const block = {
+      nodes: [
+        { course: "a", periods: 10 },
+        { title: "选一门", pick: 1, children: [ { course: "b", periods: 30 }, { course: "c", periods: 20 } ] },
+        { title: "选学", optional: true, children: [ { course: "d", periods: 99 } ] },
+      ],
+    };
+    expect(blockPeriods(block)).toBe(30);
+    expect(blockCourses(block.nodes)).toEqual(["a", "b", "c", "d"]);
+    const p = (m: Record<string, number>) => (s: string) => m[s] ?? 0;
+    expect(nextCourse(block, p({}))?.course).toBe("a");
+    expect(nextCourse(block, p({ a: 1 }))?.course).toBe("b");
+    // pick 组里已经开始学的课优先
+    expect(nextCourse(block, p({ a: 1, c: 0.5 }))?.course).toBe("c");
+    expect(nextCourse(block, p({ a: 1, c: 1 }))).toBeNull();
+    expect(blockRatio(block, p({ a: 1, c: 1 }))).toBe(1);
+    expect(nodeRatio(block.nodes[1], p({ b: 0.5 }))).toBe(0.5);
   });
 });
 
@@ -232,6 +294,85 @@ describe("课程包发布与练手", () => {
     expect((await call("boot", "DELETE", "/api/admin/packages/my-course")).data.ok).toBe(true);
     expect((await call("lin", "GET", "/api/courses/my-course")).status).toBe(404);
     expect((await call("lin", "GET", "/api/learning/next")).data.items).toEqual([]);
+  });
+});
+
+describe("蓝色钉子", () => {
+  test("游客能看，登录才能钉和回复；我也想问、已解决、撤回；校外账号看不到校内成员真名", async () => {
+    const { call, member } = setup();
+    await member("lin", "250101001", "林同学");
+    await member("chen", "250101002", "陈同学");
+    const pin = { course: "cs50x", page: "notes-1", anchorKey: "h-c/p3", anchorLabel: "C 第 3 段", xPct: 0.4, yPct: 0.5, snippet: "printf 是", body: "这里为什么要 \\n？" };
+    expect((await call("guest", "POST", "/api/pins", pin)).status).toBe(401);
+    expect((await call("lin", "POST", "/api/pins", { ...pin, page: "nope" })).status).toBe(404);
+    expect((await call("lin", "POST", "/api/pins", { ...pin, course: "local-x" })).status).toBe(400);
+    const made = await call("lin", "POST", "/api/pins", pin);
+    expect(made.data).toMatchObject({ item: "w1-lecture", anchorKey: "h-c/p3", mine: true, answered: false, author: "你", status: "open" });
+    const id = made.data.id;
+
+    // 游客能看，但看不到名字
+    const guest = await call("guest", "GET", "/api/pins?course=cs50x&page=notes-1");
+    expect(guest.data).toHaveLength(1);
+    expect(guest.data[0].author).toBe("协会成员");
+    expect(guest.data[0].messages[0].body).toBe(pin.body);
+    expect((await call("chen", "GET", "/api/pins?course=cs50x&page=notes-1")).data[0].author).toBe("林同学");
+
+    // 别人回复后算“有人回了”，提问的人就不能撤回了
+    const replied = await call("chen", "POST", `/api/pins/${id}/messages`, { body: "换行符" });
+    expect(replied.data.answered).toBe(true);
+    expect(replied.data.messages[1]).toMatchObject({ author: "你", mine: true });
+    expect((await call("lin", "DELETE", `/api/pins/${id}`)).status).toBe(409);
+
+    // 我也想问：再点取消
+    expect((await call("chen", "POST", `/api/pins/${id}/vote`, {})).data).toMatchObject({ votes: 1, voted: true });
+    expect((await call("chen", "POST", `/api/pins/${id}/vote`, {})).data).toMatchObject({ votes: 0, voted: false });
+
+    // 已解决：只有提问的人和管理员
+    expect((await call("chen", "POST", `/api/pins/${id}/resolve`, { resolved: true })).status).toBe(403);
+    expect((await call("lin", "POST", `/api/pins/${id}/resolve`, { resolved: true })).data.status).toBe("resolved");
+
+    // 管理后台能看到，管理员能删
+    const admin = await call("boot", "GET", "/api/admin/pins");
+    expect(admin.data[0]).toMatchObject({ id, courseTitle: "CS50x：哈佛计算机科学导论" });
+    expect((await call("boot", "DELETE", `/api/pins/${id}`)).data.ok).toBe(true);
+    expect((await call("guest", "GET", "/api/pins?course=cs50x&page=notes-1")).data).toEqual([]);
+
+    // 没人回复前可以撤回
+    const mine = await call("lin", "POST", "/api/pins", pin);
+    expect((await call("chen", "DELETE", `/api/pins/${mine.data.id}`)).status).toBe(403);
+    expect((await call("lin", "DELETE", `/api/pins/${mine.data.id}`)).data.ok).toBe(true);
+  });
+});
+
+describe("蓝色钉子 · AI 回答", () => {
+  test("没接 AI 时提示；接上后回答留在讨论里，标明是 AI，有次数上限", async () => {
+    const { call, member, env } = setup();
+    await member("lin", "250101001", "林同学");
+    const made = await call("lin", "POST", "/api/pins", { course: "cs50x", page: "notes-1", anchorKey: "k", xPct: 0, yPct: 0, snippet: "回想一下", body: "编译器是什么？" });
+    expect((await call("lin", "GET", "/api/ai/status")).data.enabled).toBe(false);
+    expect((await call("lin", "POST", `/api/pins/${made.data.id}/ai`, {})).status).toBe(503);
+
+    (env as unknown as Record<string, string>).AI_API_KEY = "test-key";
+    const realFetch = globalThis.fetch;
+    let prompt = "";
+    globalThis.fetch = (async (_url: string, init: RequestInit) => {
+      prompt = JSON.parse(String(init.body)).messages[1].content;
+      return new Response(JSON.stringify({ choices: [{ message: { content: "编译器把源代码翻译成机器码。" }, finish_reason: "stop" }] }), { headers: { "content-type": "application/json" } });
+    }) as typeof fetch;
+    try {
+      expect((await call("guest", "POST", `/api/pins/${made.data.id}/ai`, {})).status).toBe(401);
+      const r = await call("lin", "POST", `/api/pins/${made.data.id}/ai`, {});
+      expect(r.status).toBe(200);
+      expect(r.data.messages.at(-1)).toMatchObject({ agent: true, author: "AI 助手", body: "编译器把源代码翻译成机器码。" });
+      expect(r.data.answered).toBe(true);
+      expect(prompt).toContain("CS50x");
+      expect(prompt).toContain("编译器是什么？");
+      await call("lin", "POST", `/api/pins/${made.data.id}/ai`, {});
+      await call("lin", "POST", `/api/pins/${made.data.id}/ai`, {});
+      expect((await call("lin", "POST", `/api/pins/${made.data.id}/ai`, {})).status).toBe(429);
+    } finally {
+      globalThis.fetch = realFetch;
+    }
   });
 });
 

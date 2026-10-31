@@ -463,6 +463,18 @@ class _CoursePageState extends ConsumerState<CoursePage> {
     ];
   }
 
+  /// 复制到 CourseTable 的里课表：没学完的条目一行一张卡片（和网站一致）
+  void _copyPlan(BuildContext context, String title, List<CourseItem> left) {
+    final group = title.split(RegExp('[：:（(]')).first.trim();
+    final text = left.map((it) => '${it.title}（${it.periods} 节）').join('\n');
+    Clipboard.setData(ClipboardData(text: text));
+    HapticFeedback.lightImpact();
+    showHxToast(
+      context,
+      '已复制 ${left.length} 张卡片。在 CourseTable 里课表点“+”，课程填“$group”，粘贴进去',
+    );
+  }
+
   List<Widget> _contents(
     BuildContext context,
     CourseDetail c,
@@ -470,14 +482,43 @@ class _CoursePageState extends ConsumerState<CoursePage> {
   ) {
     final h = Hx.of(context);
     final single = c.modules.length == 1;
+    final left = [
+      for (final m in c.modules)
+        for (final it in m.items)
+          if (!c.done.contains(it.id) && !it.optional) it,
+    ];
     return [
+      if (left.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 16, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '还有 ${left.length} 项没学完',
+                  style: TextStyle(fontSize: 13, color: h.sub),
+                ),
+              ),
+              Pressable(
+                onTap: () => _copyPlan(context, c.title, left),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    '加到里课表',
+                    style: TextStyle(fontSize: 14, color: h.accentText),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       for (final m in c.modules)
         if (m.items.isNotEmpty) ...[
           if (single)
             const SizedBox(height: 12)
           else
             SectionHead(
-              m.title,
+              m.group == null ? m.title : '${m.group} · ${m.title}',
               trailing: Text(
                 '${m.items.where((it) => c.done.contains(it.id)).length} / ${m.items.length}',
                 style: TextStyle(
@@ -581,6 +622,7 @@ class _ItemRow extends StatelessWidget {
                             ),
                           ),
                           TextSpan(text: '  ${u.periods} 课时'),
+                          if (u.optional) const TextSpan(text: '  选学'),
                           if (u.practiceTotal > 0)
                             TextSpan(text: '  练手 $solved / ${u.practiceTotal}'),
                         ],

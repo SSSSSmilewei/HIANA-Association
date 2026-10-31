@@ -14,8 +14,8 @@ export { FORMAT, ITEM_KINDS, ITEM_KIND_LABEL, LINK_KINDS, LINK_KIND_LABEL } from
  *   ├─ intro.community   中文介绍（爱好者写的，例如 csdiy）
  *   ├─ intro.official    官方介绍的中文翻译
  *   ├─ links             官网、视频、教材、作业、实验、论坛、仓库……
- *   └─ modules[]         模块（周、章、主题）
- *        └─ items[]      条目：讲义 / 阅读 / 视频 / 作业 / 实验 / 项目 / 测验 / 考试
+ *   └─ modules[]         模块（周、章、主题）；group 再分一层（例如 MIT 18.01 的“单元”）
+ *        └─ items[]      条目：讲义 / 讨论课 / 阅读 / 视频 / 作业 / 实验 / 项目 / 测验 / 考试
  *             ├─ pages[]     站内正文（Markdown），第一页是主页面
  *             ├─ videos[] / links[] / submit
  *             └─ practice[]  站内练手：选择、填空、代码（Python / SQL / JavaScript，浏览器里判题）
@@ -45,6 +45,8 @@ export const Page = z.object({
 const practiceBase = {
   id,
   title: z.string().max(80).optional(),
+  /** 出处：official = 从官方作业 / 习题改编；review = 自编的复习题 */
+  origin: z.enum(["official", "review"]).optional(),
   prompt: md.min(1),
   explain: md.optional(),
 };
@@ -92,6 +94,8 @@ export const Item = z.object({
   title: z.string().min(1).max(100),
   /** 预计课时（一节 45 分钟） */
   periods: z.number().int().min(1).max(60).default(2),
+  /** 选学（例如 CS50 的 Section、Shorts） */
+  optional: z.boolean().optional(),
   pages: z.array(Page).default([]),
   videos: z.array(Link).default([]),
   links: z.array(Link).default([]),
@@ -103,6 +107,8 @@ export const Item = z.object({
 export const Module = z.object({
   id,
   title: z.string().min(1).max(100),
+  /** 模块上面一层的分组；相邻模块写同一个 group 就归到一起 */
+  group: z.string().max(100).optional(),
   summary: z.string().max(400).optional(),
   items: z.array(Item).default([]),
 });

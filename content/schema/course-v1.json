@@ -219,6 +219,10 @@
       "minLength": 1,
       "maxLength": 100
      },
+     "group": {
+      "type": "string",
+      "maxLength": 100
+     },
      "summary": {
       "type": "string",
       "maxLength": 400
@@ -237,6 +241,7 @@
          "type": "string",
          "enum": [
           "lecture",
+          "section",
           "reading",
           "video",
           "assignment",
@@ -256,6 +261,9 @@
          "type": "integer",
          "minimum": 1,
          "maximum": 60
+        },
+        "optional": {
+         "type": "boolean"
         },
         "pages": {
          "default": [],
@@ -415,6 +423,13 @@
               "type": "string",
               "maxLength": 80
              },
+             "origin": {
+              "type": "string",
+              "enum": [
+               "official",
+               "review"
+              ]
+             },
              "prompt": {
               "type": "string",
               "minLength": 1,
@@ -475,6 +490,13 @@
               "type": "string",
               "maxLength": 80
              },
+             "origin": {
+              "type": "string",
+              "enum": [
+               "official",
+               "review"
+              ]
+             },
              "prompt": {
               "type": "string",
               "minLength": 1,
@@ -514,6 +536,13 @@
              "title": {
               "type": "string",
               "maxLength": 80
+             },
+             "origin": {
+              "type": "string",
+              "enum": [
+               "official",
+               "review"
+              ]
              },
              "prompt": {
               "type": "string",

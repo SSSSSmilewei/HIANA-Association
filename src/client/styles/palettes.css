@@ -93,6 +93,57 @@
   --bad-ink: color-mix(in srgb, #e5484d 78%, var(--p-ink));
 }
 
+/*
+ * shanmoew-mizu（默认）：以水色（JIS 慣用色名 6B 8/4 ≈ #bce2e8）和 Light Blue #add8e6 为主色，
+ * 配水縹 #afdfe4、Aqua Green #88bfbf、Water Green #a5c9c1、Aqua Blue #00bfff 和白。
+ * 主色很浅，直接当文字看不清：文字、链接用同色相压深的 #1d6b80，主按钮用浅色底 + 深色字。
+ */
+:root[data-palette="shanmoew-mizu"] {
+  --p-bg: #f2f9fa;
+  --p-surface: #ffffff;
+  --p-ink: #102c35;
+  --p-accent: #3e9fb8;
+  --p-text: #1d6b80;
+  --p-cta: #add8e6;
+  --p-cta-ink: #0e3340;
+
+  --cta-shadow: color-mix(in srgb, #3e9fb8 28%, transparent);
+  --tint: color-mix(in srgb, #add8e6 42%, transparent);
+  --next-bg: color-mix(in srgb, #a5c9c1 24%, transparent);
+  --ok-bg: color-mix(in srgb, #88bfbf 26%, transparent);
+  --ok-ink: #22615d;
+  --wall: #f2f9fa;
+  --l1: #dcf0f3;
+  --l2: #afdfe4;
+  --l3: #6fb9cc;
+  --l4: #2a7f96;
+  --pin: #1f78c1;
+  --pin-deep: #0f4f86;
+}
+:root[data-palette="shanmoew-mizu"][data-mode="dark"] {
+  --p-bg: #0c1a20;
+  --p-surface: #13262e;
+  --p-ink: #e3f3f6;
+  --p-accent: #add8e6;
+  --p-text: #bce2e8;
+  --p-cta: #bce2e8;
+  --p-cta-ink: #0c1a20;
+
+  --cta-shadow: rgba(0, 0, 0, 0.4);
+  --tint: color-mix(in srgb, #add8e6 16%, transparent);
+  --next-bg: color-mix(in srgb, #a5c9c1 12%, transparent);
+  --ok-bg: color-mix(in srgb, #88bfbf 18%, transparent);
+  --ok-ink: #a5c9c1;
+  --wall: #0c1a20;
+  --l1: #16313a;
+  --l2: #24505d;
+  --l3: #4f8fa1;
+  --l4: #add8e6;
+  --pin: #7cc4ff;
+  --pin-deep: #00bfff;
+  --pin-ink: #0c1a20;
+}
+
 :root[data-palette="nord"] {
   --p-bg: #eceff4;
   --p-surface: #ffffff;

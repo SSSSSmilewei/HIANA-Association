@@ -15,7 +15,7 @@ interface NavItem {
 
 const MEMBER_NAV: NavItem[] = [
   { to: "/", label: "首页", icon: "home", match: (p) => p === "/" },
-  { to: "/courses", label: "课程", icon: "book", match: (p) => p.startsWith("/courses") },
+  { to: "/courses", label: "课程", icon: "book", match: (p) => p.startsWith("/courses") || p.startsWith("/blocks") },
   { to: "/checkin", label: "签到", icon: "camera", match: (p) => p.startsWith("/checkin") },
   { to: "/notices", label: "公告与比赛", short: "公告", icon: "megaphone", match: (p) => p.startsWith("/notices") },
   { to: "/me", label: "我的", icon: "user", match: (p) => p.startsWith("/me") || p === "/password" },
@@ -34,8 +34,9 @@ const GUEST_NAV: NavItem[] = [
 ];
 
 const ADMIN_NAV: NavItem[] = [
-  { to: "/admin", label: "今日签到", short: "签到", icon: "clipboard", match: (p) => p === "/admin" },
+  { to: "/admin", label: "今日签到", short: "签到", icon: "clipboard", match: (p) => p === "/admin" || p === "/admin/report" },
   { to: "/admin/members", label: "成员", icon: "users", match: (p) => p.startsWith("/admin/members") },
+  { to: "/admin/pins", label: "蓝色钉子", short: "钉子", icon: "pin", match: (p) => p.startsWith("/admin/pins") },
   { to: "/admin/notices", label: "发公告", short: "公告", icon: "edit", match: (p) => p.startsWith("/admin/notices") },
   { to: "/admin/settings", label: "设置", icon: "sliders", match: (p) => p.startsWith("/admin/settings") },
 ];

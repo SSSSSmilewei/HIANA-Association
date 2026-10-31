@@ -44,6 +44,7 @@ export function PracticeList({
           <header className="practice-head">
             <span className="practice-no num">{i + 1}</span>
             <span className="practice-title">{q.title ?? (q.type === "choice" ? (Array.isArray(q.answer) ? "多选" : "单选") : q.type === "text" ? "填空" : LANG[q.lang])}</span>
+            {q.origin && <span className="tag">{q.origin === "official" ? "官方习题改编" : "复习题"}</span>}
             {solved.has(q.id) && (
               <span className="tag tag-ok">
                 <Icon name="check" size={14} stroke={2.4} />

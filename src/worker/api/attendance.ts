@@ -4,6 +4,7 @@ import {
   AttendanceError,
   type AttendanceKind,
   attendanceCsv,
+  attendanceMinutes,
   attendanceTotals,
   autoClose,
   dailyCode,
@@ -24,6 +25,21 @@ import { clientIp, requireSecret } from "../session";
 import { DAY_RE, isAdmin, memberId, requireAdmin, requireCampus } from "./common";
 
 const PhotoBody = z.object({ photo: z.string().min(100).max(1_000_000) });
+/** 手写签名：PNG 的 base64（新版网页和 App 会传；旧版 App 不传） */
+const Signature = z.string().min(100).max(400_000).optional();
+
+async function storeSignature(c: Parameters<Parameters<Router["get"]>[1]>[0], b64: string, userId: string): Promise<string> {
+  let bytes: Uint8Array;
+  try {
+    bytes = decodeBase64(b64);
+  } catch {
+    throw new HttpError(400, "签名格式不对，重新签一次");
+  }
+  if (bytes.length > 300_000) throw new HttpError(413, "签名太大了，重新签一次");
+  const mime = sniffImage(bytes);
+  if (mime !== "image/png") throw new HttpError(400, "签名要是 PNG 图片");
+  return putFile(c.env, { prefix: "signature", ownerId: userId, mime, bytes });
+}
 
 async function storePhoto(c: Parameters<Parameters<Router["get"]>[1]>[0], b64: string, userId: string): Promise<string> {
   let bytes: Uint8Array;
@@ -74,7 +90,7 @@ export function attendanceRoutes(api: Router) {
 
   api.post("/api/attendance/in", async (c) => {
     const uid = requireCampus(c);
-    const body = PhotoBody.extend({ kind: z.enum(["evening", "venue"]), code: z.string().trim().max(8).optional() }).parse(await c.body());
+    const body = PhotoBody.extend({ kind: z.enum(["evening", "venue"]), code: z.string().trim().max(8).optional(), signature: Signature }).parse(await c.body());
     const rule = await loadRule(c.env.DB);
     // 先检查能不能签到，再存照片，免得存下没用的照片
     const ev = eveningState(rule, Date.now());
@@ -84,8 +100,9 @@ export function attendanceRoutes(api: Router) {
       );
     }
     const key = await storePhoto(c, body.photo, uid);
+    const signKey = body.signature ? await storeSignature(c, body.signature, uid) : null;
     try {
-      const row = await signIn(c.env.DB, { userId: uid, kind: body.kind as AttendanceKind, rule, secret: requireSecret(c.env), code: body.code, photoKey: key, ip: clientIp(c.req) });
+      const row = await signIn(c.env.DB, { userId: uid, kind: body.kind as AttendanceKind, rule, secret: requireSecret(c.env), code: body.code, photoKey: key, signKey, ip: clientIp(c.req) });
       return json({ ok: true, id: row.id, kind: row.kind, inAt: row.in_at });
     } catch (err) {
       attendanceError(err);
@@ -162,6 +179,67 @@ export function attendanceRoutes(api: Router) {
     await setSetting(c.env.DB, "evening_window", body.window);
     await setSetting(c.env.DB, "checkin_code", body.requireCode ? "on" : "off");
     return json({ ok: true });
+  });
+
+  /**
+   * 给学校看的签到表：每条记录带照片和签名，按人汇总次数和时长，再列出每个晚自习日没签到的校内成员。
+   * 网页 /admin/report 把它排成可以直接打印（或存成 PDF）的表格。
+   */
+  api.get("/api/admin/attendance/report", async (c) => {
+    requireAdmin(c);
+    const today = cnDate(Date.now());
+    const day = z.string().regex(DAY_RE);
+    const from = day.catch(addDays(today, -6)).parse(c.url.searchParams.get("from"));
+    const to = day.catch(today).parse(c.url.searchParams.get("to"));
+    if (to < from || addDays(from, 62) < to) throw new HttpError(400, "日期范围最多两个月，开始不能晚于结束");
+    const kind = z.enum(["evening", "venue"]).optional().catch(undefined).parse(c.url.searchParams.get("kind") ?? undefined);
+    const rule = await loadRule(c.env.DB);
+    const now = Date.now();
+    await autoClose(c.env.DB, rule, now);
+    const [rows, members] = await Promise.all([
+      listAttendance(c.env.DB, from, to, kind),
+      c.env.DB.prepare("SELECT student_no, name, class_name FROM users WHERE status = 'active' AND kind = 'campus' ORDER BY student_no").all<{
+        student_no: string;
+        name: string;
+        class_name: string | null;
+      }>(),
+    ]);
+    const people = new Map<string, { studentNo: string; name: string; className: string; evening: number; venue: number; minutes: number }>();
+    for (const m of members.results) people.set(m.student_no, { studentNo: m.student_no, name: m.name, className: m.class_name ?? "", evening: 0, venue: 0, minutes: 0 });
+    const records = rows.map((r) => {
+      const minutes = attendanceMinutes(r, now);
+      const p = people.get(r.student_no) ?? { studentNo: r.student_no, name: r.name, className: r.class_name ?? "", evening: 0, venue: 0, minutes: 0 };
+      p[r.kind] += 1;
+      p.minutes += minutes;
+      people.set(r.student_no, p);
+      return {
+        day: r.day,
+        kind: r.kind,
+        studentNo: r.student_no,
+        name: r.name,
+        className: r.class_name ?? "",
+        inAt: r.in_at,
+        outAt: r.out_at,
+        status: r.status,
+        minutes,
+        inPhoto: r.in_photo,
+        outPhoto: r.out_photo,
+        sign: r.in_sign,
+      };
+    });
+    // 晚自习日里没签到的人（只看校内成员）
+    const absent: { day: string; names: string[] }[] = [];
+    if (kind !== "venue") {
+      for (let d = from; d <= to && d <= today; d = addDays(d, 1)) {
+        const wd = ((new Date(`${d}T00:00:00Z`).getUTCDay() + 6) % 7) + 1;
+        if (!rule.days.includes(wd)) continue;
+        // 今晚的晚自习还没结束，先不算缺勤
+        if (d === today && now <= eveningState(rule, now).endsAt) continue;
+        const came = new Set(rows.filter((r) => r.day === d && r.kind === "evening").map((r) => r.student_no));
+        absent.push({ day: d, names: members.results.filter((m) => !came.has(m.student_no)).map((m) => `${m.name}（${m.student_no}）`) });
+      }
+    }
+    return json({ from, to, kind: kind ?? null, rule: { days: rule.days, window: rule.window }, records, people: [...people.values()], absent });
   });
 
   api.get("/api/admin/attendance.csv", async (c) => {

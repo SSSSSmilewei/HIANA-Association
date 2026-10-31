@@ -1,0 +1,54 @@
+{
+  "format": "hiana-block@1",
+  "slug": "ai",
+  "title": "人工智能知识块",
+  "summary": "数学 → 机器学习 → 深度学习 → 选一个方向深入",
+  "audience": "会 Python，学过一门编程入门课",
+  "intro": "人工智能最容易卡在数学上，所以先把线性代数和概率补上。机器学习和深度学习各挑一门系统学完，再按兴趣选视觉、语言或强化学习。\n\n想先尝尝鲜，可以先看 **CS50AI** 或者 Karpathy 的 **从零到英雄**。",
+  "nodes": [
+    {
+      "title": "① 先尝尝鲜",
+      "optional": true,
+      "children": [
+        { "course": "cs50ai", "note": "搜索、知识、概率、优化、学习、神经网络，Python 写着玩" },
+        { "course": "nn-zero-to-hero", "note": "从头手写一个 GPT" }
+      ]
+    },
+    {
+      "title": "② 数学",
+      "children": [
+        { "course": "mitla", "note": "线性代数：矩阵就是一切" },
+        { "title": "概率", "pick": 1, "children": [ { "course": "cs70" }, { "course": "6-042j" } ] }
+      ]
+    },
+    {
+      "title": "③ 机器学习",
+      "pick": 1,
+      "children": [
+        { "course": "ml", "note": "吴恩达，入门首选" },
+        { "course": "cs229", "note": "推导更多" },
+        { "course": "lhy-ml", "note": "李宏毅，中文" }
+      ]
+    },
+    {
+      "title": "④ 深度学习",
+      "pick": 1,
+      "children": [
+        { "course": "cs230" },
+        { "course": "mit6-7960" },
+        { "course": "cmu11-785" }
+      ]
+    },
+    {
+      "title": "⑤ 选一个方向",
+      "pick": 1,
+      "children": [
+        { "course": "cs231", "note": "计算机视觉" },
+        { "course": "cs224n", "note": "自然语言处理" },
+        { "course": "cs285", "note": "强化学习" },
+        { "course": "cmu10-414", "note": "深度学习系统：自己写一个框架" }
+      ]
+    }
+  ],
+  "next": ["kaoyan"]
+}

@@ -275,6 +275,45 @@ export const MIGRATIONS: string[][] = [
     // 邀请码决定注册出来的是哪种账号
     `ALTER TABLE invite_codes ADD COLUMN kind TEXT NOT NULL DEFAULT 'campus'`,
   ],
+  // v9：签到时的手写签名（files 表里的图片 key）。旧记录和旧版 App 签的没有签名
+  [`ALTER TABLE attendance ADD COLUMN in_sign TEXT`],
+  // v10：蓝色钉子。钉在讲义某一段（anchor_key + 段内百分比坐标）上的问题，大家都能回复，Agent 的回答也留在里面
+  [
+    `CREATE TABLE IF NOT EXISTS pins (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      course TEXT NOT NULL,
+      item TEXT NOT NULL,
+      page TEXT NOT NULL,
+      anchor_key TEXT NOT NULL,
+      anchor_label TEXT,
+      x_pct REAL NOT NULL,
+      y_pct REAL NOT NULL,
+      snippet TEXT,
+      status TEXT NOT NULL DEFAULT 'open',
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    )`,
+    `CREATE INDEX IF NOT EXISTS pins_by_page ON pins(course, page)`,
+    `CREATE INDEX IF NOT EXISTS pins_by_status ON pins(status, updated_at)`,
+    // author_kind：member（成员）、agent（AI 的回答，user_id 记是谁让 AI 回答的）
+    `CREATE TABLE IF NOT EXISTS pin_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      pin_id TEXT NOT NULL,
+      user_id TEXT,
+      author_kind TEXT NOT NULL DEFAULT 'member',
+      body TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    )`,
+    `CREATE INDEX IF NOT EXISTS pin_messages_by_pin ON pin_messages(pin_id, created_at)`,
+    // “我也想问”
+    `CREATE TABLE IF NOT EXISTS pin_votes (
+      pin_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY (pin_id, user_id)
+    )`,
+  ],
 ];
 
 // 每个数据库连接只迁移一次（Worker 里通常只有一个；测试里每个用例一个内存库）

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { ITEM_KIND_LABEL } from "../../shared/light";
+import { BlockCards } from "./Blocks";
 import { itemHref } from "../library";
 import { overview } from "../../shared/heatmap";
 import { api, clock, daysBetween, longDay, minutesText, mutate, useApi } from "../api";
@@ -94,6 +95,16 @@ function GuestHome() {
         )}
       </section>
 
+      <section className="section" aria-labelledby="blocks-h">
+        <div className="section-head">
+          <h2 id="blocks-h" className="h2">
+            知识块
+          </h2>
+          <span className="small sub">一个方向该学哪些课、按什么顺序</span>
+        </div>
+        <BlockCards />
+      </section>
+
       <NoticeRow notices={notices.data} today={today} error={notices.error} retry={notices.reload} />
     </div>
   );
@@ -161,6 +172,16 @@ function MemberHome({ campus }: { campus: boolean }) {
         ) : (
           <SkeletonCards n={3} h={190} />
         )}
+      </section>
+
+      <section className="section" aria-labelledby="blocks-h">
+        <div className="section-head">
+          <h2 id="blocks-h" className="h2">
+            知识块
+          </h2>
+          <span className="small sub">一个方向该学哪些课、按什么顺序</span>
+        </div>
+        <BlockCards />
       </section>
 
       <NoticeRow notices={notices.data} today={today} error={notices.error} retry={notices.reload} />
