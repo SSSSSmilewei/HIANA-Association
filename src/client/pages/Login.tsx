@@ -32,7 +32,7 @@ function LoginFrame({ children, back }: { children: React.ReactNode; back?: stri
           <BrandMark />
           <span className="stack" style={{ gap: 0 }}>
             <span className="brand-name">海纳协会</span>
-            <span className="brand-sub">智慧网络算法协会 · 学习平台</span>
+            <span className="brand-sub">智慧算法网络协会 · 学习平台</span>
           </span>
         </div>
         {children}

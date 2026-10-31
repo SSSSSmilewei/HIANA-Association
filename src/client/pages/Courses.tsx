@@ -3,6 +3,7 @@ import { categoriesOf } from "../../shared/courses";
 import type { CoursePackage } from "../../shared/package";
 import { useApi } from "../api";
 import { ImportCourse } from "../components/ImportCourse";
+import { BlockCards } from "./Blocks";
 import { Icon } from "../icons";
 import { localMeta, localPackages, onLocalChange } from "../library";
 import { Link, navigate, useQuery } from "../router";
@@ -98,6 +99,17 @@ export function CoursesPage() {
         <SkeletonCards n={6} h={120} />
       ) : (
         <>
+          {browsing && (
+            <section className="section" aria-labelledby="blocks-h">
+              <div className="section-head">
+                <h2 id="blocks-h" className="h2">
+                  知识块
+                </h2>
+                <span className="small sub">一个方向该学哪些课、按什么顺序</span>
+              </div>
+              <BlockCards />
+            </section>
+          )}
           {mine.length > 0 && (
             <section className="section" aria-labelledby="mine-h">
               <h2 id="mine-h" className="h2">

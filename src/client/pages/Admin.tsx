@@ -4,6 +4,7 @@ import { api, clock, cnToday, invalidate, longDay, relativeTime, useApi } from "
 import { KIND_LABEL } from "../attendance";
 import { compressImage } from "../components/NoticeBody";
 import { Icon } from "../icons";
+import { Link } from "../router";
 import type { AdminMember, AdminToday, Invite, Notice } from "../types";
 import { Dialog, Empty, ErrorBox, Seg, Skeleton, Spinner, useConfirm, useDialogClose, useTitle, useToast } from "../ui";
 
@@ -52,7 +53,7 @@ export function AdminTodayPage() {
       <Head eyebrow={data ? `${longDay(data.today)} · ${data.isEveningDay ? `晚自习 ${data.rule.window[0]} – ${data.rule.window[1]}` : "今天没有晚自习"}` : " "} title="今日签到">
         <button type="button" className="btn btn-ghost" onClick={() => setExporting(true)}>
           <Icon name="download" size={18} />
-          导出给学校（CSV）
+          导出给学校
         </button>
       </Head>
 
@@ -212,7 +213,8 @@ function ExportDialog({ onClose }: { onClose: () => void }) {
   const [from, setFrom] = useState(addDays(today, -30));
   const [to, setTo] = useState(today);
   const [kind, setKind] = useState<"" | "evening" | "venue">("");
-  const href = `/api/admin/attendance.csv?from=${from}&to=${to}${kind ? `&kind=${kind}` : ""}`;
+  const qs = `from=${from}&to=${to}${kind ? `&kind=${kind}` : ""}`;
+  const href = `/api/admin/attendance.csv?${qs}`;
   return (
     <Dialog title="导出签到记录" onClose={onClose}>
       <div className="form">
@@ -242,11 +244,15 @@ function ExportDialog({ onClose }: { onClose: () => void }) {
             ]}
           />
         </div>
+        <p className="small sub pretty">签到表带照片和手写签名，可以直接打印或存成 PDF 交给学校（最多两个月）；CSV 只有文字，适合用 Excel 再加工。</p>
         <div className="dialog-actions">
-          <a className="btn btn-primary" href={href} download>
+          <a className="btn btn-ghost" href={href} download>
             <Icon name="download" size={18} />
             下载 CSV
           </a>
+          <Link className="btn btn-primary" to={`/admin/report?${qs}`}>
+            打开签到表
+          </Link>
         </div>
       </div>
     </Dialog>

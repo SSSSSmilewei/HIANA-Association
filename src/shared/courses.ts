@@ -73,3 +73,15 @@ export function weeksToFinish(remainingPeriods: number, periodsPerWeek: number):
   if (periodsPerWeek <= 0) return null;
   return Math.ceil(remainingPeriods / periodsPerWeek);
 }
+
+/**
+ * 给 CourseTable 里课表用的卡片：没学完的条目，一行一张，带预计节数。
+ * CourseTable 里点“+”，课程名填 group，把 lines 整段粘贴进去就是一张张卡片。
+ */
+export function planCards(c: Pick<CourseMeta, "title" | "modules">, done: Set<string>): { group: string; lines: string[] } {
+  const group = c.title.split(/[：:（(]/)[0].trim() || c.title;
+  const lines = itemsOf(c)
+    .filter((it) => !done.has(it.id) && !it.optional)
+    .map((it) => `${it.title}（${it.periods} 节）`);
+  return { group, lines };
+}

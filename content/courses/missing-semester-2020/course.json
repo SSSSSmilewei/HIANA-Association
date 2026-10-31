@@ -77,7 +77,8 @@
         "`/sys` 目录"
        ],
        "answer": 0,
-       "explain": "shell 会咨询 `$PATH`，它是以 `:` 分隔的一系列目录，shell 依次在其中搜索同名的可执行程序。"
+       "explain": "shell 会咨询 `$PATH`，它是以 `:` 分隔的一系列目录，shell 依次在其中搜索同名的可执行程序。",
+       "origin": "review"
       },
       {
        "id": "q-which",
@@ -86,7 +87,8 @@
        "answer": [
         "which"
        ],
-       "explain": "`which echo` 会输出 `/bin/echo` 之类的路径。"
+       "explain": "`which echo` 会输出 `/bin/echo` 之类的路径。",
+       "origin": "review"
       },
       {
        "id": "q-perm",
@@ -99,7 +101,8 @@
         "`d` 表示默认；九个字符是修改时间"
        ],
        "answer": 0,
-       "explain": "第一个字符 `d` 表示这是目录，后面每三个字符一组，分别对应所有者、用户组、其他所有人的读(r)、写(w)、执行(x)权限。"
+       "explain": "第一个字符 `d` 表示这是目录，后面每三个字符一组，分别对应所有者、用户组、其他所有人的读(r)、写(w)、执行(x)权限。",
+       "origin": "review"
       },
       {
        "id": "q-dirx",
@@ -112,7 +115,8 @@
         "可以重命名该目录"
        ],
        "answer": 1,
-       "explain": "进入目录需要该目录及其父目录的“搜索”权限，即 `x`；列出内容需要的是读权限 `r`。"
+       "explain": "进入目录需要该目录及其父目录的“搜索”权限，即 `x`；列出内容需要的是读权限 `r`。",
+       "origin": "review"
       },
       {
        "id": "q-sudo-redirect",
@@ -125,7 +129,8 @@
         "brightness 文件不存在"
        ],
        "answer": 2,
-       "explain": "`|`、`>`、`<` 是由 shell 执行的，而不是 echo 程序。shell 以当前用户权限尝试打开文件，因此被拒绝。"
+       "explain": "`|`、`>`、`<` 是由 shell 执行的，而不是 echo 程序。shell 以当前用户权限尝试打开文件，因此被拒绝。",
+       "origin": "review"
       },
       {
        "id": "q-tee",
@@ -134,7 +139,8 @@
        "answer": [
         "tee"
        ],
-       "explain": "此时打开文件的是以 root 运行的 `tee` 程序，所以可以成功写入。"
+       "explain": "此时打开文件的是以 root 运行的 `tee` 程序，所以可以成功写入。",
+       "origin": "review"
       },
       {
        "id": "q-shebang",
@@ -147,7 +153,8 @@
         "声明文件编码"
        ],
        "answer": 1,
-       "explain": "shebang 告诉系统用哪个解释器执行脚本；还需要用 `chmod +x` 赋予执行权限，才能 `./semester` 直接运行。"
+       "explain": "shebang 告诉系统用哪个解释器执行脚本；还需要用 `chmod +x` 赋予执行权限，才能 `./semester` 直接运行。",
+       "origin": "review"
       },
       {
        "id": "q-pipe-py",
@@ -178,7 +185,8 @@
          "stdout": "c d e\n"
         }
        ],
-       "solution": "n = int(input())\nlines = [input() for _ in range(n)]\nif lines:\n    print(lines[-1])\n"
+       "solution": "n = int(input())\nlines = [input() for _ in range(n)]\nif lines:\n    print(lines[-1])\n",
+       "origin": "review"
       }
      ]
     },
@@ -217,7 +225,8 @@
         "`set foo = bar`"
        ],
        "answer": 1,
-       "explain": "赋值时等号两边不能有空格。`foo = bar` 会被解释为调用程序 `foo`，并把 `=` 和 `bar` 作为参数。"
+       "explain": "赋值时等号两边不能有空格。`foo = bar` 会被解释为调用程序 `foo`，并把 `=` 和 `bar` 作为参数。",
+       "origin": "review"
       },
       {
        "id": "q-quotes",
@@ -230,7 +239,8 @@
         "报错"
        ],
        "answer": 1,
-       "explain": "单引号定义原义字符串，变量不会被替换；双引号 `\"$foo\"` 才会打印 bar。"
+       "explain": "单引号定义原义字符串，变量不会被替换；双引号 `\"$foo\"` 才会打印 bar。",
+       "origin": "review"
       },
       {
        "id": "q-special",
@@ -239,7 +249,8 @@
        "answer": [
         "$?"
        ],
-       "explain": "`$?` 保存上一条命令的退出码；0 表示正常，非 0 表示出错。"
+       "explain": "`$?` 保存上一条命令的退出码；0 表示正常，非 0 表示出错。",
+       "origin": "review"
       },
       {
        "id": "q-andor",
@@ -252,7 +263,8 @@
         "`false ; echo \"Things\"`"
        ],
        "answer": 2,
-       "explain": "`&&` 在前一个命令返回 0 时才执行后面的；`||` 在前一个命令失败时才执行后面的。`true` 返回 0，`false` 返回 1。"
+       "explain": "`&&` 在前一个命令返回 0 时才执行后面的；`||` 在前一个命令失败时才执行后面的。`true` 返回 0，`false` 返回 1。",
+       "origin": "review"
       },
       {
        "id": "q-func-script",
@@ -265,7 +277,8 @@
         "脚本只在定义时被加载一次"
        ],
        "answer": 1,
-       "explain": "函数在当前 shell 环境中执行，因此能 `cd`、改环境变量；脚本在单独进程中运行，不能。脚本可用任意语言（靠 shebang）。"
+       "explain": "函数在当前 shell 环境中执行，因此能 `cd`、改环境变量；脚本在单独进程中运行，不能。脚本可用任意语言（靠 shebang）。",
+       "origin": "review"
       },
       {
        "id": "q-brace",
@@ -274,7 +287,8 @@
        "answer": [
         "image.jpg"
        ],
-       "explain": "花括号用于展开共同子串，`image.{png,jpg}` 等价于 `image.png image.jpg`。"
+       "explain": "花括号用于展开共同子串，`image.{png,jpg}` 等价于 `image.png image.jpg`。",
+       "origin": "review"
       },
       {
        "id": "q-find",
@@ -287,7 +301,8 @@
         "`history`；`locate` 速度太慢"
        ],
        "answer": 0,
-       "explain": "`find` 可以按名称、大小、修改时间、权限等查找；`locate` 使用 `updatedb` 每日更新的数据库，速度快但只能按文件名，时效性差。"
+       "explain": "`find` 可以按名称、大小、修改时间、权限等查找；`locate` 使用 `updatedb` 每日更新的数据库，速度快但只能按文件名，时效性差。",
+       "origin": "review"
       },
       {
        "id": "q-history",
@@ -299,7 +314,8 @@
         "Ctrl-R",
         "^R"
        ],
-       "explain": "`Ctrl+R` 对历史命令做回溯搜索，可与 fzf 配合使用。"
+       "explain": "`Ctrl+R` 对历史命令做回溯搜索，可与 fzf 配合使用。",
+       "origin": "review"
       },
       {
        "id": "q-argv-rev",
@@ -330,7 +346,8 @@
          "stdout": "3\n2\n1\n"
         }
        ],
-       "solution": "args = input().split()\nfor a in reversed(args):\n    print(a)\n"
+       "solution": "args = input().split()\nfor a in reversed(args):\n    print(a)\n",
+       "origin": "review"
       }
      ]
     },
@@ -369,7 +386,8 @@
         "可视模式"
        ],
        "answer": 1,
-       "explain": "Vim 启动时处于正常模式，用于在文件中移动光标和修改；按 `<ESC>` 可从任何其他模式回到正常模式。"
+       "explain": "Vim 启动时处于正常模式，用于在文件中移动光标和修改；按 `<ESC>` 可从任何其他模式回到正常模式。",
+       "origin": "review"
       },
       {
        "id": "q-enter-modes",
@@ -382,7 +400,8 @@
         "`R`"
        ],
        "answer": 2,
-       "explain": "`v` 是可视（一般）模式，`V` 是可视（行）模式，`<C-v>` 是可视（块）模式，`R` 是替换模式，`i` 是插入模式，`:` 是命令模式。"
+       "explain": "`v` 是可视（一般）模式，`V` 是可视（行）模式，`<C-v>` 是可视（块）模式，`R` 是替换模式，`i` 是插入模式，`:` 是命令模式。",
+       "origin": "review"
       },
       {
        "id": "q-save-quit",
@@ -392,7 +411,8 @@
         "wq",
         "x"
        ],
-       "explain": "`:w` 保存，`:q` 退出，`:wq` 保存然后退出。"
+       "explain": "`:w` 保存，`:q` 退出，`:wq` 保存然后退出。",
+       "origin": "review"
       },
       {
        "id": "q-buffer",
@@ -405,7 +425,8 @@
         "关闭窗口就会丢弃缓存中的修改"
        ],
        "answer": 1,
-       "explain": "缓存与窗口不是一一对应关系；窗口只是缓存的视图，同一个缓存可在多个窗口甚至同一标签页内的多个窗口中打开。"
+       "explain": "缓存与窗口不是一一对应关系；窗口只是缓存的视图，同一个缓存可在多个窗口甚至同一标签页内的多个窗口中打开。",
+       "origin": "review"
       },
       {
        "id": "q-move",
@@ -418,7 +439,8 @@
         "`G`"
        ],
        "answer": 2,
-       "explain": "`0` 行初，`^` 第一个非空格字符，`$` 行尾，`G` 文件尾。"
+       "explain": "`0` 行初，`^` 第一个非空格字符，`$` 行尾，`G` 文件尾。",
+       "origin": "review"
       },
       {
        "id": "q-dw",
@@ -427,7 +449,8 @@
        "answer": [
         "dw"
        ],
-       "explain": "编辑命令是“动词”，移动是“名词”，`dw` 删除词，`d$` 删除到行尾，`d0` 删除到行头。"
+       "explain": "编辑命令是“动词”，移动是“名词”，`dw` 删除词，`d$` 删除到行尾，`d0` 删除到行头。",
+       "origin": "review"
       },
       {
        "id": "q-count",
@@ -437,7 +460,8 @@
         "7dw",
         "d7w"
        ],
-       "explain": "计数可以结合名词和动词，如 `3w` 向后移动三个词，`7dw` 删除 7 个词。"
+       "explain": "计数可以结合名词和动词，如 `3w` 向后移动三个词，`7dw` 删除 7 个词。",
+       "origin": "review"
       },
       {
        "id": "q-modifier",
@@ -450,7 +474,8 @@
         "在括号外插入文本"
        ],
        "answer": 1,
-       "explain": "修饰语 `i` 表示“内部”，`a` 表示“周围”。`ci(` 改变括号内的内容，`da'` 则删除单引号字符串及其周围的引号。"
+       "explain": "修饰语 `i` 表示“内部”，`a` 表示“周围”。`ci(` 改变括号内的内容，`da'` 则删除单引号字符串及其周围的引号。",
+       "origin": "review"
       },
       {
        "id": "q-fizz",
@@ -481,7 +506,8 @@
          "stdout": ""
         }
        ],
-       "solution": "limit = int(input())\nfor i in range(1, limit + 1):\n    if i % 15 == 0:\n        print('fizzbuzz')\n    elif i % 3 == 0:\n        print('fizz')\n    elif i % 5 == 0:\n        print('buzz')\n    else:\n        print(i)\n"
+       "solution": "limit = int(input())\nfor i in range(1, limit + 1):\n    if i % 15 == 0:\n        print('fizzbuzz')\n    elif i % 3 == 0:\n        print('fizz')\n    elif i % 5 == 0:\n        print('buzz')\n    else:\n        print(i)\n",
+       "origin": "review"
       }
      ]
     },
@@ -520,7 +546,8 @@
         "`s(REGEX,SUBSTITUTION)`"
        ],
        "answer": 0,
-       "explain": "`s/REGEX/SUBSTITUTION/` 表示用 SUBSTITUTION 替换匹配 REGEX 的文本，与 Vim 的搜索替换语法相似。"
+       "explain": "`s/REGEX/SUBSTITUTION/` 表示用 SUBSTITUTION 替换匹配 REGEX 的文本，与 Vim 的搜索替换语法相似。",
+       "origin": "review"
       },
       {
        "id": "q-greedy",
@@ -533,7 +560,8 @@
         "只匹配行首"
        ],
        "answer": 1,
-       "explain": "贪婪模式会尽可能多地匹配。`sed` 不支持用 `?` 后缀变非贪婪，可切换到 `perl -pe 's/.*?Disconnected from //'`。"
+       "explain": "贪婪模式会尽可能多地匹配。`sed` 不支持用 `?` 后缀变非贪婪，可切换到 `perl -pe 's/.*?Disconnected from //'`。",
+       "origin": "review"
       },
       {
        "id": "q-sed-e",
@@ -543,7 +571,8 @@
         "-E",
         "-e"
        ],
-       "explain": "加上 `-E` 选项即可支持 `(`、`+`、`|` 等扩展写法而不必转义。"
+       "explain": "加上 `-E` 选项即可支持 `(`、`+`、`|` 等扩展写法而不必转义。",
+       "origin": "review"
       },
       {
        "id": "q-capture",
@@ -556,7 +585,8 @@
         "第一个文件"
        ],
        "answer": 0,
-       "explain": "被圆括号括起来的正则匹配到的文本会存入编号的捕获组，替换串中可用 `\\1`、`\\2` 等引用。"
+       "explain": "被圆括号括起来的正则匹配到的文本会存入编号的捕获组，替换串中可用 `\\1`、`\\2` 等引用。",
+       "origin": "review"
       },
       {
        "id": "q-uniq",
@@ -569,7 +599,8 @@
         "按数字大小倒序排序"
        ],
        "answer": 1,
-       "explain": "`uniq -c` 把连续出现的相同行折叠并在前面给出次数，所以通常要先 `sort`。"
+       "explain": "`uniq -c` 把连续出现的相同行折叠并在前面给出次数，所以通常要先 `sort`。",
+       "origin": "review"
       },
       {
        "id": "q-sort-nk",
@@ -582,7 +613,8 @@
         "去重；基于第一列"
        ],
        "answer": 0,
-       "explain": "`-n` 按数值排序（默认字典序），`-k1,1` 表示仅基于第一列。要倒序可用 `-r`。"
+       "explain": "`-n` 按数值排序（默认字典序），`-k1,1` 表示仅基于第一列。要倒序可用 `-r`。",
+       "origin": "review"
       },
       {
        "id": "q-awk",
@@ -592,7 +624,8 @@
         "2",
         "二"
        ],
-       "explain": "`$0` 是整行，`$1` 到 `$n` 是各个域，默认以空白分隔，可用 `-F` 修改分隔符。"
+       "explain": "`$0` 是整行，`$1` 到 `$n` 是各个域，默认以空白分隔，可用 `-F` 修改分隔符。",
+       "origin": "review"
       },
       {
        "id": "q-paste",
@@ -603,7 +636,8 @@
         "\",\"",
         "','"
        ],
-       "explain": "`paste -s` 合并行，`-d` 指定分隔符，所以是 `paste -sd,`。"
+       "explain": "`paste -s` 合并行，`-d` 指定分隔符，所以是 `paste -sd,`。",
+       "origin": "review"
       },
       {
        "id": "q-count-users",
@@ -634,7 +668,8 @@
          "stdout": ""
         }
        ],
-       "solution": "n = int(input())\ncount = {}\nfor _ in range(n):\n    u = input()\n    count[u] = count.get(u, 0) + 1\nfor u, c in sorted(count.items(), key=lambda kv: (-kv[1], kv[0])):\n    print(c, u)\n"
+       "solution": "n = int(input())\ncount = {}\nfor _ in range(n):\n    u = input()\n    count[u] = count.get(u, 0) + 1\nfor u, c in sorted(count.items(), key=lambda kv: (-kv[1], kv[0])):\n    print(c, u)\n",
+       "origin": "review"
       }
      ]
     },
@@ -673,7 +708,8 @@
         "SIGHUP"
        ],
        "answer": 1,
-       "explain": "`Ctrl-C` 发送 `SIGINT`；`Ctrl-\\` 发送 `SIGQUIT`；`kill -TERM <PID>` 发送更通用、更优雅的 `SIGTERM`；关闭终端会发送 `SIGHUP`。"
+       "explain": "`Ctrl-C` 发送 `SIGINT`；`Ctrl-\\` 发送 `SIGQUIT`；`kill -TERM <PID>` 发送更通用、更优雅的 `SIGTERM`；关闭终端会发送 `SIGHUP`。",
+       "origin": "review"
       },
       {
        "id": "q-bg",
@@ -686,7 +722,8 @@
         "`Ctrl-\\` 然后 `jobs`"
        ],
        "answer": 1,
-       "explain": "`Ctrl-Z` 发送 SIGTSTP 暂停进程，再用 `bg` 在后台继续；`fg` 则是在前台继续，`jobs` 列出当前会话的任务。"
+       "explain": "`Ctrl-Z` 发送 SIGTSTP 暂停进程，再用 `bg` 在后台继续；`fg` 则是在前台继续，`jobs` 列出当前会话的任务。",
+       "origin": "review"
       },
       {
        "id": "q-nohup",
@@ -695,7 +732,8 @@
        "answer": [
         "nohup"
        ],
-       "explain": "`nohup` 是用来忽略 SIGHUP 的包装命令，如 `nohup sleep 2000 &`。"
+       "explain": "`nohup` 是用来忽略 SIGHUP 的包装命令，如 `nohup sleep 2000 &`。",
+       "origin": "review"
       },
       {
        "id": "q-tmux",
@@ -708,7 +746,8 @@
         "`tmux new -s NAME`"
        ],
        "answer": 1,
-       "explain": "`<C-b> d` 分离当前会话；`tmux a` 重新连接最后一个会话；`tmux ls` 列出会话；`tmux new -s NAME` 新建命名会话。"
+       "explain": "`<C-b> d` 分离当前会话；`tmux a` 重新连接最后一个会话；`tmux ls` 列出会话；`tmux new -s NAME` 新建命名会话。",
+       "origin": "review"
       },
       {
        "id": "q-alias",
@@ -721,7 +760,8 @@
         "`alias = ll \"ls -lh\"`"
        ],
        "answer": 1,
-       "explain": "`=` 两边不能有空格，因为 `alias` 只接受一个参数。可用 `unalias` 取消别名。"
+       "explain": "`=` 两边不能有空格，因为 `alias` 只接受一个参数。可用 `unalias` 取消别名。",
+       "origin": "review"
       },
       {
        "id": "q-sshconfig",
@@ -730,7 +770,8 @@
        "answer": [
         "config"
        ],
-       "explain": "在 `~/.ssh/config` 里可用 Host、User、HostName、Port、IdentityFile、LocalForward 等给服务器起别名，`scp`、`rsync`、`mosh` 也会读取它。"
+       "explain": "在 `~/.ssh/config` 里可用 Host、User、HostName、Port、IdentityFile、LocalForward 等给服务器起别名，`scp`、`rsync`、`mosh` 也会读取它。",
+       "origin": "review"
       },
       {
        "id": "q-authkeys",
@@ -739,7 +780,8 @@
        "answer": [
         "authorized_keys"
        ],
-       "explain": "公钥放在服务器的 `~/.ssh/authorized_keys`，可用 `ssh-copy-id` 简化操作。"
+       "explain": "公钥放在服务器的 `~/.ssh/authorized_keys`，可用 `ssh-copy-id` 简化操作。",
+       "origin": "review"
       },
       {
        "id": "q-forward",
@@ -749,7 +791,8 @@
         "-L",
         "-l"
        ],
-       "explain": "`-L` 是本地端口转发：`ssh -L 9999:localhost:8888 foobar@remote_server`，然后访问本地 `localhost:9999`。"
+       "explain": "`-L` 是本地端口转发：`ssh -L 9999:localhost:8888 foobar@remote_server`，然后访问本地 `localhost:9999`。",
+       "origin": "review"
       }
      ]
     },
@@ -788,7 +831,8 @@
         "文件是 commit，目录是 blob"
        ],
        "answer": 1,
-       "explain": "文件被称为 blob（数据对象），目录被称为 tree，它把名字映射到 blob 或其他 tree；快照是被追踪的最顶层的树。"
+       "explain": "文件被称为 blob（数据对象），目录被称为 tree，它把名字映射到 blob 或其他 tree；快照是被追踪的最顶层的树。",
+       "origin": "review"
       },
       {
        "id": "q-commit",
@@ -801,7 +845,8 @@
         "仅 SHA-1 值"
        ],
        "answer": 0,
-       "explain": "伪代码中 `commit = struct { parents, author, message, snapshot: tree }`。"
+       "explain": "伪代码中 `commit = struct { parents, author, message, snapshot: tree }`。",
+       "origin": "review"
       },
       {
        "id": "q-ref",
@@ -814,7 +859,8 @@
         "引用只能指向 blob"
        ],
        "answer": 1,
-       "explain": "引用是指向提交的指针，可以更新指向新的提交（如 `master`）；对象按哈希寻址。当前位置由特殊引用 `HEAD` 表示。"
+       "explain": "引用是指向提交的指针，可以更新指向新的提交（如 `master`）；对象按哈希寻址。当前位置由特殊引用 `HEAD` 表示。",
+       "origin": "review"
       },
       {
        "id": "q-staging",
@@ -827,7 +873,8 @@
         "为了代替 .git 目录"
        ],
        "answer": 1,
-       "explain": "暂存区让你指定下次快照包含哪些改动，比如只提交与 bug 修复相关的代码而丢弃调试打印语句。"
+       "explain": "暂存区让你指定下次快照包含哪些改动，比如只提交与 bug 修复相关的代码而丢弃调试打印语句。",
+       "origin": "review"
       },
       {
        "id": "q-graph",
@@ -837,7 +884,8 @@
         "--decorate",
         "--decorate --oneline"
        ],
-       "explain": "`git log --all --graph --decorate` 可视化历史；再加 `--oneline` 可以更简洁。"
+       "explain": "`git log --all --graph --decorate` 可视化历史；再加 `--oneline` 可以更简洁。",
+       "origin": "review"
       },
       {
        "id": "q-pull",
@@ -846,7 +894,8 @@
        "answer": [
         "merge"
        ],
-       "explain": "`git fetch` 从远端获取对象和引用，`git merge` 将其合并到当前分支。"
+       "explain": "`git fetch` 从远端获取对象和引用，`git merge` 将其合并到当前分支。",
+       "origin": "review"
       },
       {
        "id": "q-blame",
@@ -859,7 +908,8 @@
         "`git clone --depth=1`"
        ],
        "answer": 2,
-       "explain": "`git blame` 查看最后修改某行的人；`git bisect` 用二分查找历史；`git stash` 暂时移除工作目录改动。"
+       "explain": "`git blame` 查看最后修改某行的人；`git bisect` 用二分查找历史；`git stash` 暂时移除工作目录改动。",
+       "origin": "review"
       },
       {
        "id": "q-history-py",
@@ -890,7 +940,8 @@
          "stdout": "c\nb\na\n"
         }
        ],
-       "solution": "n = int(input())\nparent = {}\nfor _ in range(n):\n    c, p = input().split()\n    parent[c] = p\ncur = input().strip()\nwhile cur != '-':\n    print(cur)\n    cur = parent[cur]\n"
+       "solution": "n = int(input())\nparent = {}\nfor _ in range(n):\n    c, p = input().split()\n    parent[c] = p\ncur = input().strip()\nwhile cur != '-':\n    print(cur)\n    cur = parent[cur]\n",
+       "origin": "review"
       }
      ]
     },
@@ -925,7 +976,8 @@
        "answer": [
         "journalctl"
        ],
-       "explain": "systemd 把日志以特殊格式存放在 `/var/log/journal`，用 `journalctl` 查看；macOS 则使用 `log show`。"
+       "explain": "systemd 把日志以特殊格式存放在 `/var/log/journal`，用 `journalctl` 查看；macOS 则使用 `log show`。",
+       "origin": "review"
       },
       {
        "id": "q-pdb",
@@ -938,7 +990,8 @@
         "两者完全相同"
        ],
        "answer": 0,
-       "explain": "`s` 执行当前行并在第一个可能的时机停止（通常指步入函数）；`n` 继续执行到当前函数的下一行或函数返回（步过函数）。`b` 设置断点，`p` 打印表达式，`q` 退出。"
+       "explain": "`s` 执行当前行并在第一个可能的时机停止（通常指步入函数）；`n` 继续执行到当前函数的下一行或函数返回（步过函数）。`b` 设置断点，`p` 打印表达式，`q` 退出。",
+       "origin": "review"
       },
       {
        "id": "q-strace",
@@ -951,7 +1004,8 @@
         "`cProfile`"
        ],
        "answer": 1,
-       "explain": "Linux 用 `strace`，macOS 和 BSD 用 `dtruss`。网络问题则用 `tcpdump` 或 Wireshark 查看数据包。"
+       "explain": "Linux 用 `strace`，macOS 和 BSD 用 `dtruss`。网络问题则用 `tcpdump` 或 Wireshark 查看数据包。",
+       "origin": "review"
       },
       {
        "id": "q-static",
@@ -964,7 +1018,8 @@
         "只能分析性能"
        ],
        "answer": 1,
-       "explain": "静态分析工具能在不运行代码的情况下发现未使用变量、类型不一致等问题；`mypy` 做类型检查，`shellcheck` 用于 shell 脚本。"
+       "explain": "静态分析工具能在不运行代码的情况下发现未使用变量、类型不一致等问题；`mypy` 做类型检查，`shellcheck` 用于 shell 脚本。",
+       "origin": "review"
       },
       {
        "id": "q-time",
@@ -977,7 +1032,8 @@
         "user 时间指网络用时"
        ],
        "answer": 1,
-       "explain": "real 是墙上时间，可能包含等待；user + sys 才代表进程在 CPU 上实际消耗的时间。"
+       "explain": "real 是墙上时间，可能包含等待；user + sys 才代表进程在 CPU 上实际消耗的时间。",
+       "origin": "review"
       },
       {
        "id": "q-cprofile",
@@ -987,7 +1043,8 @@
         "cProfile",
         "cprofile"
        ],
-       "explain": "用法：`python -m cProfile -s tottime grep.py ...`。要按行分析可用 `line_profiler`（`kernprof -l -v`）。"
+       "explain": "用法：`python -m cProfile -s tottime grep.py ...`。要按行分析可用 `line_profiler`（`kernprof -l -v`）。",
+       "origin": "review"
       },
       {
        "id": "q-valgrind",
@@ -1000,7 +1057,8 @@
         "tcpdump"
        ],
        "answer": 0,
-       "explain": "Valgrind 可用于检查内存泄漏；Python 里可用 `memory-profiler`。"
+       "explain": "Valgrind 可用于检查内存泄漏；Python 里可用 `memory-profiler`。",
+       "origin": "review"
       },
       {
        "id": "q-bubble",
@@ -1037,7 +1095,8 @@
         }
        ],
        "solution": "arr = list(map(int, input().split()))\nn = len(arr)\nfor i in range(n):\n    for j in range(n - i - 1):\n        if arr[j] > arr[j + 1]:\n            arr[j], arr[j + 1] = arr[j + 1], arr[j]\nprint(*arr)\n",
-       "hint": "交换时先覆盖了 arr[j]，导致 arr[j+1] 拿到的是新值。用元组交换。"
+       "hint": "交换时先覆盖了 arr[j]，导致 arr[j+1] 拿到的是新值。用元组交换。",
+       "origin": "review"
       }
      ]
     },
@@ -1076,7 +1135,8 @@
         "输入、输出和日志"
        ],
        "answer": 0,
-       "explain": "构建系统需要定义依赖、目标和规则；系统负责找到构建目标所需的依赖并按规则构建，若依赖没变则可复用之前的构建结果。"
+       "explain": "构建系统需要定义依赖、目标和规则；系统负责找到构建目标所需的依赖并按规则构建，若依赖没变则可复用之前的构建结果。",
+       "origin": "review"
       },
       {
        "id": "q-makefile",
@@ -1089,7 +1149,8 @@
         "左右都是目标"
        ],
        "answer": 0,
-       "explain": "冒号左侧是目标，右侧是依赖，缩进的部分是由依赖构建目标的命令。不带参数运行 `make` 时构建第一条规则的目标。"
+       "explain": "冒号左侧是目标，右侧是依赖，缩进的部分是由依赖构建目标的命令。不带参数运行 `make` 时构建第一条规则的目标。",
+       "origin": "review"
       },
       {
        "id": "q-semver",
@@ -1101,7 +1162,8 @@
         "主版本号",
         "major"
        ],
-       "explain": "没改 API 递增补丁号；向后兼容地新增 API 递增次版本号；不兼容的修改递增主版本号。"
+       "explain": "没改 API 递增补丁号；向后兼容地新增 API 递增次版本号；不兼容的修改递增主版本号。",
+       "origin": "review"
       },
       {
        "id": "q-compat",
@@ -1114,7 +1176,8 @@
         "2.2.4"
        ],
        "answer": 3,
-       "explain": "只要主版本号没变、次版本号不低于之前使用的版本就是安全的；`2.2.4` 的主版本号增加了，API 可能不兼容。"
+       "explain": "只要主版本号没变、次版本号不低于之前使用的版本就是安全的；`2.2.4` 的主版本号增加了，API 可能不兼容。",
+       "origin": "review"
       },
       {
        "id": "q-lock",
@@ -1127,7 +1190,8 @@
         "CI 的密码"
        ],
        "answer": 0,
-       "explain": "锁文件列出每个依赖的具体版本，可避免不必要的重新编译、创建可复现的版本、禁止自动升级到可能有 bug 的新版本。"
+       "explain": "锁文件列出每个依赖的具体版本，可避免不必要的重新编译、创建可复现的版本、禁止自动升级到可能有 bug 的新版本。",
+       "origin": "review"
       },
       {
        "id": "q-ci",
@@ -1140,7 +1204,8 @@
         "一种版本号格式"
        ],
        "answer": 0,
-       "explain": "CI 是涵盖“当代码变动时自动运行的东西”的雨伞术语，常见的有 Travis CI、Azure Pipelines、GitHub Actions。"
+       "explain": "CI 是涵盖“当代码变动时自动运行的东西”的雨伞术语，常见的有 Travis CI、Azure Pipelines、GitHub Actions。",
+       "origin": "review"
       },
       {
        "id": "q-regression",
@@ -1153,7 +1218,8 @@
         "模拟（Mocking）"
        ],
        "answer": 2,
-       "explain": "回归测试保证旧 bug 不再复现；单元测试测单个封装特性；集成测试测多个组件协同工作；Mocking 是用假实现替换不相关的部分。"
+       "explain": "回归测试保证旧 bug 不再复现；单元测试测单个封装特性；集成测试测多个组件协同工作；Mocking 是用假实现替换不相关的部分。",
+       "origin": "review"
       },
       {
        "id": "q-semver-py",
@@ -1189,7 +1255,8 @@
          "stdout": "no\n"
         }
        ],
-       "solution": "a = list(map(int, input().strip().split('.')))\nb = list(map(int, input().strip().split('.')))\nprint('yes' if a[0] == b[0] and b[1] >= a[1] else 'no')\n"
+       "solution": "a = list(map(int, input().strip().split('.')))\nb = list(map(int, input().strip().split('.')))\nprint('yes' if a[0] == b[0] and b[1] >= a[1] else 'no')\n",
+       "origin": "review"
       }
      ]
     },
@@ -1228,7 +1295,8 @@
         "2n"
        ],
        "answer": 1,
-       "explain": "熵等于 log_2(n)。扔一次硬币的熵是 1 比特，掷一次六面骰子约为 2.58 比特。"
+       "explain": "熵等于 log_2(n)。扔一次硬币的熵是 1 比特，掷一次六面骰子约为 2.58 比特。",
+       "origin": "review"
       },
       {
        "id": "q-entropy-40",
@@ -1237,7 +1305,8 @@
        "answer": [
         "40"
        ],
-       "explain": "在线穷举受限于网络速度和应用认证机制，约 40 比特的熵足够；具体多少取决于威胁模型。"
+       "explain": "在线穷举受限于网络速度和应用认证机制，约 40 比特的熵足够；具体多少取决于威胁模型。",
+       "origin": "review"
       },
       {
        "id": "q-hash",
@@ -1250,7 +1319,8 @@
         "哈希值长度可变"
        ],
        "answer": 1,
-       "explain": "目标碰撞抵抗性是给定 m_1 难以找到 m_2；碰撞抵抗性是难以找到任意一对碰撞输入，且严格强于前者。"
+       "explain": "目标碰撞抵抗性是给定 m_1 难以找到 m_2；碰撞抵抗性是难以找到任意一对碰撞输入，且严格强于前者。",
+       "origin": "review"
       },
       {
        "id": "q-salt",
@@ -1260,7 +1330,8 @@
         "盐",
         "salt"
        ],
-       "explain": "登录验证时用输入的密码连接存储的盐重新计算 `KDF(input + salt)` 并与存储的哈希比较。"
+       "explain": "登录验证时用输入的密码连接存储的盐重新计算 `KDF(input + salt)` 并与存储的哈希比较。",
+       "origin": "review"
       },
       {
        "id": "q-aes",
@@ -1273,7 +1344,8 @@
         "数字签名"
        ],
        "answer": 0,
-       "explain": "AES 是现在常用的对称加密系统：加密与解密使用同一个密钥。"
+       "explain": "AES 是现在常用的对称加密系统：加密与解密使用同一个密钥。",
+       "origin": "review"
       },
       {
        "id": "q-asym",
@@ -1286,7 +1358,8 @@
         "用自己的私钥签名"
        ],
        "answer": 1,
-       "explain": "信息用公钥加密，在不知道私钥的情况下很难得出明文；类比为把打开的挂锁（公钥）给别人，只有你有钥匙（私钥）。"
+       "explain": "信息用公钥加密，在不知道私钥的情况下很难得出明文；类比为把打开的挂锁（公钥）给别人，只有你有钥匙（私钥）。",
+       "origin": "review"
       },
       {
        "id": "q-sign",
@@ -1299,7 +1372,8 @@
         "都用私钥"
        ],
        "answer": 0,
-       "explain": "用私钥对信息签名，任何人可用对应公钥验证。Git 支持用 GPG 对提交和标签签名。"
+       "explain": "用私钥对信息签名，任何人可用对应公钥验证。Git 支持用 GPG 对提交和标签签名。",
+       "origin": "review"
       },
       {
        "id": "q-entropy-py",
@@ -1335,7 +1409,8 @@
          "stdout": "44.00\n"
         }
        ],
-       "solution": "import math\nn, k = map(int, input().split())\nprint('%.2f' % (k * math.log2(n)))\n"
+       "solution": "import math\nn, k = map(int, input().split())\nprint('%.2f' % (k * math.log2(n)))\n",
+       "origin": "review"
       }
      ]
     },
@@ -1370,7 +1445,8 @@
         "只能运行一次"
        ],
        "answer": 0,
-       "explain": "守护进程在后台运行，不需要用户交互；Linux 中常用 `systemd` 配置，用 `systemctl` 控制。"
+       "explain": "守护进程在后台运行，不需要用户交互；Linux 中常用 `systemd` 配置，用 `systemctl` 控制。",
+       "origin": "review"
       },
       {
        "id": "q-systemctl",
@@ -1379,7 +1455,8 @@
        "answer": [
         "status"
        ],
-       "explain": "`systemctl status` 可以看到正在运行的所有守护进程；还可以 enable、disable、start、stop、restart 某个服务。"
+       "explain": "`systemctl status` 可以看到正在运行的所有守护进程；还可以 enable、disable、start、stop、restart 某个服务。",
+       "origin": "review"
       },
       {
        "id": "q-fuse",
@@ -1392,7 +1469,8 @@
         "管理窗口"
        ],
        "answer": 0,
-       "explain": "FUSE 让用户空间程序实现文件系统，如 `sshfs`（通过 SSH 挂载远程目录）、`rclone`（挂载云存储）、`gocryptfs`（加密文件系统）。"
+       "explain": "FUSE 让用户空间程序实现文件系统，如 `sshfs`（通过 SSH 挂载远程目录）、`rclone`（挂载云存储）、`gocryptfs`（加密文件系统）。",
+       "origin": "review"
       },
       {
        "id": "q-api",
@@ -1405,7 +1483,8 @@
         "没有任何权限"
        ],
        "answer": 1,
-       "explain": "使用有效 OAuth 令牌的请求在 API 看来就是用户本人发出的，泄露后别人可冒用你的身份。"
+       "explain": "使用有效 OAuth 令牌的请求在 API 看来就是用户本人发出的，泄露后别人可冒用你的身份。",
+       "origin": "review"
       },
       {
        "id": "q-flags",
@@ -1418,7 +1497,8 @@
         "`rm -f -r`"
        ],
        "answer": 1,
-       "explain": "特殊参数 `--` 让程序停止处理其后的标志参数，所以 `rm -- -r` 把 `-r` 当作文件名。"
+       "explain": "特殊参数 `--` 让程序停止处理其后的标志参数，所以 `rm -- -r` 把 `-r` 当作文件名。",
+       "origin": "review"
       },
       {
        "id": "q-dryrun",
@@ -1427,7 +1507,8 @@
        "answer": [
         "dry"
        ],
-       "explain": "dry run 让用户先确认工具真实运行时会做什么；也常有“交互式”标志在每次不可撤回操作前提示。"
+       "explain": "dry run 让用户先确认工具真实运行时会做什么；也常有“交互式”标志在每次不可撤回操作前提示。",
+       "origin": "review"
       },
       {
        "id": "q-vpn",
@@ -1440,7 +1521,8 @@
         "VPN 不会记录任何流量"
        ],
        "answer": 0,
-       "explain": "ISP 能看到的 VPN 供应商也能看到；若不信任 VPN 供应商则价值不明确，且大部分敏感流量已被 HTTPS/TLS 加密。"
+       "explain": "ISP 能看到的 VPN 供应商也能看到；若不信任 VPN 供应商则价值不明确，且大部分敏感流量已被 HTTPS/TLS 加密。",
+       "origin": "review"
       },
       {
        "id": "q-wm",
@@ -1453,7 +1535,8 @@
         "只能在 macOS 使用"
        ],
        "answer": 1,
-       "explain": "平铺式管理器和 tmux 管理终端窗口的方式类似，可以不用鼠标切换、缩放、移动窗口。"
+       "explain": "平铺式管理器和 tmux 管理终端窗口的方式类似，可以不用鼠标切换、缩放、移动窗口。",
+       "origin": "review"
       },
       {
        "id": "q-docker-vm",
@@ -1466,7 +1549,8 @@
         "容器隔离性强于虚拟机"
        ],
        "answer": 1,
-       "explain": "容器开销更小但隔离较弱，并且要求主机内核相同；在 macOS 上运行 Docker 需要先启动 Linux 虚拟机。"
+       "explain": "容器开销更小但隔离较弱，并且要求主机内核相同；在 macOS 上运行 Docker 需要先启动 Linux 虚拟机。",
+       "origin": "review"
       }
      ]
     },
@@ -1501,7 +1585,8 @@
         "`source` 会启动新的 bash 实例"
        ],
        "answer": 0,
-       "explain": "`./script.sh` 在新的 bash 实例中运行，退出后父会话仍在原目录；要在当前终端定义函数就需要 `source`。"
+       "explain": "`./script.sh` 在新的 bash 实例中运行，退出后父会话仍在原目录；要在当前终端定义函数就需要 `source`。",
+       "origin": "review"
       },
       {
        "id": "q-fn-source",
@@ -1511,7 +1596,8 @@
         "source",
         "."
        ],
-       "explain": "用 `source script.sh`，这样函数定义才留在当前 shell 里。"
+       "explain": "用 `source script.sh`，这样函数定义才留在当前 shell 里。",
+       "origin": "review"
       },
       {
        "id": "q-pkg",
@@ -1524,7 +1610,8 @@
         "永远不用虚拟环境"
        ],
        "answer": 1,
-       "explain": "应只使用一种方案，避免冲突；推荐用语言包管理器并使用隔离环境（Python 用 virtualenv）。但在 ARM 等需要二进制/编译的场景，系统包管理器可能更好。"
+       "explain": "应只使用一种方案，避免冲突；推荐用语言包管理器并使用隔离环境（Python 用 virtualenv）。但在 ARM 等需要二进制/编译的场景，系统包管理器可能更好。",
+       "origin": "review"
       },
       {
        "id": "q-docker",
@@ -1537,7 +1624,8 @@
         "只有 root 用户有"
        ],
        "answer": 1,
-       "explain": "Docker 是为软件部署定制的，有些怪异之处，例如默认容器重启之间不保留存储。"
+       "explain": "Docker 是为软件部署定制的，有些怪异之处，例如默认容器重启之间不保留存储。",
+       "origin": "review"
       },
       {
        "id": "q-2fa",
@@ -1550,7 +1638,8 @@
         "用两个用户名"
        ],
        "answer": 0,
-       "explain": "2FA 在密码之上增加一层保护。短信 2FA 存在已知问题，推荐 YubiKey 之类的 U2F 设备。"
+       "explain": "2FA 在密码之上增加一层保护。短信 2FA 存在已知问题，推荐 YubiKey 之类的 U2F 设备。",
+       "origin": "review"
       },
       {
        "id": "q-fhs",
@@ -1563,7 +1652,8 @@
         "都存放临时文件"
        ],
        "answer": 0,
-       "explain": "`/bin` 是基本命令的可执行文件所在目录，`/lib` 是共享库所在目录，shell 通过 `$PATH` 来找到程序。"
+       "explain": "`/bin` 是基本命令的可执行文件所在目录，`/lib` 是共享库所在目录，shell 通过 `$PATH` 来找到程序。",
+       "origin": "review"
       },
       {
        "id": "q-which",
@@ -1573,7 +1663,8 @@
         "which",
         "type"
        ],
-       "explain": "`which`（或 `type`）会显示 shell 根据 `PATH` 环境变量找到的程序位置。"
+       "explain": "`which`（或 `type`）会显示 shell 根据 `PATH` 环境变量找到的程序位置。",
+       "origin": "review"
       },
       {
        "id": "q-bash-limit",
@@ -1586,7 +1677,8 @@
         "Bash 无法执行任何外部命令"
        ],
        "answer": 3,
-       "explain": "Bash 非常擅长调用外部命令，它的问题在于难以对所有输入都正确、不利于代码重用、依赖特殊字符。大型或复杂脚本推荐用 Python、Ruby 等。"
+       "explain": "Bash 非常擅长调用外部命令，它的问题在于难以对所有输入都正确、不利于代码重用、依赖特殊字符。大型或复杂脚本推荐用 Python、Ruby 等。",
+       "origin": "review"
       }
      ]
     }

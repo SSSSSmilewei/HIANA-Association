@@ -13,6 +13,7 @@ import '../../widgets/markdown_view.dart';
 import '../../widgets/ui.dart';
 import '../auth/guest.dart';
 import 'course_page.dart';
+import '../pins/pins_section.dart';
 import 'practice_card.dart';
 
 /// 讲义里的链接：站内课程页、讲义页在 App 里打开，其余交给浏览器。
@@ -237,6 +238,8 @@ class LessonPage extends ConsumerWidget {
               ),
             ),
         ],
+        if (!slug.startsWith('local-'))
+          PinsSection(course: slug, page: page),
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: HxButton(

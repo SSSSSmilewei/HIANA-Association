@@ -1,8 +1,12 @@
 import { useEffect } from "react";
 import { ASSOCIATION, DEPARTMENTS, DIRECTIONS, HONORS, type Honor, JOIN_STEPS, YEAR, honorStats } from "../../shared/association";
+import { Icon } from "../icons";
 import { Link } from "../router";
 import { loginHref, useMe } from "../session";
 import { useTitle } from "../ui";
+
+/** 开场动画的地图（看过一遍之后的状态），看完“回到平台”回这一页 */
+export const INTRO_MAP_HREF = "/intro/?view=map&from=/about";
 
 /** 协会介绍和学生成就，同一页。游客也能看。内容在 association.ts。 */
 export function AboutPage() {
@@ -23,6 +27,11 @@ export function AboutPage() {
           <p className="lead">{ASSOCIATION.slogan}</p>
         </div>
         <nav className="row wrap" style={{ gap: 8 }} aria-label="本页">
+          {/* 开场动画是单独的静态页（public/intro/），整页跳过去，不走前端路由 */}
+          <a href={INTRO_MAP_HREF} className="btn btn-primary btn-sm">
+            <Icon name="play" size={16} />
+            打开协会介绍
+          </a>
           <a href="#honors" className="btn btn-ghost btn-sm">
             学生成就
           </a>

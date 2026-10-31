@@ -77,7 +77,8 @@
         "它会修改 `$PATH`"
        ],
        "answer": 1,
-       "explain": "cd 需要改变 Shell 自身进程的工作目录，所以必须是内建命令。"
+       "explain": "cd 需要改变 Shell 自身进程的工作目录，所以必须是内建命令。",
+       "origin": "review"
       },
       {
        "id": "shell-path",
@@ -90,7 +91,8 @@
         "读取 `/etc/commands`"
        ],
        "answer": 1,
-       "explain": "`$PATH` 是冒号分隔的目录列表；也可以直接给完整路径绕过它。"
+       "explain": "`$PATH` 是冒号分隔的目录列表；也可以直接给完整路径绕过它。",
+       "origin": "review"
       },
       {
        "id": "shell-pwd",
@@ -99,7 +101,8 @@
        "answer": [
         "pwd"
        ],
-       "explain": "pwd = print working directory，也可以 echo $PWD。"
+       "explain": "pwd = print working directory，也可以 echo $PWD。",
+       "origin": "review"
       },
       {
        "id": "shell-space",
@@ -116,7 +119,8 @@
         2,
         3
        ],
-       "explain": "空格会把参数拆开；用引号或反斜杠转义都可以。"
+       "explain": "空格会把参数拆开；用引号或反斜杠转义都可以。",
+       "origin": "review"
       },
       {
        "id": "shell-help",
@@ -125,7 +129,8 @@
        "answer": [
         "--help"
        ],
-       "explain": "`man` 看完整手册，`--help` 看简短帮助。"
+       "explain": "`man` 看完整手册，`--help` 看简短帮助。",
+       "origin": "review"
       },
       {
        "id": "shell-dotdot",
@@ -138,7 +143,8 @@
         "/usr"
        ],
        "answer": 1,
-       "explain": "每个 `..` 上升一级：/home/jon -> /home -> /。"
+       "explain": "每个 `..` 上升一级：/home/jon -> /home -> /。",
+       "origin": "review"
       },
       {
        "id": "shell-uniq",
@@ -151,7 +157,8 @@
         "以 # 开头的行"
        ],
        "answer": 1,
-       "explain": "uniq 只处理相邻重复，所以常和 sort 搭配：`sort | uniq`。"
+       "explain": "uniq 只处理相邻重复，所以常和 sort 搭配：`sort | uniq`。",
+       "origin": "review"
       },
       {
        "id": "count-unique",
@@ -182,7 +189,8 @@
          "stdout": "3 a\n2 b\n1 c\n"
         }
        ],
-       "solution": "import sys\nfrom collections import Counter\nc=Counter(l.rstrip('\\n') for l in sys.stdin)\nfor k in sorted(c): print(c[k],k)\n"
+       "solution": "import sys\nfrom collections import Counter\nc=Counter(l.rstrip('\\n') for l in sys.stdin)\nfor k in sorted(c): print(c[k],k)\n",
+       "origin": "review"
       }
      ]
     },
@@ -217,7 +225,8 @@
         "SIGSTOP"
        ],
        "answer": 1,
-       "explain": "Ctrl-C 发送 SIGINT；Ctrl-\\ 发送 SIGQUIT。"
+       "explain": "Ctrl-C 发送 SIGINT；Ctrl-\\ 发送 SIGQUIT。",
+       "origin": "review"
       },
       {
        "id": "cle-sigterm",
@@ -230,7 +239,8 @@
         "SIGUSR2"
        ],
        "answer": 0,
-       "explain": "SIGTERM 可被程序捕获并做清理；SIGKILL 不能被捕获。"
+       "explain": "SIGTERM 可被程序捕获并做清理；SIGKILL 不能被捕获。",
+       "origin": "review"
       },
       {
        "id": "cle-nohup",
@@ -239,7 +249,8 @@
        "answer": [
         "nohup"
        ],
-       "explain": "nohup 忽略 SIGHUP；已启动的进程可用 disown。"
+       "explain": "nohup 忽略 SIGHUP；已启动的进程可用 disown。",
+       "origin": "review"
       },
       {
        "id": "cle-exit",
@@ -252,7 +263,8 @@
         "参数个数"
        ],
        "answer": 1,
-       "explain": "返回码 0 表示成功，非 0 表示失败。"
+       "explain": "返回码 0 表示成功，非 0 表示失败。",
+       "origin": "review"
       },
       {
        "id": "cle-pipe",
@@ -265,7 +277,8 @@
         "把输出追加到文件 cmd2"
        ],
        "answer": 0,
-       "explain": "管道连接流：前者标准输出，后者标准输入。"
+       "explain": "管道连接流：前者标准输出，后者标准输入。",
+       "origin": "review"
       },
       {
        "id": "cle-chmod",
@@ -278,7 +291,8 @@
         "加密脚本"
        ],
        "answer": 1,
-       "explain": "要用 ./script.sh 直接执行，需要有 x 权限。"
+       "explain": "要用 ./script.sh 直接执行，需要有 x 权限。",
+       "origin": "review"
       },
       {
        "id": "cle-ssh",
@@ -287,7 +301,8 @@
        "answer": [
         "ssh"
        ],
-       "explain": "SSH 是远程登录的标准方式。"
+       "explain": "SSH 是远程登录的标准方式。",
+       "origin": "review"
       },
       {
        "id": "cle-parse-env",
@@ -318,7 +333,8 @@
          "stdout": "Z -> 9\n"
         }
        ],
-       "solution": "import sys\nd={}\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    if '=' not in l: continue\n    k,v=l.split('=',1)\n    d[k]=v\nfor k in sorted(d): print(k,'->',d[k])\n"
+       "solution": "import sys\nd={}\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    if '=' not in l: continue\n    k,v=l.split('=',1)\n    d[k]=v\nfor k in sorted(d): print(k,'->',d[k])\n",
+       "origin": "review"
       }
      ]
     },
@@ -353,7 +369,8 @@
         "只能编辑纯英文"
        ],
        "answer": 1,
-       "explain": "Normal、Insert、Visual 等模式让按键在不同模式下执行不同功能。"
+       "explain": "Normal、Insert、Visual 等模式让按键在不同模式下执行不同功能。",
+       "origin": "review"
       },
       {
        "id": "dev-esc",
@@ -363,7 +380,8 @@
         "esc",
         "escape"
        ],
-       "explain": "Esc 回到 Normal 模式。"
+       "explain": "Esc 回到 Normal 模式。",
+       "origin": "review"
       },
       {
        "id": "dev-dw",
@@ -376,7 +394,8 @@
         "向下翻页"
        ],
        "answer": 0,
-       "explain": "d 是删除操作符，w 是移动到下一个词，组合起来就是删除一个词。"
+       "explain": "d 是删除操作符，w 是移动到下一个词，组合起来就是删除一个词。",
+       "origin": "review"
       },
       {
        "id": "dev-count",
@@ -389,7 +408,8 @@
         "跳到第 3 行"
        ],
        "answer": 0,
-       "explain": "数字前缀是计数，dd 删除当前行。"
+       "explain": "数字前缀是计数，dd 删除当前行。",
+       "origin": "review"
       },
       {
        "id": "dev-save",
@@ -399,7 +419,8 @@
         "wq",
         "x"
        ],
-       "explain": ":wq 写入并退出，`:x` 也行。"
+       "explain": ":wq 写入并退出，`:x` 也行。",
+       "origin": "review"
       },
       {
        "id": "dev-lsp",
@@ -412,7 +433,8 @@
         "管理依赖"
        ],
        "answer": 0,
-       "explain": "LSP 把语言分析与编辑器解耦，一个 server 可供多种编辑器使用。"
+       "explain": "LSP 把语言分析与编辑器解耦，一个 server 可供多种编辑器使用。",
+       "origin": "review"
       },
       {
        "id": "dev-undo",
@@ -425,7 +447,8 @@
         "w"
        ],
        "answer": 0,
-       "explain": "u 撤销，Ctrl-r 重做。"
+       "explain": "u 撤销，Ctrl-r 重做。",
+       "origin": "review"
       },
       {
        "id": "dev-vim-dw",
@@ -456,7 +479,8 @@
          "stdout": "x y\n"
         }
        ],
-       "solution": "s=input()\nn=int(input())\nw=s.split()\nprint(' '.join(w[n:]))\n"
+       "solution": "s=input()\nn=int(input())\nw=s.split()\nprint(' '.join(w[n:]))\n",
+       "origin": "review"
       }
      ]
     },
@@ -491,7 +515,8 @@
         "格式化代码"
        ],
        "answer": 0,
-       "explain": "Linux 用 strace，macOS 对应 dtruss。"
+       "explain": "Linux 用 strace，macOS 对应 dtruss。",
+       "origin": "review"
       },
       {
        "id": "dbg-sanitizer",
@@ -504,7 +529,8 @@
         "安装数据库"
        ],
        "answer": 0,
-       "explain": "Sanitizer 在编译期插桩；不能重编译时可用 Valgrind。"
+       "explain": "Sanitizer 在编译期插桩；不能重编译时可用 Valgrind。",
+       "origin": "review"
       },
       {
        "id": "dbg-valgrind",
@@ -513,7 +539,8 @@
        "answer": [
         "valgrind"
        ],
-       "explain": "Valgrind 在运行时动态翻译二进制，无需重编译。"
+       "explain": "Valgrind 在运行时动态翻译二进制，无需重编译。",
+       "origin": "review"
       },
       {
        "id": "dbg-time",
@@ -526,7 +553,8 @@
         "三者都是"
        ],
        "answer": 0,
-       "explain": "real 是墙钟时间；user+sys 是 CPU 时间。"
+       "explain": "real 是墙钟时间；user+sys 是 CPU 时间。",
+       "origin": "review"
       },
       {
        "id": "dbg-sampling",
@@ -539,7 +567,8 @@
         "网络型"
        ],
        "answer": 0,
-       "explain": "perf 按固定频率采样调用栈，开销小；Callgrind 是跟踪型。"
+       "explain": "perf 按固定频率采样调用栈，开销小；Callgrind 是跟踪型。",
+       "origin": "review"
       },
       {
        "id": "dbg-record",
@@ -552,7 +581,8 @@
         "压缩二进制"
        ],
        "answer": 0,
-       "explain": "一次录制，随便回退检查，适合偶发 bug。"
+       "explain": "一次录制，随便回退检查，适合偶发 bug。",
+       "origin": "review"
       },
       {
        "id": "dbg-massif",
@@ -561,7 +591,8 @@
        "answer": [
         "massif"
        ],
-       "explain": "Massif 是堆分析器。"
+       "explain": "Massif 是堆分析器。",
+       "origin": "review"
       },
       {
        "id": "dbg-log-level",
@@ -592,7 +623,8 @@
          "stdout": "ERROR: 1\nWARN: 1\nINFO: 1\nDEBUG: 2\n"
         }
        ],
-       "solution": "import sys\nc={k:0 for k in ['ERROR','WARN','INFO','DEBUG']}\nfor l in sys.stdin:\n    p=l.split(None,1)\n    if p and p[0] in c: c[p[0]]+=1\nfor k in c: print(f'{k}: {c[k]}')\n"
+       "solution": "import sys\nc={k:0 for k in ['ERROR','WARN','INFO','DEBUG']}\nfor l in sys.stdin:\n    p=l.split(None,1)\n    if p and p[0] in c: c[p[0]]+=1\nfor k in c: print(f'{k}: {c[k]}')\n",
+       "origin": "review"
       }
      ]
     },
@@ -627,7 +659,8 @@
         "tag"
        ],
        "answer": 0,
-       "explain": "blob 是文件，tree 是目录，commit 指向 tree 并记录父提交。"
+       "explain": "blob 是文件，tree 是目录，commit 指向 tree 并记录父提交。",
+       "origin": "review"
       },
       {
        "id": "vc-hash",
@@ -640,7 +673,8 @@
         "随机数"
        ],
        "answer": 0,
-       "explain": "内容寻址：内容相同则哈希相同。"
+       "explain": "内容寻址：内容相同则哈希相同。",
+       "origin": "review"
       },
       {
        "id": "vc-add",
@@ -649,7 +683,8 @@
        "answer": [
         "add"
        ],
-       "explain": "git add 暂存，git commit 提交。"
+       "explain": "git add 暂存，git commit 提交。",
+       "origin": "review"
       },
       {
        "id": "vc-branch",
@@ -662,7 +697,8 @@
         "一个服务器"
        ],
        "answer": 0,
-       "explain": "所以创建分支几乎零成本。"
+       "explain": "所以创建分支几乎零成本。",
+       "origin": "review"
       },
       {
        "id": "vc-fetch",
@@ -675,7 +711,8 @@
         "pull 只在本地工作"
        ],
        "answer": 0,
-       "explain": "fetch 只下载；pull = fetch + merge（或 rebase）。"
+       "explain": "fetch 只下载；pull = fetch + merge（或 rebase）。",
+       "origin": "review"
       },
       {
        "id": "vc-undo",
@@ -688,7 +725,8 @@
         "git tag file"
        ],
        "answer": 0,
-       "explain": "git restore（旧写法 git checkout -- file）。"
+       "explain": "git restore（旧写法 git checkout -- file）。",
+       "origin": "review"
       },
       {
        "id": "vc-log",
@@ -697,7 +735,8 @@
        "answer": [
         "log"
        ],
-       "explain": "git log --oneline --graph 很常用。"
+       "explain": "git log --oneline --graph 很常用。",
+       "origin": "review"
       },
       {
        "id": "vc-hash-toy",
@@ -728,7 +767,8 @@
          "stdout": "0\n0\n1\n"
         }
        ],
-       "solution": "import sys\nd={}\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    if l not in d: d[l]=len(d)\n    print(d[l])\n"
+       "solution": "import sys\nd={}\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    if l not in d: d[l]=len(d)\n    print(d[l])\n",
+       "origin": "review"
       }
      ]
     },
@@ -763,7 +803,8 @@
         "都不用"
        ],
        "answer": 0,
-       "explain": "MAJOR.MINOR.PATCH：破坏性变更升 MAJOR，向后兼容的新功能升 MINOR，修复升 PATCH。"
+       "explain": "MAJOR.MINOR.PATCH：破坏性变更升 MAJOR，向后兼容的新功能升 MINOR，修复升 PATCH。",
+       "origin": "review"
       },
       {
        "id": "ship-compat",
@@ -776,7 +817,8 @@
         "`>=2.0` 且 `<3`"
        ],
        "answer": 0,
-       "explain": "~= 是兼容版本运算符，大致等价于 npm/cargo 的插入符。"
+       "explain": "~= 是兼容版本运算符，大致等价于 npm/cargo 的插入符。",
+       "origin": "review"
       },
       {
        "id": "ship-lock",
@@ -786,7 +828,8 @@
         "lock file",
         "lockfile"
        ],
-       "explain": "例如 uv.lock、package-lock.json、Cargo.lock。"
+       "explain": "例如 uv.lock、package-lock.json、Cargo.lock。",
+       "origin": "review"
       },
       {
        "id": "ship-container",
@@ -799,7 +842,8 @@
         "不能隔离文件系统"
        ],
        "answer": 0,
-       "explain": "容器靠内核的命名空间和 cgroups 隔离，不虚拟化硬件。"
+       "explain": "容器靠内核的命名空间和 cgroups 隔离，不虚拟化硬件。",
+       "origin": "review"
       },
       {
        "id": "ship-docker",
@@ -809,7 +853,8 @@
         "Dockerfile",
         "dockerfile"
        ],
-       "explain": "Dockerfile 一步步描述镜像构成。"
+       "explain": "Dockerfile 一步步描述镜像构成。",
+       "origin": "review"
       },
       {
        "id": "ship-systemd",
@@ -822,7 +867,8 @@
         "用 grep"
        ],
        "answer": 0,
-       "explain": "/etc/systemd/system/xxx.service 描述服务。"
+       "explain": "/etc/systemd/system/xxx.service 描述服务。",
+       "origin": "review"
       },
       {
        "id": "ship-wheel",
@@ -835,7 +881,8 @@
         "dll"
        ],
        "answer": 0,
-       "explain": "wheel 可直接 pip install，无需从源码构建。"
+       "explain": "wheel 可直接 pip install，无需从源码构建。",
+       "origin": "review"
       },
       {
        "id": "ship-semver-sort",
@@ -866,7 +913,8 @@
          "stdout": "2.0.0\n2.0.9\n2.0.10\n10.0.0\n"
         }
        ],
-       "solution": "import sys\nv={tuple(map(int,l.strip().split('.'))) for l in sys.stdin if l.strip()}\nfor t in sorted(v): print('.'.join(map(str,t)))\n"
+       "solution": "import sys\nv={tuple(map(int,l.strip().split('.'))) for l in sys.stdin if l.strip()}\nfor t in sorted(v): print('.'.join(map(str,t)))\n",
+       "origin": "review"
       },
       {
        "id": "ship-bump",
@@ -897,7 +945,8 @@
          "stdout": "0.9.10\n"
         }
        ],
-       "solution": "a,b,c=map(int,input().split('.'))\nk=input().strip()\nif k=='major': a,b,c=a+1,0,0\nelif k=='minor': b,c=b+1,0\nelse: c+=1\nprint(f'{a}.{b}.{c}')\n"
+       "solution": "a,b,c=map(int,input().split('.'))\nk=input().strip()\nif k=='major': a,b,c=a+1,0,0\nelif k=='minor': b,c=b+1,0\nelse: c+=1\nprint(f'{a}.{b}.{c}')\n",
+       "origin": "review"
       }
      ]
     },
@@ -932,7 +981,8 @@
         "编译代码"
        ],
        "answer": 0,
-       "explain": "LLM 建模补全字符串的概率分布并采样。"
+       "explain": "LLM 建模补全字符串的概率分布并采样。",
+       "origin": "review"
       },
       {
        "id": "ag-window",
@@ -945,7 +995,8 @@
         "训练数据大小"
        ],
        "answer": 0,
-       "explain": "超出窗口会丢失信息，窗口很满时性能往往也会下降。"
+       "explain": "超出窗口会丢失信息，窗口很满时性能往往也会下降。",
+       "origin": "review"
       },
       {
        "id": "ag-agentsmd",
@@ -955,7 +1006,8 @@
         "AGENTS.md",
         "agents.md"
        ],
-       "explain": "Claude Code 则查找 CLAUDE.md。"
+       "explain": "Claude Code 则查找 CLAUDE.md。",
+       "origin": "review"
       },
       {
        "id": "ag-mcp",
@@ -968,7 +1020,8 @@
         "版本控制系统"
        ],
        "answer": 0,
-       "explain": "例如 Notion MCP 服务器让智能体读写 Notion 文档。"
+       "explain": "例如 Notion MCP 服务器让智能体读写 Notion 文档。",
+       "origin": "review"
       },
       {
        "id": "ag-compact",
@@ -981,7 +1034,8 @@
         "提高温度"
        ],
        "answer": 0,
-       "explain": "让对话可以近似无限长。"
+       "explain": "让对话可以近似无限长。",
+       "origin": "review"
       },
       {
        "id": "ag-clear",
@@ -994,7 +1048,8 @@
         "重装系统"
        ],
        "answer": 0,
-       "explain": "无关上下文会降低性能。"
+       "explain": "无关上下文会降低性能。",
+       "origin": "review"
       },
       {
        "id": "ag-privacy",
@@ -1007,7 +1062,8 @@
         "不需要关心"
        ],
        "answer": 0,
-       "explain": "需要阅读服务条款，敏感代码考虑本地模型或企业方案。"
+       "explain": "需要阅读服务条款，敏感代码考虑本地模型或企业方案。",
+       "origin": "review"
       },
       {
        "id": "ag-token-budget",
@@ -1038,7 +1094,8 @@
          "stdout": "0 0\n"
         }
        ],
-       "solution": "import sys\nN=int(input())\nL=[int(l.split()[0]) for l in sys.stdin if l.strip()]\nt=0;n=0\nfor x in reversed(L):\n    if t+x>N: break\n    t+=x;n+=1\nprint(n,t)\n"
+       "solution": "import sys\nN=int(input())\nL=[int(l.split()[0]) for l in sys.stdin if l.strip()]\nt=0;n=0\nfor x in reversed(L):\n    if t+x>N: break\n    t+=x;n+=1\nprint(n,t)\n",
+       "origin": "review"
       }
      ]
     },
@@ -1073,7 +1130,8 @@
         "使用尽可能多的缩写"
        ],
        "answer": 0,
-       "explain": "以读者为中心。"
+       "explain": "以读者为中心。",
+       "origin": "review"
       },
       {
        "id": "bc-pr",
@@ -1086,7 +1144,8 @@
         "绕过 CI"
        ],
        "answer": 0,
-       "explain": "尊重维护者的时间。"
+       "explain": "尊重维护者的时间。",
+       "origin": "review"
       },
       {
        "id": "bc-review",
@@ -1099,7 +1158,8 @@
         "不看代码直接通过"
        ],
        "answer": 0,
-       "explain": "评审针对代码而不是人。"
+       "explain": "评审针对代码而不是人。",
+       "origin": "review"
       },
       {
        "id": "bc-pr-name",
@@ -1109,7 +1169,8 @@
         "PR",
         "pull request"
        ],
-       "explain": "Pull Request。"
+       "explain": "Pull Request。",
+       "origin": "review"
       },
       {
        "id": "bc-ai",
@@ -1122,7 +1183,8 @@
         "用 AI 回复评审意见而不阅读"
        ],
        "answer": 0,
-       "explain": "不要把审阅的负担甩给对方。"
+       "explain": "不要把审阅的负担甩给对方。",
+       "origin": "review"
       },
       {
        "id": "bc-teach",
@@ -1135,7 +1197,8 @@
         "避免交流"
        ],
        "answer": 0,
-       "explain": "授人以渔。"
+       "explain": "授人以渔。",
+       "origin": "review"
       },
       {
        "id": "bc-issue",
@@ -1148,7 +1211,8 @@
         "无关截图"
        ],
        "answer": 0,
-       "explain": "可复现是关键。"
+       "explain": "可复现是关键。",
+       "origin": "review"
       },
       {
        "id": "bc-review-count",
@@ -1179,7 +1243,8 @@
          "stdout": "x 1\n"
         }
        ],
-       "solution": "import sys\nfrom collections import Counter\nc=Counter()\nfor l in sys.stdin:\n    if ':' in l: c[l.split(':',1)[0].strip()]+=1\nfor k,v in sorted(c.items(),key=lambda x:(-x[1],x[0])): print(k,v)\n"
+       "solution": "import sys\nfrom collections import Counter\nc=Counter()\nfor l in sys.stdin:\n    if ':' in l: c[l.split(':',1)[0].strip()]+=1\nfor k,v in sorted(c.items(),key=lambda x:(-x[1],x[0])): print(k,v)\n",
+       "origin": "review"
       }
      ]
     },
@@ -1214,7 +1279,8 @@
         "提高 CPU 频率"
        ],
        "answer": 0,
-       "explain": "格式化只改排版；lint 检查潜在问题。"
+       "explain": "格式化只改排版；lint 检查潜在问题。",
+       "origin": "review"
       },
       {
        "id": "cq-lint",
@@ -1227,7 +1293,8 @@
         "运行容器"
        ],
        "answer": 0,
-       "explain": "在不运行代码的情况下发现问题。"
+       "explain": "在不运行代码的情况下发现问题。",
+       "origin": "review"
       },
       {
        "id": "cq-cov",
@@ -1236,7 +1303,8 @@
        "answer": [
         "覆盖率"
        ],
-       "explain": "代码覆盖率，高并不等于测试质量高。"
+       "explain": "代码覆盖率，高并不等于测试质量高。",
+       "origin": "review"
       },
       {
        "id": "cq-precommit",
@@ -1249,7 +1317,8 @@
         "永不"
        ],
        "answer": 0,
-       "explain": "可在提交前自动格式化、lint。"
+       "explain": "可在提交前自动格式化、lint。",
+       "origin": "review"
       },
       {
        "id": "cq-ci",
@@ -1262,7 +1331,8 @@
         "禁止测试"
        ],
        "answer": 0,
-       "explain": "如 GitHub Actions。"
+       "explain": "如 GitHub Actions。",
+       "origin": "review"
       },
       {
        "id": "cq-regex",
@@ -1275,7 +1345,8 @@
         "ab c"
        ],
        "answer": 0,
-       "explain": "以 a 开头、以 b 结尾，中间任意。"
+       "explain": "以 a 开头、以 b 结尾，中间任意。",
+       "origin": "review"
       },
       {
        "id": "cq-regex2",
@@ -1285,7 +1356,8 @@
         "\\d+",
         "[0-9]+"
        ],
-       "explain": "\\d 数字，+ 一次或多次。"
+       "explain": "\\d 数字，+ 一次或多次。",
+       "origin": "review"
       },
       {
        "id": "cq-regex-ids",
@@ -1316,7 +1388,8 @@
          "stdout": "4\n"
         }
        ],
-       "solution": "import re,sys\nfor l in sys.stdin:\n    for m in re.findall(r'#(\\d+)',l): print(m)\n"
+       "solution": "import re,sys\nfor l in sys.stdin:\n    for m in re.findall(r'#(\\d+)',l): print(m)\n",
+       "origin": "review"
       },
       {
        "id": "cq-regex-group",
@@ -1347,7 +1420,8 @@
          "stdout": "on 2026-01-09\n"
         }
        ],
-       "solution": "import re,sys\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    print(re.sub(r'^(\\d{4})-(\\d{2})-(\\d{2})$',r'\\3/\\2/\\1',l))\n"
+       "solution": "import re,sys\nfor l in sys.stdin:\n    l=l.rstrip('\\n')\n    print(re.sub(r'^(\\d{4})-(\\d{2})-(\\d{2})$',r'\\3/\\2/\\1',l))\n",
+       "origin": "review"
       }
      ]
     }

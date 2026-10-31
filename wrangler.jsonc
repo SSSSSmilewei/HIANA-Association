@@ -34,8 +34,9 @@
   "triggers": { "crons": ["*/5 * * * *", "30 15 * * *"] },
   "vars": {
     "AI_PROVIDER": "openai",
-    "AI_BASE_URL": "https://api.deepseek.com",
-    "AI_MODEL": "deepseek-chat"
+    // 默认用智谱的免费模型（open.bigmodel.cn 注册拿 API Key，填到密钥 AI_API_KEY）；换别家改这两个
+    "AI_BASE_URL": "https://open.bigmodel.cn/api/paas/v4",
+    "AI_MODEL": "glm-4-flash"
   }
   // 密钥用 `wrangler secret put` 或在 Cloudflare 面板里设置，不要写在这里：
   // SESSION_SECRET, FIRST_ADMIN_CODE, AI_API_KEY, WXPUSHER_SPT, SERVERCHAN_KEY, SITE_URL, GITHUB_TOKEN

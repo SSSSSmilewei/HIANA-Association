@@ -1,0 +1,118 @@
+{
+ "$id": "https://study.shanmoew-denied.win/schema/block-v1.json",
+ "title": "hiana-block@1 知识块",
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "type": "object",
+ "properties": {
+  "format": {
+   "type": "string",
+   "const": "hiana-block@1"
+  },
+  "slug": {
+   "type": "string",
+   "pattern": "^[a-z0-9][a-z0-9-]{1,47}$"
+  },
+  "title": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 40
+  },
+  "summary": {
+   "default": "",
+   "type": "string",
+   "maxLength": 120
+  },
+  "audience": {
+   "type": "string",
+   "maxLength": 80
+  },
+  "intro": {
+   "type": "string",
+   "maxLength": 20000
+  },
+  "nodes": {
+   "minItems": 1,
+   "maxItems": 40,
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/__schema0"
+   }
+  },
+  "next": {
+   "default": [],
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[a-z0-9][a-z0-9-]{1,47}$"
+   }
+  }
+ },
+ "required": [
+  "format",
+  "slug",
+  "title",
+  "nodes"
+ ],
+ "$defs": {
+  "__schema0": {
+   "type": "object",
+   "properties": {
+    "title": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 80
+    },
+    "note": {
+     "type": "string",
+     "maxLength": 400
+    },
+    "course": {
+     "type": "string",
+     "pattern": "^[a-z0-9][a-z0-9-]{0,47}$"
+    },
+    "items": {
+     "maxItems": 40,
+     "type": "array",
+     "items": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,47}$"
+     }
+    },
+    "link": {
+     "type": "object",
+     "properties": {
+      "label": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 80
+      },
+      "url": {
+       "type": "string",
+       "pattern": "^(https?:\\/\\/|\\/)\\S+$"
+      }
+     },
+     "required": [
+      "label",
+      "url"
+     ]
+    },
+    "children": {
+     "minItems": 1,
+     "maxItems": 40,
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/__schema0"
+     }
+    },
+    "pick": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 9007199254740991
+    },
+    "optional": {
+     "type": "boolean"
+    }
+   }
+  }
+ }
+}

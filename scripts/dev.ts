@@ -43,7 +43,11 @@ const ASSETS = {
     const url = new URL(typeof input === "string" ? input : input.url);
     const path = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, "");
     let file = join(clientDir, path);
-    if (!file.startsWith(clientDir) || !existsSync(file) || path.endsWith("/")) file = join(clientDir, "index.html");
+    // 和 Cloudflare 一样：目录先找里面的 index.html（比如开场动画 /intro/），找不到才回退到网站
+    if (file.startsWith(clientDir) && existsSync(join(file, "index.html")) && path !== "/") {
+      if (!url.pathname.endsWith("/")) return Response.redirect(`${url.origin}${url.pathname}/${url.search}`, 307);
+      file = join(file, "index.html");
+    } else if (!file.startsWith(clientDir) || !existsSync(file) || path.endsWith("/")) file = join(clientDir, "index.html");
     const body = readFileSync(file);
     const type = TYPES[extname(file)] ?? "application/octet-stream";
     const cache = file.includes("/assets/") ? "public, max-age=31536000, immutable" : "no-cache";

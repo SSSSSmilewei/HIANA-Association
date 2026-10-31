@@ -205,6 +205,7 @@ class AttendanceState {
 
 const kItemKindLabel = {
   'lecture': '讲义',
+  'section': '讨论课',
   'reading': '阅读',
   'video': '视频',
   'assignment': '作业',
@@ -270,6 +271,7 @@ class Practice {
     this.multi = false,
     this.textAnswer = const [],
     this.lang,
+    this.origin,
   });
   final String id;
   final String type; // choice | text | code
@@ -281,6 +283,14 @@ class Practice {
   final bool multi;
   final List<String> textAnswer;
   final String? lang;
+
+  /// 出处：official = 官方习题改编，review = 复习题
+  final String? origin;
+  String? get originLabel => switch (origin) {
+    'official' => '官方习题改编',
+    'review' => '复习题',
+    _ => null,
+  };
 
   String get heading =>
       title ??
@@ -321,6 +331,7 @@ class Practice {
       multi: type == 'choice' && a is List,
       textAnswer: type == 'text' ? (a as List).cast<String>() : const [],
       lang: j['lang'] as String?,
+      origin: j['origin'] as String?,
     );
   }
 }
@@ -334,6 +345,7 @@ class CourseItem {
     required this.kind,
     required this.periods,
     required this.pages,
+    this.optional = false,
     this.videos = const [],
     this.links = const [],
     this.submit,
@@ -345,6 +357,9 @@ class CourseItem {
   final String kind;
   final int periods;
   final List<LessonRef> pages;
+
+  /// 选学（例如 CS50 的 Section）
+  final bool optional;
   final List<CourseLink> videos;
   final List<CourseLink> links;
   final CourseLink? submit;
@@ -371,6 +386,7 @@ class CourseItem {
       kind: j['kind'] as String? ?? 'lecture',
       periods: _int(j['periods']) ?? 2,
       pages: _list(j['pages'], LessonRef.fromJson),
+      optional: j['optional'] == true,
       videos: _list(j['videos'], CourseLink.fromJson),
       links: _list(j['links'], CourseLink.fromJson),
       submit: j['submit'] == null
@@ -387,14 +403,19 @@ class CourseModule {
     required this.id,
     required this.title,
     required this.items,
+    this.group,
   });
   final String id;
   final String title;
   final List<CourseItem> items;
 
+  /// 模块上面一层的分组，例如 MIT 18.01 的“单元 1”
+  final String? group;
+
   factory CourseModule.fromJson(Map<String, dynamic> j) => CourseModule(
     id: j['id'] as String,
     title: j['title'] as String,
+    group: j['group'] as String?,
     items: _list(j['items'], CourseItem.fromJson),
   );
 }
