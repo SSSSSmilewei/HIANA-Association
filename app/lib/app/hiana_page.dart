@@ -106,7 +106,8 @@ class _HianaPageState extends State<HianaPage> {
         }
         if (widget.collapsible) list = MiuixScrollBehaviorListener(behavior: _behavior, child: list);
         // flutter_miuix 的输入框需要 Material 祖先（skill 心智模型第 5 条）
-        return MaterialSurface(child: Stack(children: [Positioned.fill(child: list), ...widget.overlays]));
+        // 撑满：MiuixScaffold 给的是宽松约束，overlays 里有不定位的组件时 Stack 会缩成 0×0
+        return MaterialSurface(child: Stack(fit: StackFit.expand, children: [Positioned.fill(child: list), ...widget.overlays]));
       },
     );
   }
