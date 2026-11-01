@@ -15,6 +15,7 @@ import '../../data/providers.dart';
 import '../../widgets/heat.dart';
 import '../../widgets/hx_icons.dart';
 import '../../widgets/ui.dart';
+import '../../widgets/update_dialog.dart';
 import '../auth/guest.dart';
 import '../auth/set_password_page.dart';
 
@@ -32,6 +33,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String? _selected;
   ProviderInfo? _binding; // 正在编辑的平台；非空时底部面板打开
   bool _confirmLogout = false;
+  AppVersion? _update; // 非空时弹出升级窗口
+  String _current = '';
 
   static const _modes = [
     (MiuixColorSchemeMode.light, '浅色'),
@@ -53,13 +56,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       if (!mounted) return;
       if (compareVersion(info.version, v.latest) >= 0) {
         showHxToast(context, '已经是最新版本 ${info.version}');
-      } else if (v.apkUrl != null) {
-        await launchUrl(
-          Uri.parse(v.apkUrl!),
-          mode: LaunchMode.externalApplication,
-        );
       } else {
-        showHxToast(context, '有新版本 ${v.latest}，找会长要安装包');
+        // 在 App 里下载安装（本地升级），见 UpdateDialog
+        setState(() {
+          _current = info.version;
+          _update = v;
+        });
       }
     } on ApiException catch (e) {
       if (mounted) showHxToast(context, e.message, error: true);
@@ -69,7 +71,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final h = Hx.of(context);
-    final me = ref.watch(sessionProvider).valueOrNull?.member;
+    final session = ref.watch(sessionProvider).valueOrNull;
+    final me = session?.member;
+    final admin = session?.isAdmin ?? false;
     final guest = ref.watch(isGuestProvider);
     // 热力图要登录；游客不去请求
     final heat = guest ? null : ref.watch(heatmapProvider);
@@ -83,6 +87,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 .refresh(heatmapProvider.future)
                 .then((_) {}, onError: (_) {}),
       overlays: [
+        UpdateDialog(
+          version: _update,
+          current: _current,
+          onClose: () => setState(() => _update = null),
+        ),
         BindingSheet(
           provider: _binding,
           binding: _binding == null
@@ -157,10 +166,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 '校外账号',
                                 me.username ?? '',
                                 if (me.org != null) me.org!,
+                                if (admin) '管理员',
                               ]
                             : [
                                 if (me.className != null) me.className!,
                                 '学号 ${me.studentNo}',
+                                if (admin) '管理员',
                               ])
                         .join(' · '),
                     style: TextStyle(fontSize: 14, color: h.sub),
@@ -214,6 +225,43 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
           ),
         ),
+        if (admin) ...[
+          const SectionHead('管理'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: HxCard(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                children: [
+                  // 后台只在网页上做；用系统浏览器打开，第一次要在浏览器里登录
+                  for (final (title, path) in const [
+                    ('今日签到', '/admin'),
+                    ('成员', '/admin/members'),
+                    ('新生报名', '/admin/applications'),
+                    ('蓝色钉子', '/admin/pins'),
+                    ('发公告', '/admin/notices'),
+                    ('设置', '/admin/settings'),
+                  ])
+                    _Row(
+                      icon: HxIcon.external,
+                      title: title,
+                      onTap: () => launchUrl(
+                        Uri.parse('$kBaseUrl$path'),
+                        mode: LaunchMode.externalApplication,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+            child: Text(
+              '管理后台在网页上，会用浏览器打开；浏览器里没登录过的话要先登录一次。',
+              style: TextStyle(fontSize: 12, color: h.sub),
+            ),
+          ),
+        ],
         const SectionHead('外观'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),

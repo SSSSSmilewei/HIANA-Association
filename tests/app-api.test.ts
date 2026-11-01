@@ -106,8 +106,17 @@ describe("手机 App 接口", () => {
 
   test("版本检查不需要登录，有默认值", async () => {
     const { call } = setup();
-    const v = await call("GET", "/api/app/version");
+    const v = await call("GET", "/api/app/version?scheme=0");
     expect(v.status).toBe(200);
-    expect(v.data).toMatchObject({ latest: "1.0.0", min: "1.0.0", apkUrl: null });
+    expect(v.data).toMatchObject({ latest: "0.0.0", min: "0.0.0", apkUrl: null });
+  });
+
+  test("版本号改成 0.x 后，旧版 1.x App 仍然会看到更新", async () => {
+    const { call, admin } = setup();
+    await admin("PUT", "/api/admin/settings", { app_latest_version: "0.4.0", app_min_version: "0.3.0" });
+    const fresh = await call("GET", "/api/app/version?scheme=0");
+    expect(fresh.data).toMatchObject({ latest: "0.4.0", min: "0.3.0" });
+    const legacy = await call("GET", "/api/app/version");
+    expect(legacy.data).toMatchObject({ latest: "1.99.0", min: "1.0.0" });
   });
 });

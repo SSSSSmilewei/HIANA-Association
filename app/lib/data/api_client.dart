@@ -445,6 +445,7 @@ class ApiClient {
   Future<void> unbind(String source) =>
       _send('DELETE', '/api/heatmap/bindings/${Uri.encodeComponent(source)}');
 
+  /// scheme=0：告诉服务器这是 0.x 版本号的 App（1.x 旧版不带，服务器另给它能看懂的答案）。
   Future<AppVersion> appVersion() async =>
-      AppVersion.fromJson(await _send('GET', '/api/app/version'));
+      AppVersion.fromJson(await _send('GET', '/api/app/version?scheme=0'));
 }

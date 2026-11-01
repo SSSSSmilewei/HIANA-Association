@@ -965,11 +965,11 @@ function OtherSettings({ s, onSaved }: { s: Record<string, string | null>; onSav
       <div className="row wrap">
         <label className="field grow">
           App 最新版本
-          <input className="input mono" value={latest} onChange={(e) => setLatest(e.target.value)} placeholder="1.0.1" />
+          <input className="input mono" value={latest} onChange={(e) => setLatest(e.target.value)} placeholder="0.4.1" />
         </label>
         <label className="field grow">
           最低可用版本<span className="hint">低于它会要求更新</span>
-          <input className="input mono" value={min} onChange={(e) => setMin(e.target.value)} placeholder="1.0.0" />
+          <input className="input mono" value={min} onChange={(e) => setMin(e.target.value)} placeholder="0.4.0" />
         </label>
       </div>
       <label className="field">
