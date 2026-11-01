@@ -41,7 +41,22 @@ export interface AttendanceRow {
   out_at: number | null;
   in_photo: string | null;
   out_photo: string | null;
+  in_sign?: string | null;
   status: AttendanceStatus;
+}
+
+/** 场地签到忘了签退（被自动结束）时，只算这么多分钟 */
+export const VENUE_FORGOT_MINUTES = 60;
+
+/**
+ * 一条签到记录算多少分钟的学习时长（热力图和报表用）：
+ * 正常签退按实际时长；晚自习没签退算到结束时刻；场地没签退只算 60 分钟；进行中的算到现在。
+ */
+export function attendanceMinutes(r: { kind: AttendanceKind; in_at: number; out_at: number | null; status: AttendanceStatus }, now = Date.now()): number {
+  const end = r.status === "open" ? now : (r.out_at ?? r.in_at);
+  const raw = Math.max(0, Math.round((end - r.in_at) / 60_000));
+  if (r.status === "auto_closed" && r.kind === "venue") return Math.min(raw, VENUE_FORGOT_MINUTES);
+  return Math.min(raw, 16 * 60);
 }
 
 export class AttendanceError extends Error {
@@ -127,7 +142,7 @@ export async function openRecord(db: D1Database, userId: string): Promise<Attend
 
 export async function signIn(
   db: D1Database,
-  input: { userId: string; kind: AttendanceKind; rule: AttendanceRule; secret: string; code?: string; photoKey: string | null; ip?: string | null },
+  input: { userId: string; kind: AttendanceKind; rule: AttendanceRule; secret: string; code?: string; photoKey: string | null; signKey?: string | null; ip?: string | null },
   now = Date.now(),
 ): Promise<AttendanceRow> {
   await autoClose(db, input.rule, now, input.userId);
@@ -154,11 +169,12 @@ export async function signIn(
     out_at: null,
     in_photo: input.photoKey,
     out_photo: null,
+    in_sign: input.signKey ?? null,
     status: "open",
   };
   await db
-    .prepare("INSERT INTO attendance (id, user_id, kind, day, in_at, in_photo, status, ip) VALUES (?, ?, ?, ?, ?, ?, 'open', ?)")
-    .bind(row.id, row.user_id, row.kind, row.day, row.in_at, row.in_photo, input.ip ?? null)
+    .prepare("INSERT INTO attendance (id, user_id, kind, day, in_at, in_photo, in_sign, status, ip) VALUES (?, ?, ?, ?, ?, ?, ?, 'open', ?)")
+    .bind(row.id, row.user_id, row.kind, row.day, row.in_at, row.in_photo, row.in_sign, input.ip ?? null)
     .run();
   await recordActivity(db, input.userId, "attend_in", row.id, now);
   return row;
@@ -183,12 +199,15 @@ export interface AttendanceExportRow {
   in_at: number;
   out_at: number | null;
   status: AttendanceStatus;
+  in_photo: string | null;
+  out_photo: string | null;
+  in_sign: string | null;
 }
 
 export async function listAttendance(db: D1Database, fromDay: string, toDay: string, kind?: AttendanceKind): Promise<AttendanceExportRow[]> {
   const rows = await db
     .prepare(
-      `SELECT u.student_no, u.name, u.class_name, a.day, a.kind, a.in_at, a.out_at, a.status
+      `SELECT u.student_no, u.name, u.class_name, a.day, a.kind, a.in_at, a.out_at, a.status, a.in_photo, a.out_photo, a.in_sign
        FROM attendance a JOIN users u ON u.id = a.user_id
        WHERE a.day >= ? AND a.day <= ?${kind ? " AND a.kind = ?" : ""}
        ORDER BY a.day, a.kind, u.student_no, a.in_at`,
@@ -201,7 +220,7 @@ export async function listAttendance(db: D1Database, fromDay: string, toDay: str
 const KIND_LABEL: Record<AttendanceKind, string> = { evening: "晚自习", venue: "大创场地" };
 const STATUS_LABEL: Record<AttendanceStatus, string> = { open: "进行中", closed: "已签退", auto_closed: "未签退" };
 
-function csvCell(v: string): string {
+export function csvCell(v: string): string {
   // 防止 Excel 把 =、+、-、@ 开头的内容当公式
   const safe = /^[=+\-@]/.test(v) ? `'${v}` : v;
   return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
@@ -209,13 +228,40 @@ function csvCell(v: string): string {
 
 /** 导出给学校的表格：带 BOM 的 UTF-8 CSV，Excel 直接打开不乱码。 */
 export function attendanceCsv(rows: AttendanceExportRow[]): string {
-  const head = ["学号", "姓名", "班级", "日期", "场景", "签到时间", "签退时间", "状态"];
+  const head = ["学号", "姓名", "班级", "日期", "场景", "签到时间", "签退时间", "时长（分钟）", "状态", "签到照片", "签退照片", "手写签名"];
   const lines = rows.map((r) =>
-    [r.student_no, r.name, r.class_name ?? "", r.day, KIND_LABEL[r.kind], cnClock(r.in_at), r.out_at ? cnClock(r.out_at) : "", STATUS_LABEL[r.status]]
+    [
+      r.student_no,
+      r.name,
+      r.class_name ?? "",
+      r.day,
+      KIND_LABEL[r.kind],
+      cnClock(r.in_at),
+      r.out_at ? cnClock(r.out_at) : "",
+      String(attendanceMinutes(r)),
+      STATUS_LABEL[r.status],
+      r.in_photo ? "有" : "无",
+      r.out_photo ? "有" : "无",
+      r.in_sign ? "有" : "无",
+    ]
       .map(csvCell)
       .join(","),
   );
   return `﻿${[head.join(","), ...lines].join("\r\n")}\r\n`;
+}
+
+/** 热力图“协会学习时长”：每天在协会签到到签退的分钟数（规则见 attendanceMinutes）。 */
+export async function attendanceDailyMinutes(db: D1Database, userId: string, fromDay: string, now = Date.now()): Promise<Record<string, number>> {
+  const rows = await db
+    .prepare("SELECT kind, day, in_at, out_at, status FROM attendance WHERE user_id = ? AND day >= ?")
+    .bind(userId, fromDay)
+    .all<{ kind: AttendanceKind; day: string; in_at: number; out_at: number | null; status: AttendanceStatus }>();
+  const out: Record<string, number> = {};
+  for (const r of rows.results) {
+    const m = attendanceMinutes(r, now);
+    if (m > 0) out[r.day] = (out[r.day] ?? 0) + m;
+  }
+  return out;
 }
 
 /** 某人最近的签到记录（个人页和 App 用）。 */

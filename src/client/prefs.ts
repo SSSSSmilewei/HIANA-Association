@@ -9,6 +9,7 @@ export type Skin = "glass" | "classic";
 export type ThemeChoice = "system" | "light" | "dark";
 /** 配色主题；swatch 为 [底色, 表面, 文字, 强调色]，只用来在设置里画预览，真正的颜色在 palettes.css */
 export const PALETTES = [
+  { id: "shanmoew-mizu", label: "shanmoew-mizu", light: ["#f2f9fa", "#ffffff", "#102c35", "#add8e6"], dark: ["#0c1a20", "#13262e", "#e3f3f6", "#add8e6"] },
   { id: "hiana", label: "海纳橙", light: ["#f6f5f3", "#ffffff", "#1b1a19", "#f26b1d"], dark: ["#0e0d0c", "#1c1a19", "#f3f1ee", "#ff7a2e"] },
   { id: "nord", label: "Nord", light: ["#eceff4", "#ffffff", "#2e3440", "#5e81ac"], dark: ["#2e3440", "#3b4252", "#eceff4", "#88c0d0"] },
   { id: "catppuccin", label: "Catppuccin", light: ["#eff1f5", "#ffffff", "#4c4f69", "#8839ef"], dark: ["#1e1e2e", "#313244", "#cdd6f4", "#cba6f7"] },
@@ -22,7 +23,7 @@ export const PALETTES = [
   { id: "vesper", label: "Vesper", light: ["#f6f1ea", "#ffffff", "#1c1c1c", "#c2662a"], dark: ["#101010", "#1a1a1a", "#e6e6e6", "#ffc799"] },
 ] as const;
 export type PaletteId = (typeof PALETTES)[number]["id"] | "custom";
-export const DEFAULT_PALETTE: PaletteId = "nord";
+export const DEFAULT_PALETTE: PaletteId = "shanmoew-mizu";
 export interface Prefs {
   skin: Skin;
   theme: ThemeChoice;
@@ -84,7 +85,7 @@ export function applyPrefs(p: Prefs) {
   root.dataset.mode = mode;
   root.dataset.palette = p.palette;
   const computed = getComputedStyle(root).getPropertyValue("--bg").trim();
-  const color = computed || (mode === "dark" ? "#0e0d0c" : "#f6f5f3");
+  const color = computed || (mode === "dark" ? "#0c1a20" : "#f2f9fa");
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", color);
 }
 

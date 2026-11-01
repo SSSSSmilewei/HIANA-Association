@@ -1,9 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/hiana_page.dart';
 import '../../app/tokens.dart';
+import '../../data/api_client.dart';
 import '../../data/providers.dart';
+import '../../widgets/hx_icons.dart';
 import '../../widgets/ui.dart';
 
 /// 协会介绍和学生成就，同一页。内容和网页共用 src/shared/association.ts。
@@ -61,6 +64,17 @@ class AboutPage extends ConsumerWidget {
                     ),
                   ),
                   Text(a.slogan, style: TextStyle(fontSize: 14, color: h.sub)),
+                  const SizedBox(height: 14),
+                  // 开场动画是网站上的静态页，用系统浏览器打开（不嵌 WebView）
+                  HxButton(
+                    '打开协会介绍',
+                    icon: HxIcon.play,
+                    height: 44,
+                    onTap: () => launchUrl(
+                      Uri.parse('$kBaseUrl/intro/?view=map'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                  ),
                 ],
               ),
             ),

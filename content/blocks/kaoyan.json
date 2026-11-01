@@ -1,0 +1,52 @@
+{
+  "format": "hiana-block@1",
+  "slug": "kaoyan",
+  "title": "考研知识块",
+  "summary": "408 四门专业课 + 数学，用好课把原理学懂",
+  "audience": "准备考计算机专业硕士（408）",
+  "intro": "408 考数据结构、计算机组成原理、操作系统、计算机网络四门。下面每门都给了能把原理讲透的公开课，适合大一大二提前打底；临考还是要回到考纲、教材和真题。\n\n数学一和数学二的高数、线代、概率也列在最后。",
+  "nodes": [
+    {
+      "title": "数据结构",
+      "pick": 1,
+      "children": [
+        { "course": "cs61b" },
+        { "course": "6-006", "note": "MIT 算法导论，偏理论" }
+      ]
+    },
+    {
+      "title": "计算机组成原理",
+      "pick": 1,
+      "children": [
+        { "course": "cs61c" },
+        { "course": "csapp" }
+      ]
+    },
+    {
+      "title": "操作系统",
+      "pick": 1,
+      "children": [
+        { "course": "hitos", "note": "哈工大李治军，中文，贴近考研" },
+        { "course": "njuos" }
+      ]
+    },
+    {
+      "title": "计算机网络",
+      "pick": 1,
+      "children": [
+        { "course": "topdown-ustc", "note": "中科大郑烇，中文，自顶向下" },
+        { "course": "cs144", "note": "动手实现 TCP，难" }
+      ]
+    },
+    {
+      "title": "数学",
+      "children": [
+        { "course": "mit-1801", "note": "高等数学" },
+        { "course": "mitla", "note": "线性代数" },
+        { "course": "cs126", "optional": true, "note": "概率论（很难，选学）" }
+      ]
+    },
+    { "link": { "label": "中国研究生招生信息网（考纲、报名）", "url": "https://yz.chsi.com.cn/" } }
+  ],
+  "next": []
+}

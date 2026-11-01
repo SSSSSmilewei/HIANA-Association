@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
+import 'blocks.dart';
 import 'models.dart';
+import 'pins.dart';
 import 'token_store.dart';
 
 /// 后端地址。只请求这个域名：*.workers.dev 在国内经常打不开。
@@ -228,10 +230,12 @@ class ApiClient {
   Future<AttendanceState> attendance() async =>
       AttendanceState.fromJson(await _send('GET', '/api/attendance'));
 
-  /// 签到：[photo] 是 JPEG 的 base64；晚自习开了现场口令时带上 [code]。返回签到时间（毫秒）。
+  /// 签到：[photo] 是 JPEG 的 base64，[signature] 是手写签名 PNG 的 base64；
+  /// 晚自习开了现场口令时带上 [code]。返回签到时间（毫秒）。
   Future<int> signIn({
     required String kind,
     required String photo,
+    String? signature,
     String? code,
   }) async {
     final d = await _send(
@@ -240,6 +244,7 @@ class ApiClient {
       body: {
         'kind': kind,
         'photo': photo,
+        if (signature != null) 'signature': signature,
         if (code != null && code.isNotEmpty) 'code': code,
       },
     );
@@ -309,6 +314,64 @@ class ApiClient {
       if (e.response == null) throw ApiException(_networkMessage(e));
     }
     return CoursePackage.fromJson(await _send('GET', '/api/packages/$slug'));
+  }
+
+  /* ---------- 蓝色钉子 ---------- */
+
+  Future<List<Pin>> pins(String course, String page) async {
+    final d = await _sendList(
+      'GET',
+      '/api/pins?course=${Uri.encodeQueryComponent(course)}&page=${Uri.encodeQueryComponent(page)}',
+    );
+    return d.map((e) => Pin.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Pin> replyPin(String id, String body) async => Pin.fromJson(
+    await _send('POST', '/api/pins/$id/messages', body: {'body': body}),
+  );
+
+  /// 请 AI 回答（回答留在讨论里）；AI 没接上时 enabled 是 false
+  Future<bool> aiEnabled() async =>
+      (await _send('GET', '/api/ai/status'))['enabled'] == true;
+
+  Future<Pin> askAiPin(String id) async =>
+      Pin.fromJson(await _send('POST', '/api/pins/$id/ai', body: const {}));
+
+  Future<Pin> votePin(String id) async =>
+      Pin.fromJson(await _send('POST', '/api/pins/$id/vote', body: const {}));
+
+  Future<Pin> resolvePin(String id, bool resolved) async => Pin.fromJson(
+    await _send('POST', '/api/pins/$id/resolve', body: {'resolved': resolved}),
+  );
+
+  /// 构建时发布的静态 JSON（知识块）
+  Future<Object?> _static(String path) async {
+    try {
+      final res = await _dio.get<Object>(
+        path,
+        options: Options(responseType: ResponseType.json),
+      );
+      if ((res.statusCode ?? 0) < 400) return res.data;
+      throw ApiException('请求失败（${res.statusCode}）', status: res.statusCode);
+    } on DioException catch (e) {
+      throw ApiException(_networkMessage(e));
+    }
+  }
+
+  Future<List<BlockSummary>> blocks() async {
+    final d = await _static('/data/blocks/index.json');
+    if (d is! List) throw const ApiException('服务器返回的内容看不懂，稍后再试');
+    return d
+        .map((e) => BlockSummary.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<Block> block(String slug) async {
+    final d = await _static('/data/blocks/$slug.json');
+    if (d is! Map<String, dynamic>) {
+      throw const ApiException('没有这个知识块', status: 404);
+    }
+    return Block.fromJson(d);
   }
 
   /// 选课 / 暂停 / 退课 / 标记学完：status 是 active、paused、dropped 或 done（done 只用于没有条目的课）。

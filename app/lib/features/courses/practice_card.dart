@@ -93,6 +93,10 @@ class _PracticeCardState extends State<PracticeCard> {
                   ),
                 ),
               ),
+              if (q.originLabel != null) ...[
+                HxTag(q.originLabel!),
+                const SizedBox(width: 6),
+              ],
               if (widget.solved) HxTag('做对过', bg: h.okBg, fg: h.okInk),
             ],
           ),

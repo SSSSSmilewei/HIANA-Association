@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { PALETTES, resolvedMode, usePrefs } from "../prefs";
+import { DEFAULT_PALETTE, PALETTES, resolvedMode, usePrefs } from "../prefs";
 import { type CustomFont, type FontSlot, exportPalette, parsePalette, saveFontFile } from "../theme";
 import { Dialog, Seg, useDialogClose, useToast } from "../ui";
 
@@ -132,7 +132,7 @@ function ImportPalette({ onClose }: { onClose: () => void }) {
       <ImportBody text={text} setText={setText} err={err} setErr={setErr} file={file} />
       <ImportActions
         canDelete={!!prefs.custom}
-        onDelete={() => setPrefs({ custom: null, palette: prefs.palette === "custom" ? "nord" : prefs.palette })}
+        onDelete={() => setPrefs({ custom: null, palette: prefs.palette === "custom" ? DEFAULT_PALETTE : prefs.palette })}
         onApply={() => {
           const p = parsePalette(text, file.current?.files?.[0]?.name.replace(/\.\w+$/, "") ?? "自定义");
           if (!p) {

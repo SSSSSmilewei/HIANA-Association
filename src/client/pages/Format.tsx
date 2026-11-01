@@ -86,13 +86,15 @@ const PROMPT = `你是课程整理助手。把我给你的公开课资料整理�
 1. 顶层字段：format 固定为 "hiana-course@1"；slug 用小写字母、数字、连字符（2–48 个字符）；title 用中文名，titleEn 写原名；category 写分类（如“编程入门”“系统”“人工智能”）；provider 写学校或机构；language、prerequisites、hours、summary（一句话，不超过 300 字）、license（原课程的许可，例如“© MIT，CC BY-NC-SA 4.0”）。difficulty 是 0–5 的整数。
 2. intro.community：中文爱好者写的介绍（有现成的就引用，并在 communitySource 写出处）；intro.official：官方介绍的忠实中文翻译，officialSource 写官方页面。正文都是 Markdown。
 3. links：课程级的链接，每个是 {kind, label, url}。kind 只能是：${LINK_KINDS.join("、")}。
-4. modules：按周 / 章 / 主题分模块；每个模块的 items 是条目，kind 只能是：${ITEM_KINDS.join("、")}。periods 是预计课时（45 分钟一节）。
+4. modules：按周 / 章 / 主题分模块；课程有“单元 → 部分”两层时（例如 MIT 18.01），模块写 group（单元名），相邻模块写同一个 group。每个模块的 items 是条目，kind 只能是：${ITEM_KINDS.join("、")}（section 是讨论课 / 习题课）。periods 是预计课时（45 分钟一节）；官方标明“推荐 / 可选”的条目写 "optional": true。
+   练手题尽量从官方作业、习题改编（注明出处），官方没有的再出复习题。
 5. 条目的 pages 是站内正文（Markdown，写在 body 里）；videos 是视频链接；links 是参考链接；作业和实验写 submit（正式提交的地址，例如 GitHub Classroom、Gradescope、submit50）。
 6. practice 是练手题，浏览器里自动判：
    - 选择：{"id","type":"choice","prompt","options":[...],"answer":下标或下标数组,"explain"}
    - 填空：{"id","type":"text","prompt","answer":["所有可接受的写法"]}（比较时忽略大小写和首尾空白）
    - 代码（Python / JavaScript）：{"id","type":"code","lang":"python","prompt","starter","tests":[{"name","stdin","stdout"}],"solution"}，程序从标准输入读、向标准输出写，至少 4 个测试。JavaScript 用 readLine() 读一行、console.log 输出。
    - SQL（SQLite）：{"id","type":"code","lang":"sql","prompt","setup":"建表和数据","starter","solution":"参考查询","ordered":是否要求顺序}
+   - 每道题写 origin："official"（从官方作业、习题改编，优先）或 "review"（官方没有时自己出的复习题）。
 7. 所有 id 用小写字母、数字、连字符；同一门课里条目 id、页面 id 不能重复。
 8. 不要编造链接；不确定的字段留空字符串或省略。
 
@@ -103,7 +105,8 @@ const FIELDS: [string, string][] = [
   ["intro.community", "中文介绍：爱好者写的推荐和学习建议（例如 csdiy.wiki 的介绍）"],
   ["intro.official", "官方介绍的中文翻译"],
   ["links", "课程级资源：官网、视频、讲义、教材、作业、实验、论坛、代码仓库、中文资料"],
-  ["modules[].items[]", "条目：讲义、阅读、视频、作业、实验、项目、测验、考试"],
+  ["modules[].group", "可选：模块上面再分一层（例如 MIT 18.01 的“单元 1：求导”）"],
+  ["modules[].items[]", "条目：讲义、讨论课、阅读、视频、作业、实验、项目、测验、考试；optional 表示选学"],
   ["items[].pages", "站内正文（Markdown），一个条目可以有多页（讲义、笔记、题面）"],
   ["items[].submit", "作业 / 实验的正式提交地址（GitHub、Gradescope、submit50……）"],
   ["items[].practice", "练手题：选择、填空、代码（Python / JavaScript / SQL），在浏览器里判"],
@@ -155,8 +158,8 @@ export function FormatPage() {
 ├─ 基本信息   标题、原名、分类、学校、先修、语言、难度、学时、许可
 ├─ 介绍       中文介绍（爱好者）· 官方介绍（中文翻译）
 ├─ 资源       官网、视频、教材、作业、实验……
-└─ 模块       周 / 章 / 主题
-   └─ 条目    讲义 · 阅读 · 视频 · 作业 · 实验 · 项目 · 测验 · 考试
+└─ 模块       周 / 章 / 主题（可以再按单元分组）
+   └─ 条目    讲义 · 讨论课 · 阅读 · 视频 · 作业 · 实验 · 项目 · 测验 · 考试
       ├─ 正文      Markdown，可以多页
       ├─ 视频、链接、正式提交地址
       └─ 练手题    选择 · 填空 · 代码`}</code>
@@ -223,6 +226,27 @@ export function FormatPage() {
             <strong>导出：</strong>每门课的页面底部都能导出课程包，改完再导入。
           </li>
         </ul>
+      </section>
+
+      <section className="section" aria-labelledby="f-block">
+        <div className="section-head">
+          <h2 id="f-block" className="h2">
+            知识块
+          </h2>
+          <a className="btn btn-quiet btn-sm" href="/schema/block-v1.json" download>
+            JSON Schema
+          </a>
+        </div>
+        <p className="pretty">知识块（hiana-block@1）是一个方向的路线图，只引用课程，不复制内容。目前放在仓库的 content/blocks/ 里。</p>
+        <pre className="code tree">
+          <code>{`知识块
+├─ 基本信息   标题、一句话、适合谁、介绍
+├─ 节点
+│  ├─ 分组    标题 + 子节点；pick: N 表示几门里选 N 门，optional 表示选学
+│  ├─ 课程    course: 课程 slug；items: 只看其中几个条目；note: 一句话
+│  └─ 链接    书、网站
+└─ next       学完以后去哪个知识块`}</code>
+        </pre>
       </section>
       {importing && <ImportCourse onClose={() => setImporting(false)} />}
     </div>

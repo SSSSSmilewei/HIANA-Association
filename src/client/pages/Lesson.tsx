@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ITEM_KIND_LABEL } from "../../shared/light";
 import type { Item } from "../../shared/package";
+import { PinBoard } from "../components/Pins";
 import { Prose, Toc, type TocItem } from "../components/Prose";
 import { useCourse } from "../courseData";
 import { Icon } from "../icons";
-import { loadPage, locate } from "../library";
+import { isLocalSlug, loadPage, locate } from "../library";
 import { PracticeList } from "../practice/Practice";
 import { Link } from "../router";
 import { Empty, ErrorBox, Skeleton, useTitle } from "../ui";
@@ -22,6 +23,9 @@ export function LessonPage({ slug, page }: { slug: string; page: string }) {
     tabs.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: "nearest", inline: "center" });
   }, [page]);
   const onToc = useCallback((t: TocItem[]) => setToc(t), []);
+  const [toolHost, setToolHost] = useState<HTMLElement | null>(null);
+  const [panelHost, setPanelHost] = useState<HTMLElement | null>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
   const source = useMemo(() => (pkg && at?.pageId ? () => loadPage(slug, pkg, at.pageId as string) : null), [pkg, slug, at?.pageId]);
 
   if (pkgError)
@@ -71,7 +75,10 @@ export function LessonPage({ slug, page }: { slug: string; page: string }) {
           <span className={`kind kind-${item.kind}`}>{ITEM_KIND_LABEL[item.kind]}</span>
           <span className="num"> · {item.periods} 课时</span>
         </span>
-        <h1 className="h1">{item.title}</h1>
+        <div className="lesson-title-row">
+          <h1 className="h1">{item.title}</h1>
+          <span ref={setToolHost} />
+        </div>
       </header>
 
       {item.pages.length > 1 && (
@@ -84,7 +91,8 @@ export function LessonPage({ slug, page }: { slug: string; page: string }) {
         </nav>
       )}
 
-      <div className="lesson">
+      <div className={`lesson${panelOpen ? " has-pin" : ""}`}>
+        <PinBoard course={slug} page={page} enabled={!isLocalSlug(slug)} toolHost={toolHost} panelHost={panelHost} onPanel={setPanelOpen}>
         <div className="lesson-body stack" style={{ gap: 40 }}>
           {source && (
             <article key={page}>
@@ -106,8 +114,10 @@ export function LessonPage({ slug, page }: { slug: string; page: string }) {
             </section>
           )}
         </div>
+        </PinBoard>
         <aside className="lesson-side">
-          <Toc items={toc} />
+          <div ref={setPanelHost} className="pin-host" />
+          {!panelOpen && <Toc items={toc} />}
         </aside>
       </div>
 

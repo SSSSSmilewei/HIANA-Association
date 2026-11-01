@@ -54,6 +54,9 @@ export class Router {
   put(path: string, h: Handler) {
     return this.on("PUT", path, h);
   }
+  patch(path: string, h: Handler) {
+    return this.on("PATCH", path, h);
+  }
   delete(path: string, h: Handler) {
     return this.on("DELETE", path, h);
   }

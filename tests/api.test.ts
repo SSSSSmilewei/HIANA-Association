@@ -5,6 +5,7 @@ import worker from "../src/worker/index";
 
 /** 一张最小的 JPEG（只用来过文件头检查） */
 const JPEG_B64 = btoa(String.fromCharCode(0xff, 0xd8, 0xff, 0xe0, ...new Array(200).fill(0), 0xff, 0xd9));
+const PNG_B64 = btoa(String.fromCharCode(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, ...new Array(200).fill(0)));
 
 /** 用内存数据库把整个 Worker 跑起来，像浏览器一样带着 Cookie 调接口。 */
 function setup() {
@@ -169,14 +170,31 @@ describe("接口", () => {
     expect(img.headers.get("content-type")).toBe("image/jpeg");
     expect((await call("lin", "GET", `/api/files/${photoKey}`)).status).toBe(200);
 
-    // 签到出现在热力图“签到”那一行（签到 + 签退两条）
+    // 热力图第一行是协会学习时长（分钟）；刚签到就签退，不到 1 分钟不计
     const after = await call("lin", "GET", "/api/heatmap");
-    expect(Object.values(after.data.series[0].days)).toEqual([2]);
+    expect(after.data.series[0]).toMatchObject({ source: "site:attendance", label: "协会学习时长", unit: "分钟" });
+    expect(Object.values(after.data.series[0].days)).toEqual([]);
 
     const csv = await call("admin", "GET", `/api/admin/attendance.csv?from=${state.data.today}&to=${state.data.today}`);
     expect(csv.headers.get("content-type")).toContain("text/csv");
     expect(String(csv.data)).toContain("250101001,林同学,计科2501");
     expect(String(csv.data)).toContain("已签退");
+
+    // 场地签到带手写签名（PNG）；签名不是 PNG 时拒绝
+    expect((await call("lin", "POST", "/api/attendance/in", { kind: "venue", photo, signature: JPEG_B64 })).status).toBe(400);
+    expect((await call("lin", "POST", "/api/attendance/in", { kind: "venue", photo, signature: PNG_B64 })).data.ok).toBe(true);
+    await call("lin", "POST", "/api/attendance/out", { photo });
+
+    // 给学校的签到表：每条记录带照片和签名，按人汇总
+    const report = await call("admin", "GET", `/api/admin/attendance/report?from=${state.data.today}&to=${state.data.today}`);
+    expect(report.status).toBe(200);
+    expect(report.data.records).toHaveLength(2);
+    const venue = report.data.records.find((r: { kind: string }) => r.kind === "venue");
+    expect(venue.sign).toMatch(/^signature\//);
+    expect((await call("admin", "GET", `/api/files/${venue.sign}`)).headers.get("content-type")).toBe("image/png");
+    expect(report.data.people.find((p: { name: string }) => p.name === "林同学")).toMatchObject({ evening: 1, venue: 1 });
+    expect((await call("lin", "GET", "/api/admin/attendance/report")).status).toBe(403);
+    expect(String((await call("admin", "GET", `/api/admin/attendance.csv?from=${state.data.today}&to=${state.data.today}`)).data)).toContain("有,有,有");
 
     // 没动静名单里只有陈同学
     const idle = await call("admin", "GET", "/api/admin/idle?days=7");

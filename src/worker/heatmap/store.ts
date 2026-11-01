@@ -1,5 +1,6 @@
 import { type Daily, type SourceSeries, addDays, cnDate } from "../../shared/heatmap";
 import { siteDailyByCategory } from "../activity";
+import { attendanceDailyMinutes } from "../attendance";
 import { openSecret, sealSecret } from "../secret-box";
 import { type Fetch, PROVIDERS, ProviderError, getProvider } from "./providers";
 import { syncBindings } from "./sync";
@@ -94,8 +95,9 @@ export async function syncUser(
 /** 读出一个人的热力图：协会平台一行 + 每个绑定的外部平台一行（含同步失败的原因）。 */
 export async function loadSeries(db: D1Database, userId: string, today = cnDate(Date.now())): Promise<SourceSeries[]> {
   const from = addDays(today, -371);
-  const [site, bindings, daily] = await Promise.all([
+  const [site, minutes, bindings, daily] = await Promise.all([
     siteDailyByCategory(db, userId, from),
+    attendanceDailyMinutes(db, userId, from),
     listBindings(db, userId),
     db
       .prepare("SELECT source, day, count FROM external_daily WHERE user_id = ? AND day >= ?")
@@ -108,9 +110,9 @@ export async function loadSeries(db: D1Database, userId: string, today = cnDate(
     d[r.day] = r.count;
     bySource.set(r.source, d);
   }
-  // 站内记录按分类各占一行：签到、晨思夜思、站内学习（技术方案“热力图”一节）
+  // 站内记录各占一行：协会学习时长（签到到签退）、晨思夜思、站内学习
   const out: SourceSeries[] = [
-    { source: "site:attendance", label: "签到", unit: "次签到签退", days: site.attendance, group: "attendance" },
+    { source: "site:attendance", label: "协会学习时长", unit: "分钟", days: minutes, group: "attendance" },
     { source: "site:reflection", label: "晨思夜思", unit: "次", days: site.reflection, group: "reflection" },
     { source: "site:study", label: "站内学习", unit: "次学习记录", days: site.study, group: "study" },
   ];

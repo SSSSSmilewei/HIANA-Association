@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { type CourseMeta, type MetaItem, nextItem, periodsToHours, progress, weeksToFinish } from "../../shared/courses";
+import { type CourseMeta, type MetaItem, nextItem, periodsToHours, planCards, progress, weeksToFinish } from "../../shared/courses";
 import { ITEM_KIND_LABEL, LINK_KINDS, LINK_KIND_LABEL } from "../../shared/light";
 import type { Link as PkgLink } from "../../shared/package";
 import { Prose } from "../components/Prose";
@@ -10,7 +10,7 @@ import { Link, navigate, useQuery } from "../router";
 import { useMe } from "../session";
 import { api } from "../api";
 import { refreshLearning } from "../courseMeta";
-import { Empty, ErrorBox, Ring, Seg, Skeleton, useConfirm, useTitle, useToast } from "../ui";
+import { Dialog, Empty, ErrorBox, Ring, Seg, Skeleton, useConfirm, useTitle, useToast } from "../ui";
 import { Stars } from "./Courses";
 
 const PACE_KEY = "hiana-pace";
@@ -343,6 +343,7 @@ function Contents({
 
   return (
     <div className="stack" style={{ gap: 20 }}>
+      <PlanButton meta={meta} done={doneSet} />
       {kinds.length > 1 && (
         <div className="row wrap" style={{ gap: 8 }} role="group" aria-label="按类型筛选">
           <button type="button" className="chip" aria-pressed={kind === "all"} onClick={() => setKind("all")}>
@@ -355,10 +356,12 @@ function Contents({
           ))}
         </div>
       )}
-      {modules.map((m) => {
+      {modules.map((m, mi) => {
         const doneN = m.items.filter((it) => doneSet.has(it.id)).length;
+        const groupStart = m.group && m.group !== modules[mi - 1]?.group;
         return (
-          <section key={m.id} className="module" aria-label={m.title}>
+          <section key={m.id} className="module" aria-label={m.group ? `${m.group} · ${m.title}` : m.title}>
+            {groupStart && <h3 className="module-group h2">{m.group}</h3>}
             {!single && (
               <header className="module-head">
                 <h3 className="h3">{m.title}</h3>
@@ -390,6 +393,7 @@ function Contents({
                       <span className="unit-meta small sub">
                         <span className={`kind kind-${it.kind}`}>{ITEM_KIND_LABEL[it.kind as keyof typeof ITEM_KIND_LABEL] ?? it.kind}</span>
                         <span className="num">{it.periods} 课时</span>
+                        {it.optional && <span>选学</span>}
                         {it.practice > 0 && (
                           <span className="num">
                             练手 {solved} / {it.practice}
@@ -405,6 +409,58 @@ function Contents({
         );
       })}
     </div>
+  );
+}
+
+/** 复制到 CourseTable 的里课表：没学完的条目一行一张卡片 */
+function PlanButton({ meta, done }: { meta: CourseMeta; done: Set<string> }) {
+  const [open, setOpen] = useState(false);
+  const toast = useToast();
+  const { group, lines } = planCards(meta, done);
+  if (!lines.length) return null;
+  const text = lines.join("\n");
+  const copy = async (v: string, what: string) => {
+    try {
+      await navigator.clipboard.writeText(v);
+      toast(`${what}已复制`);
+    } catch {
+      toast("复制失败，手动选中复制吧", "error");
+    }
+  };
+  return (
+    <>
+      <div className="row wrap" style={{ gap: 8, justifyContent: "space-between", alignItems: "center" }}>
+        <span className="small sub num">
+          还有 {lines.length} 项没学完
+        </span>
+        <button type="button" className="btn btn-quiet btn-sm" onClick={() => setOpen(true)}>
+          <Icon name="clipboard" size={16} />
+          加到里课表
+        </button>
+      </div>
+      {open && (
+        <Dialog title="加到里课表" sub="在 CourseTable 里把这些条目排进你的课表空档" onClose={() => setOpen(false)}>
+          <div className="stack" style={{ gap: 12 }}>
+            <ol className="plain-list small">
+              <li>打开 CourseTable → 里课表 → 右上角“+”。</li>
+              <li>
+                课程填 <code>{group}</code>{" "}
+                <button type="button" className="btn btn-quiet btn-sm" onClick={() => copy(group, "课程名")}>
+                  复制
+                </button>
+              </li>
+              <li>把下面 {lines.length} 行整段粘贴进去，每行变成一张卡片，再长按拖进课表的格子。</li>
+            </ol>
+            <textarea className="input mono" readOnly rows={Math.min(10, lines.length)} value={text} onFocus={(e) => e.currentTarget.select()} />
+            <div className="dialog-actions">
+              <button type="button" className="btn btn-primary" onClick={() => copy(text, `${lines.length} 张卡片`)}>
+                复制卡片
+              </button>
+            </div>
+          </div>
+        </Dialog>
+      )}
+    </>
   );
 }
 

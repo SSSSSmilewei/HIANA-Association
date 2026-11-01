@@ -27,6 +27,12 @@
   --r-pill: 0;
 }
 
+:root[data-skin="classic"][data-mode="dark"] {
+  --edge: color-mix(in srgb, var(--ink) 18%, var(--surface));
+  --edge-strong: color-mix(in srgb, var(--ink) 36%, var(--surface));
+  --shadow-ink: rgba(0, 0, 0, 0.75);
+}
+
 /* 去掉所有圆角（写死的也算）；只留真正该是圆的：状态小圆点、转圈、快门、进度环 */
 [data-skin="classic"] *:not(.live-dot, .nav-dot, .spin, .shutter, .shutter *, .badge-dot),
 [data-skin="classic"] *::before,

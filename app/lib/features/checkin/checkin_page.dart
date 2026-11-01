@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../app/hiana_page.dart';
+import '../../app/page_transition.dart';
 import '../../app/tokens.dart';
 import '../../data/api_client.dart';
 import '../../data/models.dart';
@@ -16,6 +17,7 @@ import '../../widgets/hx_icons.dart';
 import '../../widgets/ui.dart';
 import 'attendance_phase.dart';
 import 'done_page.dart';
+import 'signature_page.dart';
 
 /// 签到：晚自习（默认周一、二、四 19:00–20:40）和大创场地，签到签退各拍一张现场照片。
 /// 只能用相机拍，不提供相册入口。不统计连续天数。
@@ -75,12 +77,22 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
     try {
       final photo = await _shoot();
       if (photo == null) return; // 没拍就返回了
+      // 签到：拍完照接着手写签名
+      String? signature;
+      if (!out) {
+        if (!mounted) return;
+        signature = await context.pushPage<String>(
+          SignaturePage(title: '${kindLabel(scene)}签到 · 签名'),
+        );
+        if (signature == null) return; // 没签就返回了
+      }
       final api = ref.read(apiProvider);
       final at = out
           ? await api.signOut(photo: photo)
           : await api.signIn(
               kind: scene,
               photo: photo,
+              signature: signature,
               code: needCode ? _code.text.trim() : null,
             );
       _code.clear();

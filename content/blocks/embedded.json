@@ -1,0 +1,46 @@
+{
+  "format": "hiana-block@1",
+  "slug": "embedded",
+  "title": "嵌入式知识块",
+  "summary": "C 语言 → 数字电路与体系结构 → 操作系统 → 端侧 AI",
+  "audience": "学过一门编程入门课，对硬件感兴趣",
+  "intro": "嵌入式要同时懂软件和硬件：C 语言和指针要熟，要知道 CPU 怎么执行指令、内存怎么组织，还要会和操作系统打交道。\n\n下面的课都是“原理”。动手还得配一块开发板（STM32、ESP32、树莓派都行），边学边做。",
+  "nodes": [
+    {
+      "title": "① C 语言要熟",
+      "pick": 1,
+      "children": [
+        { "course": "cs50x", "items": ["w1-lecture", "w1-pset", "w2-lecture", "w2-pset", "w3-lecture", "w3-pset", "w4-lecture", "w4-pset", "w5-lecture", "w5-pset"], "note": "CS50x 的 C 语言部分（第 1–5 周）" },
+        { "course": "duke-coursera-intro-c", "note": "杜克的 C 语言专项，更系统" }
+      ]
+    },
+    {
+      "title": "② 从门电路到计算机",
+      "children": [
+        { "course": "n2t", "note": "从与非门搭出一台计算机，最好玩的一门" },
+        { "title": "数字电路与体系结构", "pick": 1, "children": [ { "course": "ddca" }, { "course": "cs61c" } ] }
+      ]
+    },
+    {
+      "title": "③ 程序在机器上怎么跑",
+      "children": [
+        { "course": "csapp", "note": "深入理解计算机系统" },
+        { "title": "操作系统", "pick": 1, "children": [ { "course": "mit6-s081", "note": "xv6，实验很硬" }, { "course": "njuos", "note": "中文，蒋炎岩" } ] }
+      ]
+    },
+    {
+      "title": "电子与信号",
+      "optional": true,
+      "children": [
+        { "course": "ee16", "note": "电路、线性代数和控制" },
+        { "course": "signals-and-systems-avo", "note": "信号与系统" }
+      ]
+    },
+    {
+      "title": "④ 端侧 AI",
+      "optional": true,
+      "children": [ { "course": "eml", "note": "TinyML：在单片机上跑模型" } ]
+    }
+  ],
+  "next": ["ai"]
+}

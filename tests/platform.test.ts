@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { memoryD1 } from "../scripts/local-d1";
 import { recordActivity, recordActivityOnce, siteDaily, siteDailyByCategory } from "../src/worker/activity";
-import { attendanceCsv, autoClose, cnClock, dailyCode, eveningState, listAttendance, parseDays, parseWindow, signIn, signOut } from "../src/worker/attendance";
+import { attendanceCsv, attendanceMinutes, autoClose, cnClock, dailyCode, eveningState, listAttendance, parseDays, parseWindow, signIn, signOut } from "../src/worker/attendance";
 import { MIGRATIONS } from "../src/worker/db";
 import { type Fetch, bbdc, bbdcDate, duolingo, maimemo } from "../src/worker/heatmap/providers";
 import { bindSource, listBindings, loadSeries, syncEveryone, syncUser, unbindSource } from "../src/worker/heatmap/store";
@@ -117,13 +117,20 @@ describe("签到签退", () => {
     await signIn(db, { ...base, userId: "u1", kind: "evening" }, thu("19:10"));
     await signOut(db, { userId: "u1", rule, photoKey: "p" }, thu("20:30"));
     const csv = attendanceCsv(await listAttendance(db, "2026-10-22", "2026-10-22", "evening"));
-    expect(csv.startsWith("\uFEFF学号,姓名,班级,日期,场景,签到时间,签退时间,状态\r\n")).toBe(true);
-    expect(csv).toContain("2025010101,林同学,计科2501,2026-10-22,晚自习,19:10,20:30,已签退");
-    expect(csv).toContain("2025010102,陈同学,计科2501,2026-10-22,晚自习,19:20,,进行中");
+    expect(csv.startsWith("\uFEFF学号,姓名,班级,日期,场景,签到时间,签退时间,时长（分钟）,状态,签到照片,签退照片,手写签名\r\n")).toBe(true);
+    expect(csv).toContain("2025010101,林同学,计科2501,2026-10-22,晚自习,19:10,20:30,80,已签退,有,有,无");
+    expect(csv).toContain("2025010102,陈同学,计科2501,2026-10-22,晚自习,19:20,,");
+  });
+
+  test("学习时长：正常签退按实际，晚自习没签退算到结束，场地没签退只算 60 分钟", () => {
+    expect(attendanceMinutes({ kind: "evening", in_at: thu("19:10"), out_at: thu("20:30"), status: "closed" })).toBe(80);
+    expect(attendanceMinutes({ kind: "evening", in_at: thu("19:10"), out_at: thu("20:40"), status: "auto_closed" })).toBe(90);
+    expect(attendanceMinutes({ kind: "venue", in_at: thu("14:00"), out_at: thu("23:59"), status: "auto_closed" })).toBe(60);
+    expect(attendanceMinutes({ kind: "venue", in_at: thu("14:00"), out_at: null, status: "open" }, thu("15:30"))).toBe(90);
   });
 
   test("表格防公式注入", () => {
-    const csv = attendanceCsv([{ student_no: "1", name: "=HYPERLINK(1)", class_name: null, day: "2026-10-22", kind: "venue", in_at: thu("19:00"), out_at: null, status: "open" }]);
+    const csv = attendanceCsv([{ student_no: "1", name: "=HYPERLINK(1)", class_name: null, day: "2026-10-22", kind: "venue", in_at: thu("19:00"), out_at: null, status: "open", in_photo: null, out_photo: null, in_sign: null }]);
     expect(csv).toContain("'=HYPERLINK(1)");
   });
 });

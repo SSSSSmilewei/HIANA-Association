@@ -2,7 +2,9 @@ import 'package:flutter_miuix/miuix.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'api_client.dart';
+import 'blocks.dart';
 import 'models.dart';
+import 'pins.dart';
 import 'token_store.dart';
 
 final tokenStoreProvider = Provider<TokenStore>((ref) => TokenStore());
@@ -172,6 +174,43 @@ final coursesProvider = FutureProvider<List<CourseSummary>>((ref) {
 final courseProvider = FutureProvider.family<CourseDetail, String>((ref, slug) {
   _uid(ref);
   return ref.read(apiProvider).course(slug);
+});
+
+/// 某一页的蓝色钉子；key 是 "课程/页"
+final pinsProvider = FutureProvider.family<List<Pin>, String>((ref, key) {
+  _uid(ref);
+  final i = key.indexOf('/');
+  return ref.read(apiProvider).pins(key.substring(0, i), key.substring(i + 1));
+});
+
+final aiEnabledProvider = FutureProvider<bool>(
+  (ref) => ref.read(apiProvider).aiEnabled(),
+);
+
+/// 知识块（静态文件，和登录状态无关）
+final blocksProvider = FutureProvider<List<BlockSummary>>(
+  (ref) => ref.read(apiProvider).blocks(),
+);
+
+final blockProvider = FutureProvider.family<Block, String>(
+  (ref, slug) => ref.read(apiProvider).block(slug),
+);
+
+/// 每门课的完成度：学完 = 1，在学按条目进度，没选 = 0（游客全是 0）
+final courseProgressProvider = Provider<double Function(String)>((ref) {
+  final list = ref.watch(coursesProvider).valueOrNull ?? const [];
+  final map = {for (final c in list) c.slug: c};
+  return (slug) {
+    final c = map[slug];
+    switch (c?.enrollStatus) {
+      case 'done':
+        return 1;
+      case 'active' || 'paused':
+        return c!.progress.items > 0 ? c.progress.ratio : 0;
+      default:
+        return 0;
+    }
+  };
 });
 
 /// 完整课程包（介绍、条目详情、练手题），和登录状态无关

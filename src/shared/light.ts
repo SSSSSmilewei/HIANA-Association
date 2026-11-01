@@ -23,9 +23,10 @@ export const LINK_KIND_LABEL: Record<(typeof LINK_KINDS)[number], string> = {
   other: "其他",
 };
 
-export const ITEM_KINDS = ["lecture", "reading", "video", "assignment", "lab", "project", "quiz", "exam"] as const;
+export const ITEM_KINDS = ["lecture", "section", "reading", "video", "assignment", "lab", "project", "quiz", "exam"] as const;
 export const ITEM_KIND_LABEL: Record<(typeof ITEM_KINDS)[number], string> = {
   lecture: "讲义",
+  section: "讨论课",
   reading: "阅读",
   video: "视频",
   assignment: "作业",
@@ -46,6 +47,8 @@ export interface MetaItem {
   kind: string;
   title: string;
   periods: number;
+  /** 选学（例如 CS50 的 Section、Shorts）；不填就是必学 */
+  optional?: boolean;
   pages: { id: string; title: string }[];
   /** 练手题数量 */
   practice: number;
@@ -54,6 +57,8 @@ export interface MetaItem {
 export interface MetaModule {
   id: string;
   title: string;
+  /** 模块上面一层的分组，例如 MIT 18.01 的“单元 1：求导” */
+  group?: string;
   items: MetaItem[];
 }
 
@@ -95,11 +100,13 @@ export function light(c: Raw): CourseMeta {
     modules: (c.modules ?? []).map((m: Raw) => ({
       id: m.id,
       title: m.title,
+      ...(m.group ? { group: m.group } : {}),
       items: (m.items ?? []).map((it: Raw) => ({
         id: it.id,
         kind: it.kind,
         title: it.title,
         periods: it.periods ?? 2,
+        ...(it.optional ? { optional: true } : {}),
         pages: (it.pages ?? []).map((p: Raw) => ({ id: p.id, title: p.title })),
         practice: (it.practice ?? []).length,
       })),

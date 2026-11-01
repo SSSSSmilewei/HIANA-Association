@@ -4,7 +4,9 @@ import { build } from "esbuild";
 import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildBlocks } from "./blocks.mjs";
 import { buildCourses, writeCatalog } from "./courses.mjs";
+import { light } from "../src/shared/light.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const out = join(root, "dist/client");
@@ -38,6 +40,7 @@ const result = await build({
 
 if (existsSync(join(root, "public"))) cpSync(join(root, "public"), out, { recursive: true });
 const pageCount = buildCourses(root, out, courses);
+const blockCount = buildBlocks(root, out, courses.map(light));
 
 const outputs = Object.keys(result.metafile.outputs).map((p) => p.replace(/\\/g, "/"));
 const js = outputs.find((p) => /assets\/app-[^/]+\.js$/.test(p));
@@ -51,9 +54,9 @@ writeFileSync(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f6f5f3">
+<meta name="theme-color" content="#f2f9fa">
 <meta name="color-scheme" content="light dark">
-<script>(function(){var r=document.documentElement,s="glass",a="nord",d=false,css=[];try{var p=JSON.parse(localStorage.getItem("hiana-prefs")||"{}");if(p.skin==="classic")s="classic";if(/^[a-z-]+$/.test(p.palette||""))a=p.palette;d=p.theme==="dark"||(p.theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);if(p.customCss)css.push(["hiana-custom",p.customCss]);if(p.fontCss){if(p.fontCss.sans)css.push(["hiana-font-sans",p.fontCss.sans]);if(p.fontCss.mono)css.push(["hiana-font-mono",p.fontCss.mono])}}catch(e){}for(var i=0;i<css.length;i++){var t=document.createElement("style");t.id=css[i][0];t.textContent=css[i][1];document.head.appendChild(t)}r.setAttribute("data-skin",s);r.setAttribute("data-palette",a);r.setAttribute("data-mode",d?"dark":"light");var c=getComputedStyle(r).getPropertyValue("--bg").trim()||(d?"#0e0d0c":"#f6f5f3");document.querySelector('meta[name="theme-color"]').setAttribute("content",c)})()</script>
+<script>(function(){var r=document.documentElement,s="glass",a="shanmoew-mizu",d=false,css=[];try{var p=JSON.parse(localStorage.getItem("hiana-prefs")||"{}");if(p.skin==="classic")s="classic";if(/^[a-z-]+$/.test(p.palette||""))a=p.palette;d=p.theme==="dark"||(p.theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);if(p.customCss)css.push(["hiana-custom",p.customCss]);if(p.fontCss){if(p.fontCss.sans)css.push(["hiana-font-sans",p.fontCss.sans]);if(p.fontCss.mono)css.push(["hiana-font-mono",p.fontCss.mono])}}catch(e){}for(var i=0;i<css.length;i++){var t=document.createElement("style");t.id=css[i][0];t.textContent=css[i][1];document.head.appendChild(t)}r.setAttribute("data-skin",s);r.setAttribute("data-palette",a);r.setAttribute("data-mode",d?"dark":"light");var c=getComputedStyle(r).getPropertyValue("--bg").trim()||(d?"#0c1a20":"#f2f9fa");document.querySelector('meta[name="theme-color"]').setAttribute("content",c)})()</script>
 <meta name="robots" content="noindex">
 <title>海纳协会学习平台</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -71,4 +74,4 @@ ${css ? `<link rel="stylesheet" href="${rel(css)}">` : ""}
 );
 
 const size = (p) => (result.metafile.outputs[p]?.bytes / 1024).toFixed(0);
-console.log(`前端已打包：${rel(js)} (${size(js)} KB)${css ? `，${rel(css)} (${size(css)} KB)` : ""}，${courses.length} 门课、${pageCount} 页讲义`);
+console.log(`前端已打包：${rel(js)} (${size(js)} KB)${css ? `，${rel(css)} (${size(css)} KB)` : ""}，${courses.length} 门课、${pageCount} 页讲义、${blockCount} 个知识块`);

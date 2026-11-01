@@ -8,6 +8,7 @@ import '../../app/tokens.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/ui.dart';
+import 'block_page.dart';
 import 'course_page.dart';
 
 /// 课程目录：按分类浏览；有站内条目的课排最前。
@@ -38,11 +39,16 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
   Widget build(BuildContext context) {
     final h = Hx.of(context);
     final courses = ref.watch(coursesProvider);
+    final blocks = ref.watch(blocksProvider).valueOrNull ?? const [];
     final q = _q.text.trim();
     return HianaPage(
       title: '课程',
-      onRefresh: () =>
-          ref.refresh(coursesProvider.future).then((_) {}, onError: (_) {}),
+      onRefresh: () {
+        ref.invalidate(blocksProvider);
+        return ref
+            .refresh(coursesProvider.future)
+            .then((_) {}, onError: (_) {});
+      },
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
@@ -127,6 +133,14 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                   padding: const EdgeInsets.all(12),
                   child: EmptyCard(title: q.isEmpty ? '没有课程' : '没有找到“$q”'),
                 ),
+              if (browsing && blocks.isNotEmpty) ...[
+                const SectionHead('知识块'),
+                for (final b in blocks)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    child: BlockCard(b: b),
+                  ),
+              ],
               if (hosted.isNotEmpty) const SectionHead('站内学习'),
               for (final c in hosted)
                 Padding(

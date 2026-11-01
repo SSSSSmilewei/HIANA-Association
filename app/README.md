@@ -1,6 +1,6 @@
 # 协会学习 App（学员端）
 
-智慧网络算法协会学习平台的手机版，用 Flutter + [flutter_miuix](https://github.com/ChuxinNeko/flutter_miuix) 写成，界面遵循 [miuix](https://github.com/compose-miuix-ui/miuix) 规范，不使用 Material 控件。后端和网页端共用 `study.shanmoew-denied.win`。
+智慧算法网络协会学习平台的手机版，用 Flutter + [flutter_miuix](https://github.com/ChuxinNeko/flutter_miuix) 写成，界面遵循 [miuix](https://github.com/compose-miuix-ui/miuix) 规范，不使用 Material 控件。后端和网页端共用 `study.shanmoew-denied.win`。
 
 学员每天会用的几件事：登录、用邀请码注册、找回密码（不登录也能以游客身份看首页、课程、公告），首页“接下来”、课程目录（csdiy 全部课程）和站内讲义阅读（CS50x、Missing Semester，App 内渲染 Markdown）、协会介绍与学生成就、晚自习打卡、我的热力图与平台绑定。管理后台继续用网页。
 
