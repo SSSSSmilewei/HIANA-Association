@@ -10,7 +10,7 @@ export const ASSOCIATION = {
   slogan: "用智慧驱动网络，以算法引领未来",
   school: "湖南涉外经济学院 · 信息与机电工程学院",
   founded: "2026 年 3 月",
-  teachers: ["熊芳", "邹竞", "余力"],
+  teachers: ["熊芳", "余力"],
 };
 
 export interface Direction {
