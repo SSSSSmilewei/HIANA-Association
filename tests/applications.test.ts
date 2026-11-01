@@ -35,7 +35,7 @@ function setup() {
   }
   /** 一个管理员 admin、一个普通成员 lin */
   async function accounts() {
-    const reg = (who: string, body: Record<string, unknown>) => call(who, "POST", "/api/auth/register", { password: "pass-2026-x", confirm: "pass-2026-x", ...body });
+    const reg = (who: string, body: Record<string, unknown>) => call(who, "POST", "/api/auth/register", { className: "计科2501", password: "pass-2026-x", confirm: "pass-2026-x", ...body });
     expect((await reg("admin", { studentNo: "254030411", name: "会长", invite: "first-admin-secret" })).status).toBe(200);
     const inv = await call("admin", "POST", "/api/admin/invites", { count: 1 });
     expect((await reg("lin", { studentNo: "250101001", name: "林同学", invite: inv.data.codes[0] })).status).toBe(200);

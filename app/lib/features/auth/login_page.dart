@@ -89,6 +89,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (_tab == 1 && _name.text.trim().isEmpty) {
       return _external ? '填上昵称' : '填上姓名';
     }
+    if (_tab == 1 && !_external && _className.text.trim().isEmpty) {
+      return '填上班级';
+    }
     if (_tab == 2 && _code.text.trim().length < 4) return '填上管理员给你的重置码';
     if (_tab != 0 && _password.text != _confirm.text) return '两次输入的密码不一样';
     return null;
@@ -214,7 +217,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           field(_name, '姓名'),
           hint('填真名，签到表和名单上用的是它。'),
           gap,
-          field(_className, '班级（可以不填）'),
+          field(_className, '班级（例如 计科2501）'),
+          hint('签到表按班级交给学校，请写全。'),
           gap,
         ],
         field(_password, '密码（至少 8 位）', secret: true),

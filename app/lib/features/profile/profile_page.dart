@@ -35,6 +35,46 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   bool _confirmLogout = false;
   AppVersion? _update; // 非空时弹出升级窗口
   String _current = '';
+  bool _editClass = false; // 补填 / 修改班级的弹窗
+  bool _classBusy = false;
+  String? _classError;
+  final _classCtl = TextEditingController();
+
+  @override
+  void dispose() {
+    _classCtl.dispose();
+    super.dispose();
+  }
+
+  void _openClass(String? current) {
+    _classCtl.text = current ?? '';
+    setState(() {
+      _classError = null;
+      _editClass = true;
+    });
+  }
+
+  Future<void> _saveClass() async {
+    final v = _classCtl.text.trim();
+    if (v.isEmpty) {
+      setState(() => _classError = '填上班级');
+      return;
+    }
+    setState(() {
+      _classBusy = true;
+      _classError = null;
+    });
+    try {
+      await ref.read(sessionProvider.notifier).setClass(v);
+      if (!mounted) return;
+      setState(() => _editClass = false);
+      showHxToast(context, '班级已保存');
+    } on ApiException catch (e) {
+      if (mounted) setState(() => _classError = e.message);
+    } finally {
+      if (mounted) setState(() => _classBusy = false);
+    }
+  }
 
   static const _modes = [
     (MiuixColorSchemeMode.light, '浅色'),
@@ -87,6 +127,57 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 .refresh(heatmapProvider.future)
                 .then((_) {}, onError: (_) {}),
       overlays: [
+        MiuixOverlayDialog(
+          show: _editClass,
+          title: '班级',
+          summary: '签到表按班级交给学校，请写全，例如 计科2501。',
+          onDismissRequest: _classBusy
+              ? null
+              : () => setState(() => _editClass = false),
+          content: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                MiuixTextField(
+                  controller: _classCtl,
+                  label: '班级',
+                  useLabelAsPlaceholder: true,
+                  singleLine: true,
+                ),
+                if (_classError != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _classError!,
+                    style: TextStyle(fontSize: 13, color: h.badInk),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: MiuixTextButton(
+                        '取消',
+                        onPressed: () => setState(() => _editClass = false),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: MiuixTextButton(
+                        _classBusy ? '正在保存…' : '保存',
+                        colors: MiuixButtonDefaults.buttonColorsPrimary(
+                          context,
+                        ),
+                        onPressed: _classBusy ? null : _saveClass,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
         UpdateDialog(
           version: _update,
           current: _current,
@@ -178,6 +269,34 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                 ),
               ],
+            ),
+          ),
+        // 校内成员：班级（以前注册时可以不填，没填的在这里补）
+        if (me != null && !me.isExternal)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+            child: HxCard(
+              onTap: () => _openClass(me.className),
+              child: Row(
+                children: [
+                  Text(
+                    '班级',
+                    style: TextStyle(fontSize: 15, color: h.sub),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      me.className ?? '还没填，点这里补上',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: me.className == null ? h.accentText : h.ink,
+                      ),
+                    ),
+                  ),
+                  HxIconView(HxIcon.pencil, size: 16, color: h.sub),
+                ],
+              ),
             ),
           ),
         if (guest)

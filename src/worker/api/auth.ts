@@ -9,6 +9,7 @@ import {
   register,
   resetWithCode,
   setDisplayName,
+  setOwnClass,
   setOwnPassword,
   touchLastSeen,
 } from "../members";
@@ -109,7 +110,7 @@ export function authRoutes(api: Router) {
 
   /**
    * 注册，成功后直接登录。kind 默认 campus。
-   *  - 校内：学号（9 位数字）、姓名、班级（选填）
+   *  - 校内：学号（9 位数字）、姓名、班级（必填，2026-11 起）
    *  - 校外：用户名、昵称（name）、邮箱和学校 / 单位（选填）
    * 都要密码和对应类型的邀请码。
    */
@@ -194,6 +195,18 @@ export function authRoutes(api: Router) {
     if ("error" in r) throw new HttpError(400, r.error);
     await setDisplayName(c.env.DB, uid, r.value);
     return json({ displayName: r.value });
+  });
+
+  /** 校内成员自己补填 / 修改班级（以前注册时班级是选填的）。返回 className。 */
+  api.put("/api/me/class", async (c) => {
+    const uid = memberId(c);
+    const { className } = z.object({ className: z.string().max(60) }).parse(await c.body());
+    try {
+      return json({ className: await setOwnClass(c.env.DB, uid, className) });
+    } catch (err) {
+      if (err instanceof AccountError) throw new HttpError(err.status, err.message);
+      throw err;
+    }
   });
 
   /** 首页打开时调用：返回上一次访问时间（毫秒，从没来过是 null），然后记下这次（每小时最多写一次）。 */

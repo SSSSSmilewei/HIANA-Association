@@ -80,6 +80,7 @@ export function LoginPage({ onLogin }: { onLogin: (me: Me) => void }) {
   const [email, setEmail] = useState("");
   const [org, setOrg] = useState("");
   const [name, setName] = useState("");
+  const [klass, setKlass] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [invite, setInvite] = useState(q.get("invite") ?? "");
@@ -138,6 +139,11 @@ export function LoginPage({ onLogin }: { onLogin: (me: Me) => void }) {
           姓名
           <input className="input" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" maxLength={20} />
           <span className="hint xsmall">真实姓名</span>
+        </label>
+        <label className="field">
+          班级
+          <input className="input" value={klass} onChange={(e) => setKlass(e.target.value)} maxLength={30} placeholder="例如 计科2501" />
+          <span className="hint xsmall">签到表按班级给学校，请写全</span>
         </label>
       </>
     ) : (
@@ -238,7 +244,7 @@ export function LoginPage({ onLogin }: { onLogin: (me: Me) => void }) {
               void run(
                 "/api/auth/register",
                 kind === "campus"
-                  ? { kind, studentNo: studentNo.trim(), name, password, confirm, invite: invite.trim() }
+                  ? { kind, studentNo: studentNo.trim(), name, className: klass.trim(), password, confirm, invite: invite.trim() }
                   : { kind, username: uname, email: email.trim(), org: org.trim(), name, password, confirm, invite: invite.trim() },
               );
             }}
@@ -266,7 +272,7 @@ export function LoginPage({ onLogin }: { onLogin: (me: Me) => void }) {
             <button
               className="btn btn-primary btn-lg btn-block"
               type="submit"
-              disabled={busy || (kind === "campus" ? !STUDENT_NO_RE.test(studentNo.trim()) : !USERNAME_RE.test(uname)) || !name.trim() || !invite.trim() || !pwReady}
+              disabled={busy || (kind === "campus" ? !STUDENT_NO_RE.test(studentNo.trim()) || !klass.trim() : !USERNAME_RE.test(uname)) || !name.trim() || !invite.trim() || !pwReady}
             >
               {busy ? <Spinner /> : "注册并登录"}
             </button>

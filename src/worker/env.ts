@@ -18,6 +18,8 @@ export interface Env {
   /** 公告配图的图床：公开读的 R2 存储桶，通过自定义域名 IMAGE_BASE_URL 访问。两项都配了才能上传公告图片。 */
   IMAGES?: R2Bucket;
   IMAGE_BASE_URL?: string;
+  /** App 安装包发在哪个 GitHub 仓库的 Releases（/api/app/apk 从这里转发），默认 SSSSSmilewei/HIANA-Association */
+  APP_RELEASE_REPO?: string;
 }
 
 /**

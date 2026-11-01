@@ -49,7 +49,7 @@ describe("接口", () => {
 
   test("首个管理员、邀请码注册、登录、改密码", async () => {
     const { call } = setup();
-    const reg = (who: string, body: Record<string, unknown>) => call(who, "POST", "/api/auth/register", { password: "pass-2026-x", confirm: "pass-2026-x", ...body });
+    const reg = (who: string, body: Record<string, unknown>) => call(who, "POST", "/api/auth/register", { className: "计科2501", password: "pass-2026-x", confirm: "pass-2026-x", ...body });
 
     // 还没有管理员：指定学号要用 FIRST_ADMIN_CODE 才能注册成管理员；学号不对、码不对都不行
     expect((await reg("x", { studentNo: "254030411", name: "会长" })).data.error).toContain("邀请码");
@@ -124,7 +124,7 @@ describe("接口", () => {
 
   test("成员看热力图、打卡，管理员导出表格、重置密码、停用", async () => {
     const { call, env } = setup();
-    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
+    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", className: "计科2501", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
     const inv = await call("admin", "POST", "/api/admin/invites", { count: 2 });
     for (const [who, no, name, code] of [
       ["lin", "250101001", "林同学", inv.data.codes[0]],
@@ -223,9 +223,9 @@ describe("接口", () => {
 
   test("游客能看课程、公告、日历，看不到真名和联系方式，不能做需要账号的事", async () => {
     const { call, env } = setup();
-    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
+    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", className: "计科2501", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
     const inv = await call("admin", "POST", "/api/admin/invites", { count: 1 });
-    await call("lin", "POST", "/api/auth/register", { studentNo: "250101001", name: "林同学", password: "pass-2026-x", confirm: "pass-2026-x", invite: inv.data.codes[0] });
+    await call("lin", "POST", "/api/auth/register", { studentNo: "250101001", name: "林同学", className: "计科2501", password: "pass-2026-x", confirm: "pass-2026-x", invite: inv.data.codes[0] });
     const comp = await call("admin", "POST", "/api/admin/notices", { kind: "competition", title: "蓝桥杯", deadline: "2099-01-01" });
     await call("lin", "PUT", `/api/notices/${comp.data.id}/entry`, { team: "一队", contact: "微信 lin123" });
     await call("lin", "PUT", "/api/courses/cs61a/enrollment", { status: "active" });
@@ -262,9 +262,9 @@ describe("接口", () => {
 
   test("显示名：只改自己的，校验长度和字符，空字符串恢复真名", async () => {
     const { call, env } = setup();
-    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
+    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", className: "计科2501", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
     const inv = await call("admin", "POST", "/api/admin/invites", { count: 1 });
-    await call("lin", "POST", "/api/auth/register", { studentNo: "250101001", name: "林同学", password: "pass-2026-x", confirm: "pass-2026-x", invite: inv.data.codes[0] });
+    await call("lin", "POST", "/api/auth/register", { studentNo: "250101001", name: "林同学", className: "计科2501", password: "pass-2026-x", confirm: "pass-2026-x", invite: inv.data.codes[0] });
     const set = (displayName: string) => call("lin", "PUT", "/api/me/display-name", { displayName });
 
     expect((await set("  小林  ")).data).toEqual({ displayName: "小林" });
@@ -290,7 +290,7 @@ describe("接口", () => {
 
   test("上次访问：先返回旧值，再更新；一小时内不重复写库", async () => {
     const { call, env } = setup();
-    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
+    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", className: "计科2501", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
     const first = await call("admin", "POST", "/api/me/visit");
     expect(first.data.lastSeenAt).toBeNull();
     const second = await call("admin", "POST", "/api/me/visit");
@@ -310,7 +310,7 @@ describe("接口", () => {
 
   test("错误的打卡时间段格式被拒绝", async () => {
     const { call } = setup();
-    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
+    await call("admin", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", className: "计科2501", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
     const r = await call("admin", "PUT", "/api/admin/attendance/settings", { days: "1,2,4", window: "22:00-18:00", requireCode: false });
     expect(r.status).toBe(400);
   });
