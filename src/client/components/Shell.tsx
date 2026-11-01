@@ -94,8 +94,12 @@ export function Shell({ me, children }: { me: Me; children: React.ReactNode }) {
   const adminNav = ADMIN_NAV.map((n) => (n.to === "/admin/applications" ? { ...n, count: apps.data?.counts.new ?? 0 } : n));
 
   const member = MEMBER_NAV.filter((n) => campus || n.to !== "/checkin").map((n) => (n.to === "/checkin" ? { ...n, dot: live } : n));
+  // 手机上没有侧边栏，管理员要在底栏有个入口才进得了后台
+  const memberTabs = isAdmin
+    ? [...member, { to: "/admin", label: "管理", icon: "sliders" as IconName, match: () => false, count: apps.data?.counts.new ?? 0 }]
+    : member;
   const guestTabs = GUEST_NAV.map((n) => (n.to === "/login" ? { ...n, to: loginHref(path + search) } : n));
-  const tabs = !isMember ? guestTabs : inAdmin && isAdmin ? [{ ...MEMBER_NAV[0], label: "学习", match: () => false }, ...adminNav] : member;
+  const tabs = !isMember ? guestTabs : inAdmin && isAdmin ? [{ ...MEMBER_NAV[0], label: "学习", match: () => false }, ...adminNav] : memberTabs;
   const tabIndex = tabs.findIndex((n) => n.match(path));
   const name = me.member?.name ?? "";
 

@@ -10,6 +10,9 @@ import { createResetCode, idleMembers, listMembers, setMemberRole, setMemberStat
 import { requireSecret } from "../session";
 import { DAY_RE, memberId, requireAdmin } from "./common";
 
+/** 给 1.x 旧版 App 看的“最新版本”：比任何 1.x 都大，旧版就会提示下载新的 0.x 安装包。 */
+const LEGACY_LATEST = "1.99.0";
+
 const publicProviders = () =>
   PROVIDERS.map((p) => ({
     id: p.id,
@@ -77,7 +80,10 @@ export function memberRoutes(api: Router) {
 
   /**
    * App 启动时检查更新。会长在 settings 表里改这三项即可，不用重新部署：
-   *  app_latest_version（如 1.0.1）、app_min_version（低于它就强制更新）、app_apk_url（APK 下载地址）。
+   *  app_latest_version（如 0.4.1）、app_min_version（低于它就强制更新）、app_apk_url（APK 下载地址）。
+   *
+   * 内测期间版本号改成了 0.x.x。0.4.0 起的 App 请求时带 ?scheme=0；
+   * 不带的是以前的 1.x，它拿 1.3.1 和 0.x 比会以为自己更新，所以给它一个 1.x 的“最新版本”，让它照样提示下载。
    */
   api.get("/api/app/version", async (c) => {
     const [latest, min, apk] = await Promise.all([
@@ -85,7 +91,11 @@ export function memberRoutes(api: Router) {
       getSetting(c.env.DB, "app_min_version"),
       getSetting(c.env.DB, "app_apk_url"),
     ]);
-    return json({ latest: latest ?? "1.0.0", min: min ?? "1.0.0", apkUrl: apk ?? null });
+    const v = { latest: latest ?? "0.0.0", min: min ?? "0.0.0", apkUrl: apk ?? null };
+    if (latest && c.url.searchParams.get("scheme") !== "0" && latest.startsWith("0.")) {
+      return json({ ...v, latest: LEGACY_LATEST, min: v.min.startsWith("0.") ? "1.0.0" : v.min });
+    }
+    return json(v);
   });
 
   /* ---------- 管理员：成员 ---------- */

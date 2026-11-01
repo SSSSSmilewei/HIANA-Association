@@ -64,6 +64,12 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
             .filter(Boolean)
             .join(" · ")}</span>
         </span>
+        {me.isAdmin && (
+          <Link to="/admin" className="btn btn-soft btn-sm">
+            <Icon name="sliders" size={16} />
+            管理后台
+          </Link>
+        )}
       </header>
 
       <section className="card stack" aria-labelledby="hm-h" style={{ gap: 16, padding: 22, borderRadius: 26 }}>

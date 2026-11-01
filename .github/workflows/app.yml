@@ -82,10 +82,12 @@ jobs:
           channel: stable
           cache: true
       - run: flutter create . --org win.shanmoew --project-name hiana_app --platforms=android
-      - name: 补上联网权限和应用名
+      - name: 补上联网、安装更新的权限和应用名
         run: |
           m=android/app/src/main/AndroidManifest.xml
           grep -q 'android.permission.INTERNET' $m || sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/>\n    <application|' $m
+          # 本地升级：App 里下好安装包后交给系统安装器（lib/data/updater.dart）
+          grep -q 'REQUEST_INSTALL_PACKAGES' $m || sed -i 's|<application|<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>\n    <application|' $m
           sed -i 's|android:label="hiana_app"|android:label="海纳协会"|' $m
       - run: flutter pub get
       - name: 构建 APK

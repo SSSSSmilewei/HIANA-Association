@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_miuix/miuix.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../data/models.dart';
 import '../data/providers.dart';
@@ -16,6 +15,7 @@ import '../features/home/home_page.dart';
 import '../features/profile/profile_page.dart';
 import '../widgets/hx_icons.dart';
 import '../widgets/ui.dart';
+import '../widgets/update_dialog.dart';
 import 'hiana_page.dart';
 import 'tokens.dart';
 
@@ -45,6 +45,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   final _pager = PageController();
   int _index = 0;
   AppVersion? _forceUpdate;
+  String _current = '';
 
   static const _tabs = [
     ('首页', HxIcon.home),
@@ -72,7 +73,10 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       final info = await PackageInfo.fromPlatform();
       final v = await ref.read(apiProvider).appVersion();
       if (compareVersion(info.version, v.min) < 0 && mounted) {
-        setState(() => _forceUpdate = v);
+        setState(() {
+          _current = info.version;
+          _forceUpdate = v;
+        });
       }
     } catch (_) {
       // 检查失败不影响使用
@@ -146,30 +150,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                 dotOn: live ? 2 : -1,
               ),
             ),
-            MiuixOverlayDialog(
-              show: update != null,
-              title: '需要更新 App',
-              summary: '这个版本已经停止支持，更新到 ${update?.latest ?? '最新版'} 后才能继续使用。',
-              content: Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: MiuixTextButton(
-                    '下载新版本',
-                    colors: MiuixButtonDefaults.buttonColorsPrimary(context),
-                    onPressed: () {
-                      final url = update?.apkUrl;
-                      if (url != null) {
-                        launchUrl(
-                          Uri.parse(url),
-                          mode: LaunchMode.externalApplication,
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
+            UpdateDialog(version: update, current: _current, force: true),
           ],
         ),
       ),
