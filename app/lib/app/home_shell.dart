@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_miuix/miuix.dart';
@@ -102,9 +104,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         att.evening.record == null &&
         !att.isIn;
     return MiuixScaffold(
+      // MiuixScaffold 给内容的是宽松约束（可以是 0×0）；Stack 里只有一个不定位的子组件（更新弹窗，平时不占地方），
+      // 不撑满的话整个主界面会缩成 0×0，只剩白底。
       content: (padding) => ShellTabs(
         go: _go,
         child: Stack(
+          fit: StackFit.expand,
           children: [
             Positioned.fill(
               child: TabBottomInset(
@@ -192,7 +197,7 @@ class _GlassTabBar extends StatelessWidget {
       radius: 32,
       child: LayoutBuilder(
         builder: (context, box) {
-          final w = (box.maxWidth - 10) / tabs.length;
+          final w = math.max(0.0, (box.maxWidth - 10) / tabs.length);
           return Stack(
             children: [
               AnimatedPositioned(
