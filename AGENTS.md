@@ -62,6 +62,12 @@
 - 表 `applications`、`application_hits`（v11）；管理员接口 `src/worker/api/applications.ts`；后台 `/admin/applications`（导航栏显示新报名数量）；招新开关存在 `settings` 的 `applications_open` / `applications_closed_message`。
 - 测试 `tests/applications.test.ts`。本地开发服务器 `scripts/dev.ts` 改成和 Cloudflare 一样，目录先找里面的 `index.html`（否则 `/intro/` 会被网站吞掉）。
 
+### 协会页（2026-11-04）
+- `/about` 照「海纳协会新生介绍书」重写成长海报（`pages/About.tsx`、`styles/about.css`，只在 `.hn` 里生效，固定深海蓝，不跟皮肤走，不从外网加载字体）。
+- 页面上的报名入口都是「播放协会介绍」→ `/intro/?from=/about`（从头播，结尾是报名表）；「直接看地图」→ `/intro/?view=map&from=/about`。`/honors` 仍跳到 `/about#honors`。
+- 开场动画各站的详细介绍按负责人的培养方案文档补充过；获奖汇总用学校统计（2020.10—2026.6，国家级 12、省级 82、合计 94）。
+- 本地装依赖：锁文件里的地址是 `registry.npmmirror.com`，云端容器连不上时用 `npm ci --registry=https://registry.npmjs.org/ --replace-registry-host=registry.npmmirror.com`。
+
 ### 外观
 - 两套皮肤：液态玻璃、经典直角。经典直角的结构线条用墨色，强调色只给主操作和当前状态，动效只回应操作。
 - 七级字号阶梯（13 / 14 / 15 / 16 / 18 / 22 / 28），11 套配色可导入，默认更纱黑体。
@@ -120,7 +126,7 @@
 5. 早晚一分钟的心得分享（分享图片、提交到 GitHub）。
 
 ### 协会介绍与招新：待负责人决定（2026-11-01）
-- `src/shared/association.ts` 的部门、荣誉和开场动画的新文案不一致（新文案：综合网络部、项目部、算法部、宣传设计部）。差异清单在 PR 描述里，确认后再改。指导老师已按负责人确认改成熊芳、余力（2026-11-01）。
+- `src/shared/association.ts` 的部门已改成和开场动画一致：综合网络部、项目部、算法部、宣传设计部（2026-11-04）。指导老师熊芳、余力（2026-11-01）。
 - 报名草稿存在浏览器的 `localStorage` 里（含手机号、QQ），在公用电脑上填了一半不交，要点「擦掉」才会清掉。
 - `intro/demo.html` 是接入前的演示版，只留作对照；确认不需要后可以删。
 - 手机网页上管理员的底栏多了「管理」（以前手机上没有任何后台入口，侧边栏在手机上是藏起来的）；「我的」页也有「管理后台」按钮。进了后台底栏有 7 项（学习 + 6 个管理页），320 宽的屏幕上比较挤。
