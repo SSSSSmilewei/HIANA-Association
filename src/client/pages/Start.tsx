@@ -10,13 +10,13 @@ import { Bar, ErrorBox, Skeleton, Spinner, useTitle, useToast } from "../ui";
 
 /**
  * 新生任务：协会每位新成员都要完成的三项任务。
- *  1. 阅读前言：CSDIY 前言 + 会长前言（Crossing the Deep Sea 的第一篇）
+ *  1. 阅读前言：CSDIY 前言 + 会长前言（Across the Deep Sea 的第一篇）
  *  2. CS50x：取得哈佛大学的课程证书（提交证书链接，管理员确认后才算完成，接口见 worker/api/start.ts）
- *  3. Crossing the Deep Sea：协会自己编写的课程，正在筹备，没有“完成”状态
+ *  3. Across the Deep Sea：协会自己编写的课程，正在筹备，没有“完成”状态
  * 首页最上方是 StartCard，/start 是完整的页面。
  */
 
-const DEEP_SEA = "crossing-the-deep-sea";
+const DEEP_SEA = "across-the-deep-sea";
 const PREFACES = [
   { course: "csdiy", item: "preface", title: "CSDIY 前言" },
   { course: DEEP_SEA, item: "preface", title: "会长前言" },
@@ -69,7 +69,7 @@ function useStart(): StartState {
   };
 }
 
-const STEP_TITLES = ["阅读前言", "CS50x：哈佛大学计算机科学导论", "Crossing the Deep Sea"];
+const STEP_TITLES = ["阅读前言", "CS50x：哈佛大学计算机科学导论", "Across the Deep Sea"];
 
 /** 首页最上方的卡片：当前任务和“继续”按钮。前两项完成后缩成一行。 */
 export function StartCard() {
@@ -83,7 +83,7 @@ export function StartCard() {
           <Icon name="check" size={14} stroke={2.2} />
           新生任务
         </span>
-        <span className="small">前两项任务已完成，下一项：Crossing the Deep Sea</span>
+        <span className="small">前两项任务已完成，下一项：Across the Deep Sea</span>
         <Icon name="arrowRight" size={16} stroke={2} />
       </Link>
     );
@@ -92,7 +92,7 @@ export function StartCard() {
   const next = s.cs50 && nextItem(s.cs50.course, new Set(Object.keys(s.cs50.done)));
   const unread = PREFACES.filter((_, i) => !s.prefaceDone[i]).map((p) => p.title);
   const sub = s.guest
-    ? "协会新成员的入门任务共三项：阅读前言，完成 CS50x 课程并取得证书，学习协会课程 Crossing the Deep Sea。"
+    ? "协会新成员的入门任务共三项：阅读前言，完成 CS50x 课程并取得证书，学习协会课程 Across the Deep Sea。"
     : n === 0
       ? `尚未阅读：${unread.join("、")}`
       : s.cert?.status === "pending"
@@ -173,7 +173,7 @@ export function StartPage() {
           </Step>
 
           <Step n={2} s={s} preparing>
-            <p className="small sub pretty">Crossing the Deep Sea 是协会自行编写的课程，内容包括计算机领域的专题文章和竞赛相关资料。课程正在编写中，内容将陆续发布。</p>
+            <p className="small sub pretty">Across the Deep Sea 是协会自行编写的课程，内容包括计算机领域的专题文章和竞赛相关资料。课程正在编写中，内容将陆续发布。</p>
             <Link to={`/courses/${DEEP_SEA}`} className="btn btn-soft btn-sm">
               查看课程
               <Icon name="arrowRight" size={16} stroke={2} />

@@ -64,7 +64,7 @@ describe("课程包", () => {
     expect(COURSES.map((c) => c.slug)).toEqual(PACKAGES.map((c: { slug: string }) => c.slug));
     expect(COURSES.map(({ origin, ...c }) => JSON.parse(JSON.stringify(c)))).toEqual(PACKAGES.map((c: unknown) => JSON.parse(JSON.stringify(light(c)))));
     // CSDIY 的一切排第一，然后是协会自己的课，接着是站内全文的课
-    expect(COURSES.slice(0, 5).map((c) => c.slug)).toEqual(["csdiy", "crossing-the-deep-sea", "missing-semester", "missing-semester-2020", "cs50x"]);
+    expect(COURSES.slice(0, 5).map((c) => c.slug)).toEqual(["csdiy", "across-the-deep-sea", "missing-semester", "missing-semester-2020", "cs50x"]);
     expect(COURSES.length).toBeGreaterThan(100);
   });
 

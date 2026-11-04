@@ -74,12 +74,12 @@ describe("新生任务：CS50 证书", () => {
     expect((await call("admin", "PUT", "/api/admin/certificates/cs50x/nobody", { status: "approved" })).status).toBe(404);
   });
 
-  test("Crossing the Deep Sea 是站内课，前言能标记完成", async () => {
+  test("Across the Deep Sea 是站内课，前言能标记完成", async () => {
     const { call, accounts } = setup();
     await accounts();
-    const c = await call("lin", "GET", "/api/courses/crossing-the-deep-sea");
+    const c = await call("lin", "GET", "/api/courses/across-the-deep-sea");
     expect(c.status).toBe(200);
-    expect((await call("lin", "PUT", "/api/courses/crossing-the-deep-sea/items/preface", { done: true })).status).toBe(200);
-    expect((await call("lin", "GET", "/api/courses/crossing-the-deep-sea")).data.done.preface).toBeGreaterThan(0);
+    expect((await call("lin", "PUT", "/api/courses/across-the-deep-sea/items/preface", { done: true })).status).toBe(200);
+    expect((await call("lin", "GET", "/api/courses/across-the-deep-sea")).data.done.preface).toBeGreaterThan(0);
   });
 });
