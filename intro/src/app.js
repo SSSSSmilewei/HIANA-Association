@@ -23,7 +23,11 @@
       if (!ac) {
         try {
           ac = new (window.AudioContext || window.webkitAudioContext)();
-          master = ac.createGain(); master.gain.value = 0.55; master.connect(ac.destination);
+          master = ac.createGain(); master.gain.value = 0.55;
+          // 限幅器：音乐和音效叠在一起偶尔过头时压住，免得爆音；平时到不了门限，不起作用
+          const lim = ac.createDynamicsCompressor();
+          lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.003; lim.release.value = 0.15;
+          master.connect(lim).connect(ac.destination);
           nbuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
           const d = nbuf.getChannelData(0);
           for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
@@ -66,7 +70,8 @@
       get nbuf() { return nbuf; },
       get muted() { return muted; },
       set muted(v) { muted = v; },
-      blip: (who) => (who === "wall" ? tone(196, 0.05, { type: "square", vol: 0.03 }) : tone(622, 0.04, { type: "square", vol: 0.022 })),
+      // 说话的哔哔声：背景音乐加大以后跟着加大约 12 dB，不然会被盖住
+      blip: (who) => (who === "wall" ? tone(196, 0.05, { type: "square", vol: 0.12 }) : tone(622, 0.04, { type: "square", vol: 0.09 })),
       tok: (n) => { noise(0.07, { f: 2400, q: 2.5, vol: 0.22 }); tone(150 - n * 12, 0.14, { type: "sine", vol: 0.28, slide: 0.5 }); },
       crumble: () => { noise(1.1, { f: 900, q: 0.6, vol: 0.2, type: "lowpass", sweep: 0.3 }); tone(80, 0.6, { type: "sine", vol: 0.3, slide: 0.5 }); },
       seal: () => { noise(0.9, { f: 300, q: 0.6, vol: 0.14, type: "lowpass", sweep: 3 }); tone(60, 0.5, { type: "sine", vol: 0.22, slide: 1.6 }); },
@@ -116,8 +121,12 @@
       },
       form: { bpm: 84, chords: ["Cmaj7", "Am7", "Dm7", "G7"], bass: [0], arp: [0, _, 1, 2, _, 3, _, 2], arpType: "triangle", arpVol: 0.04, pad: true },
     };
+    // 背景音乐的总音量。原来是 0.5，实测平均只有 -35 dB 左右，手机上几乎听不见；
+    // 2.2 大约响 13 dB，峰值在 -8 dB 上下，留着余量
+    const MUSIC_VOL = 2.2;
     let out = null, cur = null, want = null, timer = null, slot = 0, t = 0, muted = false;
     const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+    const HI = 1.5; // 旋律、琶音、点缀这些中高音再响一点：手机扬声器放不出低音，主要靠它们出声
     function voice(bus, midi, at, dur, type, vol, cut) {
       const a = sfx.ctx();
       const o = a.createOscillator(), g = a.createGain();
@@ -158,10 +167,10 @@
         voice(bus, ch[0] - 5, at, e * 9, "sine", 0.04);
       }
       if (m.drone && (k === 0 || k === 1)) hit(bus, at + (k ? e * 0.4 : 0), "kick");
-      if (m.glint && k === 5 && Math.random() < 0.5) voice(bus, ch[1 + Math.floor(Math.random() * 4)] + 12, at, e * 3, "sine", 0.025);
+      if (m.glint && k === 5 && Math.random() < 0.5) voice(bus, ch[1 + Math.floor(Math.random() * 4)] + 12, at, e * 3, "sine", 0.025 * HI);
       if (m.pad && k === 0) ch.slice(1, 4).forEach((n) => voice(bus, n, at, e * 8, "sine", 0.022));
       if (m.bass && m.bass.includes(k)) voice(bus, ch[0], at, e * 1.6, "triangle", 0.11, 900);
-      if (m.arp && m.arp[k] != null) voice(bus, ch[1 + (m.arp[k] % 4)] + (m.arp[k] >= 4 ? 12 : 0), at, e * 0.9, m.arpType, m.arpVol, 2200);
+      if (m.arp && m.arp[k] != null) voice(bus, ch[1 + (m.arp[k] % 4)] + (m.arp[k] >= 4 ? 12 : 0), at, e * 0.9, m.arpType, m.arpVol * HI, 2200);
       if (m.hat && k % 2 === 1) hit(bus, at, "hat");
       if (m.kick && m.kick.includes(k)) hit(bus, at, "kick");
       const cycle = Math.floor(s / (bars * 8));
@@ -169,7 +178,7 @@
         const i = s % m.mel.length, n = m.mel[i];
         if (n != null) {
           let len = 1; while (len < (m.melLen || 3) && m.mel[(i + len) % m.mel.length] == null) len++;
-          voice(bus, n, at, e * len * 0.92, m.melType || "square", m.melVol || 0.03, 2600);
+          voice(bus, n, at, e * len * 0.92, m.melType || "square", (m.melVol || 0.03) * HI, 2600);
         }
       }
     }
@@ -190,14 +199,14 @@
     }
     function wake() {
       const a = sfx.ctx(); if (!a || !want) return;
-      if (!out) { out = a.createGain(); out.gain.value = muted ? 0 : 0.5; out.connect(sfx.master); }
+      if (!out) { out = a.createGain(); out.gain.value = muted ? 0 : MUSIC_VOL; out.connect(sfx.master); }
       if (!cur) { cur = { name: want.name, bus: newBus(a.currentTime) }; want = null; slot = 0; t = a.currentTime + 0.05; }
       if (!timer) timer = setInterval(tick, 25);
     }
     return {
       set(name, now) { if ((cur && cur.name === name && !want) || (want && want.name === name)) return; want = { name, now }; if (cur && cur.name === name) want = null; wake(); },
       wake,
-      mute(v) { muted = v; if (out) out.gain.setTargetAtTime(v ? 0 : 0.5, sfx.ctx().currentTime, 0.1); },
+      mute(v) { muted = v; if (out) out.gain.setTargetAtTime(v ? 0 : MUSIC_VOL, sfx.ctx().currentTime, 0.1); },
     };
   })();
   function unlockAll() { sfx.unlock(); music.wake(); }
