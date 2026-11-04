@@ -1,0 +1,51 @@
+{
+  "format": "hiana-course@1",
+  "slug": "crossing-the-deep-sea",
+  "title": "Crossing the Deep Sea",
+  "category": "协会",
+  "provider": "智慧算法网络协会",
+  "instructors": [],
+  "language": "",
+  "prerequisites": "",
+  "difficulty": 0,
+  "hours": "",
+  "summary": "智慧算法网络协会自行编写的课程，包括会长前言、计算机领域的专题文章和竞赛相关资料。课程正在编写中。",
+  "tags": [],
+  "license": "© 智慧算法网络协会",
+  "intro": {
+    "official": "本课程由智慧算法网络协会编写，内容将陆续发布。\n\n目前已发布：会长前言。竞赛相关文章和其他专题正在编写中。"
+  },
+  "links": [],
+  "modules": [
+    {
+      "id": "front",
+      "title": "前言",
+      "items": [
+        {
+          "id": "preface",
+          "kind": "reading",
+          "title": "会长前言",
+          "periods": 1,
+          "pages": [
+            {
+              "id": "preface",
+              "title": "会长前言"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contests",
+      "title": "竞赛",
+      "summary": "筹备中",
+      "items": []
+    },
+    {
+      "id": "topics",
+      "title": "专题",
+      "summary": "筹备中",
+      "items": []
+    }
+  ]
+}

@@ -345,6 +345,21 @@ export const MIGRATIONS: string[][] = [
     )`,
     `CREATE INDEX IF NOT EXISTS application_hits_by_ip ON application_hits(ip, at)`,
   ],
+  // 新生任务的课程证书（先是 CS50x）：学员交证书链接，管理员确认
+  [
+    `CREATE TABLE IF NOT EXISTS certificates (
+      user_id TEXT NOT NULL,
+      course_slug TEXT NOT NULL,
+      url TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      note TEXT,
+      submitted_at INTEGER NOT NULL,
+      reviewed_by TEXT,
+      reviewed_at INTEGER,
+      PRIMARY KEY (user_id, course_slug)
+    )`,
+    `CREATE INDEX IF NOT EXISTS certificates_by_status ON certificates(status, submitted_at)`,
+  ],
 ];
 
 // 每个数据库连接只迁移一次（Worker 里通常只有一个；测试里每个用例一个内存库）

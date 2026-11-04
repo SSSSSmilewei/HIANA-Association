@@ -3,6 +3,7 @@ import { api } from "./api";
 import { playHandoff } from "./handoff";
 import { BrandMark, Shell } from "./components/Shell";
 import { AdminMembersPage, AdminNoticesPage, AdminSettingsPage, AdminTodayPage } from "./pages/Admin";
+import { StartPage } from "./pages/Start";
 import { AboutPage } from "./pages/About";
 import { AdminApplicationsPage } from "./pages/AdminApplications";
 import { AdminPinsPage } from "./pages/AdminPins";
@@ -40,7 +41,7 @@ function Redirect({ to }: { to: string }) {
 
 /** 游客也能看的页面；其余页面要登录。 */
 function guestCanSee(path: string): boolean {
-  return path === "/" || path === "/about" || path === "/honors" || path.startsWith("/courses") || path.startsWith("/blocks/") || path === "/notices";
+  return path === "/" || path === "/about" || path === "/honors" || path.startsWith("/courses") || path.startsWith("/blocks/") || path === "/notices" || path === "/start";
 }
 
 export function App() {
@@ -106,6 +107,7 @@ export function App() {
     else if (path === "/admin/applications") page = <AdminApplicationsPage />;
     else page = <Redirect to="/admin" />;
   } else if (path === "/") page = <HomePage />;
+  else if (path === "/start") page = <StartPage />;
   else if (path === "/courses") page = <CoursesPage />;
   else if (path === "/courses/format") page = <FormatPage />;
   else if (block) page = <BlockPage key={block.slug} slug={block.slug} />;

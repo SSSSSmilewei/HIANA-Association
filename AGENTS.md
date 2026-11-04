@@ -46,6 +46,12 @@
 - 给学校的签到表 `/admin/report`：汇总、每次的照片和签名、晚自习未签到名单，可打印 / 存 PDF。
 - 热力图第一行改成“协会学习时长”（分钟），规则在 `attendanceMinutes`。
 
+### 新生任务（2026-11-04）
+- 首页最上方是「新生任务」卡片，`/start` 列出三项任务：阅读前言（CSDIY 前言、会长前言），完成 CS50x 并取得证书，学习 Crossing the Deep Sea。
+- CS50x 证书：学员在 `/start` 提交证书链接，管理员在「今日签到」页的「待确认的 CS50x 证书」通过或退回（`src/worker/api/start.ts`，表 `certificates`）。
+- Crossing the Deep Sea 是站内课 `content/courses/crossing-the-deep-sea/`，会长前言在 `preface.md`（现在是占位）；「竞赛」「专题」两个模块是空的，标「筹备中」。
+- 界面文案用正式的书面语完整描述，不写口语，不压缩成极简短语；介绍课程时写全称并附中文翻译（负责人 2026-11-04 明确要求）。
+
 ### 规划
 - 负责人的 CourseTable 负责课表 / 里课表 / 早晚一分钟。平台这边：课程页“加到里课表”，把没学完的条目复制成卡片（`planCards`），在 CourseTable 里粘贴。
 
