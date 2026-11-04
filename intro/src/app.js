@@ -300,10 +300,12 @@
       else bottom = 30 + 30 + 3 * fs * 1.6 + 6 + 32 + sb;
       V = { x: 0, y: 52 + st, w: vw, h: Math.max(160, vh - 52 - st - bottom) };
     }
+    // 粒子和背景都是像素画，按 1 倍画再放大（style.css 里 image-rendering: pixelated）。
+    // 原来按屏幕倍数画，三倍屏手机上每帧要画 9 倍的像素，是掉帧的主要原因
     const c = $("fx");
-    c.width = Math.round(vw * dpr); c.height = Math.round(vh * dpr);
+    c.width = Math.round(vw); c.height = Math.round(vh);
     c.style.width = vw + "px"; c.style.height = vh + "px";
-    fxc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    fxc.setTransform(1, 0, 0, 1, 0, 0); fxDirty = true;
     bgSize();
   }
   function fitRect(x, y, w, h, pad = 16, max = 2) {
@@ -363,6 +365,7 @@
   /* ================= 粒子（屏幕坐标） ================= */
   const fxc = $("fx").getContext("2d");
   const P = [];
+  let fxDirty = false; // 上一帧画过粒子：没粒子的时候不用每帧清整张画布
   function burst(x, y, n, o = {}) {
     if (reduce || FAST) return;
     const cols = o.colors || [C.line, C.aqua, "#FFFFFF"];
@@ -374,7 +377,9 @@
   }
   function burstW(x, y, n, o) { const p = toScreen(x, y); burst(p.x, p.y, n, o); }
   function stepFX(dt) {
+    if (!P.length && !fxDirty) return;
     fxc.clearRect(0, 0, vw, vh);
+    fxDirty = P.length > 0;
     for (let i = P.length - 1; i >= 0; i--) {
       const p = P[i];
       p.t += dt; p.vy += p.g * dt * 60; p.x += p.vx * dt * 60; p.y += p.vy * dt * 60;
@@ -394,9 +399,9 @@
   const BG = { bubbles: [], fish: [], motes: [], night: 0, ptx: null, pty: null, w: 0, h: 0 };
   function bgSize() {
     if (!bgc) { bgc = $("bg"); bgx = bgc.getContext("2d"); }
-    bgc.width = Math.round(vw * dpr); bgc.height = Math.round(vh * dpr);
+    bgc.width = Math.round(vw); bgc.height = Math.round(vh);
     bgc.style.width = vw + "px"; bgc.style.height = vh + "px";
-    bgx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    bgx.setTransform(1, 0, 0, 1, 0, 0);
     BG.w = vw; BG.h = vh;
     const area = vw * vh / 10000;
     const nb = Math.round(clamp(area * 0.55, 14, 60)), nm = Math.round(clamp(area * 0.7, 18, 80)), nf = vw > 900 ? 6 : 4;
@@ -639,7 +644,14 @@
     if (t >= 1) { G.hop = null; G.x = h.to.x; G.y = h.to.y; guide.classList.remove("walk"); h.done(); }
     placeGuide();
   }
-  function placeGuide() { const w = G.el; if (!w) return; w.style.left = G.x + "px"; w.style.top = G.y + "px"; guide.classList.toggle("flip", G.flip); }
+  // 用独立的 translate 挪位置：不触发重新排版，也不和进场时的 transform 动画打架；旧浏览器没有 translate 就还用 left/top
+  const CAN_TRANSLATE = !!(window.CSS && CSS.supports && CSS.supports("translate", "1px 1px"));
+  function placeGuide() {
+    const w = G.el; if (!w) return;
+    if (CAN_TRANSLATE) { w.style.left = "0px"; w.style.top = "0px"; w.style.translate = G.x + "px " + G.y + "px"; }
+    else { w.style.left = G.x + "px"; w.style.top = G.y + "px"; }
+    guide.classList.toggle("flip", G.flip);
+  }
 
   /* ================= 路线：走过的路画成实线，最后绕回起点 ================= */
   let routeLen = [], routeDone = null, routeTotal = 0;
@@ -2000,7 +2012,7 @@
     $("ctaNote").textContent = submitted ? "报名表已提交，我们会尽快与你联系。" : member ? "点任意一站，先看文字介绍，再看动画。" : closed ? closedMsg : "仅限校内新生报名；老师、校外同学和已有账号的成员，请直接进入平台。";
   }
   function showCTA() {
-    phase = "end"; syncBack(); syncCTA();
+    phase = "end"; syncBack(); syncCTA(); prefetchSite();
     if (!detail.hidden) { detail.hidden = true; detailKey = null; document.body.classList.remove("detailing"); markCur(null); }
     document.body.classList.add("endmode"); document.body.classList.remove("touring");
     hideDlg();
@@ -2425,6 +2437,22 @@
   $("enter").addEventListener("click", () => leave(sheet));
 
   /* ================= 进入平台：地图退下去，按钮（或报名表）铺满整屏，再跳到网站 ================= */
+  // 结尾面板一出来，就让浏览器先把网站的脚本和样式下好，点「进入平台」时接得上
+  let prefetched = false;
+  function prefetchSite() {
+    if (prefetched) return; prefetched = true;
+    fetch(BACK_TO, { credentials: "same-origin" }).then((r) => r.text()).then((html) => {
+      const seen = new Set();
+      for (const m of html.matchAll(/(?:src|href)="(\/assets\/[^"]+\.(js|css))"/g)) {
+        if (seen.has(m[1])) continue; seen.add(m[1]);
+        const l = document.createElement("link"); l.rel = "prefetch"; l.href = m[1]; l.as = m[2] === "js" ? "script" : "style";
+        document.head.appendChild(l);
+      }
+    }).catch(() => {});
+  }
+  // 交给网站的接力标记：网站看到它，才播「白屏收拢成平台」的过渡（src/client/handoff.ts，键名两边一致）。
+  // 存在 sessionStorage：只在这个标签页、这一次跳转有效；平时打开网站没有它，不播
+  const HANDOFF_KEY = "hiana.intro.handoff";
   async function leave(srcEl) {
     if (phase === "home") return;
     phase = "home"; music.set("form");
@@ -2445,6 +2473,7 @@
         { transform: "translate(0px,0px)", width: innerWidth + "px", height: innerHeight + "px", borderColor: "#fff", borderWidth: "0px", boxShadow: "0 0 0 rgba(44,110,135,0)" },
       ], { duration: reduce ? 1 : 640, easing: INOUT, fill: "forwards" }).finished;
     } catch (e) {}
+    try { sessionStorage.setItem(HANDOFF_KEY, String(Date.now())); } catch (e) {}
     location.href = BACK_TO;
   }
   // 从网站按“返回”回到这一页：浏览器可能直接拿出跳走前的样子（整屏白），换成地图

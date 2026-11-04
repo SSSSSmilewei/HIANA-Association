@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "./api";
+import { playHandoff } from "./handoff";
 import { BrandMark, Shell } from "./components/Shell";
 import { AdminMembersPage, AdminNoticesPage, AdminSettingsPage, AdminTodayPage } from "./pages/Admin";
 import { AboutPage } from "./pages/About";
@@ -56,6 +57,10 @@ export function App() {
   const onboarding = !onboardingDone && needsOnboarding(me?.member?.id);
 
   const ctx = useMemo(() => ({ me: me ?? { role: null }, setMe: (m: Me) => setMe(m) }), [me]);
+  // 从开场动画「进入平台」过来：账号信息到了、页面画出来以后，揭开接住动画的白屏（平时不会播）
+  useEffect(() => {
+    if (me) playHandoff();
+  }, [me]);
 
   // 以前发出去的激活链接 /k/口令：旧口令现在当重置码用
   const k = matchPath("/k/:code", path);
@@ -101,7 +106,6 @@ export function App() {
     else if (path === "/admin/applications") page = <AdminApplicationsPage />;
     else page = <Redirect to="/admin" />;
   } else if (path === "/") page = <HomePage />;
-  else if (path === "/about") page = <AboutPage />;
   else if (path === "/courses") page = <CoursesPage />;
   else if (path === "/courses/format") page = <FormatPage />;
   else if (block) page = <BlockPage key={block.slug} slug={block.slug} />;
@@ -111,6 +115,15 @@ export function App() {
   else if (path === "/notices") page = <NoticesPage />;
   else if (path === "/me") page = <ProfilePage me={me} onLogout={loggedOut} />;
   else page = <Empty title="没有这个页面" />;
+
+  // 协会页是一整张海报（新生介绍书），不套侧边栏和底栏，自己有顶栏回平台
+  if (path === "/about") {
+    return (
+      <MeContext.Provider value={ctx}>
+        <AboutPage />
+      </MeContext.Provider>
+    );
+  }
 
   return (
     <MeContext.Provider value={ctx}>

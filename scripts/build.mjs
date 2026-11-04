@@ -47,6 +47,8 @@ const js = outputs.find((p) => /assets\/app-[^/]+\.js$/.test(p));
 const css = outputs.find((p) => /assets\/app-[^/]+\.css$/.test(p));
 const rel = (p) => `/${p.slice(p.indexOf("assets/"))}`;
 
+// 第二段内联脚本：从开场动画「进入平台」跳过来时（动画在 sessionStorage 留了 hiana.intro.handoff），
+// 先用一整屏白色接住动画的最后一帧，等页面画好再由 src/client/handoff.ts 揭开；6 秒后无论如何都揭开，免得卡住。
 writeFileSync(
   join(out, "index.html"),
   `<!doctype html>
@@ -57,6 +59,8 @@ writeFileSync(
 <meta name="theme-color" content="#f2f9fa">
 <meta name="color-scheme" content="light dark">
 <script>(function(){var r=document.documentElement,s="glass",a="shanmoew-mizu",d=false,css=[];try{var p=JSON.parse(localStorage.getItem("hiana-prefs")||"{}");if(p.skin==="classic")s="classic";if(/^[a-z-]+$/.test(p.palette||""))a=p.palette;d=p.theme==="dark"||(p.theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);if(p.customCss)css.push(["hiana-custom",p.customCss]);if(p.fontCss){if(p.fontCss.sans)css.push(["hiana-font-sans",p.fontCss.sans]);if(p.fontCss.mono)css.push(["hiana-font-mono",p.fontCss.mono])}}catch(e){}for(var i=0;i<css.length;i++){var t=document.createElement("style");t.id=css[i][0];t.textContent=css[i][1];document.head.appendChild(t)}r.setAttribute("data-skin",s);r.setAttribute("data-palette",a);r.setAttribute("data-mode",d?"dark":"light");var c=getComputedStyle(r).getPropertyValue("--bg").trim()||(d?"#0c1a20":"#f2f9fa");document.querySelector('meta[name="theme-color"]').setAttribute("content",c)})()</script>
+<script>(function(){try{var k="hiana.intro.handoff",t=+sessionStorage.getItem(k);sessionStorage.removeItem(k);if(t&&Date.now()-t<15000&&!matchMedia("(prefers-reduced-motion: reduce)").matches){var r=document.documentElement;r.setAttribute("data-handoff","hold");setTimeout(function(){r.removeAttribute("data-handoff")},6000)}}catch(e){}})()</script>
+<style>html[data-handoff]::after{content:"";position:fixed;inset:0;z-index:2147483647;background:#fff;pointer-events:none}</style>
 <meta name="robots" content="noindex">
 <title>海纳协会学习平台</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">

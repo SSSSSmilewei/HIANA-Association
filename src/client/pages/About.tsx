@@ -29,12 +29,34 @@ export function AboutPage() {
   useEffect(() => {
     const id = decodeURIComponent(location.hash.slice(1));
     if (id) document.getElementById(id)?.scrollIntoView();
+    // 整页深色：滚过头露出来的底色也要是深海蓝，离开这一页再还原
+    const root = document.documentElement, old = root.style.background;
+    root.style.background = "#061a33";
+    return () => {
+      root.style.background = old;
+    };
   }, []);
   // 已登录的成员不用报名，按钮只写“播放协会介绍”
   const playLabel = me.role ? "播放协会介绍" : "播放协会介绍 · 报名";
 
   return (
     <div className="hn">
+      <header className="hn-bar">
+        <Link to="/" className="hn-logo" aria-label="回到平台首页">
+          <span className="hina">HI·NA</span>
+          <span className="nm">智慧算法网络协会 · 海纳协会</span>
+        </Link>
+        <nav className="hn-bar-nav" aria-label="协会页">
+          <Link to="/" className="hn-bar-link">
+            <Icon name="arrowRight" size={16} stroke={2} className="back" />
+            回到平台
+          </Link>
+          <a className="hn-btn sm" href={INTRO_PLAY_HREF}>
+            <Icon name="play" size={16} />
+            协会介绍
+          </a>
+        </nav>
+      </header>
       <section className="hn-hero" aria-labelledby="hn-title">
         <div className="hn-top">
           <div style={{ minWidth: 0 }}>
