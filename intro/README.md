@@ -44,3 +44,10 @@ npm run build                         # scripts/build.mjs 会把 public/ 原样�
   - `POST /api/applications`：提交报名，服务器会再校验一遍；同一学号再交一次是覆盖上一次。
 - **进入平台**：「直接进入平台」「回到平台」「进入海纳协会」都会让按钮（或报名表）铺满整屏，然后 `location.href` 跳到网站。原来演示用的假首页（`#site`）已经删掉了。
 - 报名表里有一个看不见的蜜罐输入框 `#f-website`，有值的提交服务器会假装收下、但不入库。
+- **进入平台的过渡**：跳转前在 `sessionStorage` 留 `hiana.intro.handoff`（时间戳）。网站 `index.html` 开头的内联脚本（`scripts/build.mjs`）看到它，就先用整屏白色接住动画的最后一帧，页面画好后由 `src/client/handoff.ts` 揭开（白色淡出，侧边栏、底栏、内容滑进来，样式在 `src/client/styles/handoff.css`）。标记只用一次、15 秒内有效，平时打开、刷新网站都不播；系统设了“减少动态效果”也不播。
+- 结尾面板一出现就预取网站的脚本和样式（`prefetchSite`），点「进入平台」时接得更快。
+
+## 性能
+
+- 背景（光柱、气泡、小鱼）和粒子两张画布都按 **1 倍**分辨率画，CSS 用 `image-rendering: pixelated` 放大。不要改回按 `devicePixelRatio` 画：三倍屏手机上每帧要多画 9 倍的像素，CPU 降速 4 倍实测平均一帧 53 ms（改了以后 17 ms，基本 60 帧）。
+- 粒子画布没有粒子时不清屏；小螃蟹用独立的 `translate` 属性挪位置（不触发重新排版），不支持的浏览器退回 `left/top`。

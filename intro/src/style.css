@@ -64,7 +64,7 @@ body {
 }
 #nightSky { position: fixed; inset: 0; background: linear-gradient(180deg, #0B2430, #12394A); opacity: 0; transition: opacity 1.4s; pointer-events: none; }
 body.night #nightSky { opacity: 1; }
-#bg { position: fixed; inset: 0; pointer-events: none; }
+#bg { position: fixed; inset: 0; pointer-events: none; image-rendering: pixelated; }
 button, input, textarea { font-family: var(--px); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 #probeB { position: fixed; left: 0; bottom: 0; width: 0; height: env(safe-area-inset-bottom, 0px); pointer-events: none; }
@@ -249,7 +249,7 @@ body.inform .top *, body.athome .top * { pointer-events: none !important; }
 #knockTip.on { opacity: .8; }
 .tile { position: absolute; background: #000; }
 
-#fx { position: fixed; inset: 0; z-index: 35; pointer-events: none; }
+#fx { position: fixed; inset: 0; z-index: 35; pointer-events: none; image-rendering: pixelated; }
 
 /* ---------- 结尾的按钮 ---------- */
 .cta { position: fixed; z-index: 16; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0 max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); pointer-events: none; }

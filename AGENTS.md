@@ -67,6 +67,8 @@
 - `/about` 是**独立整页**：`App.tsx` 里不套 `Shell`（没有侧边栏和底栏），页面自己有吸顶的顶栏（HI·NA 回首页、「回到平台」、「协会介绍」）。在这一页时根元素底色设成深海蓝，离开时还原。
 - 页面上的报名入口都是「播放协会介绍」→ `/intro/?from=/about`（从头播，结尾是报名表）；「直接看地图」→ `/intro/?view=map&from=/about`。`/honors` 仍跳到 `/about#honors`。
 - 开场动画各站的详细介绍按负责人的培养方案文档补充过；获奖汇总用学校统计（2020.10—2026.6，国家级 12、省级 82、合计 94）。
+- 从开场动画点「进入平台」：跳转时有接力过渡（白屏接住 → 揭开平台），只在从动画过来的那一次播，平时不播。做法见 `intro/README.md`。
+- 开场动画掉帧已修：两张画布按 1 倍分辨率画（原来三倍屏上每帧画 9 倍像素）。
 - 本地装依赖：锁文件里的地址是 `registry.npmmirror.com`，云端容器连不上时用 `npm ci --registry=https://registry.npmjs.org/ --replace-registry-host=registry.npmmirror.com`。
 
 ### 外观
