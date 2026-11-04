@@ -101,7 +101,6 @@ export function App() {
     else if (path === "/admin/applications") page = <AdminApplicationsPage />;
     else page = <Redirect to="/admin" />;
   } else if (path === "/") page = <HomePage />;
-  else if (path === "/about") page = <AboutPage />;
   else if (path === "/courses") page = <CoursesPage />;
   else if (path === "/courses/format") page = <FormatPage />;
   else if (block) page = <BlockPage key={block.slug} slug={block.slug} />;
@@ -111,6 +110,15 @@ export function App() {
   else if (path === "/notices") page = <NoticesPage />;
   else if (path === "/me") page = <ProfilePage me={me} onLogout={loggedOut} />;
   else page = <Empty title="没有这个页面" />;
+
+  // 协会页是一整张海报（新生介绍书），不套侧边栏和底栏，自己有顶栏回平台
+  if (path === "/about") {
+    return (
+      <MeContext.Provider value={ctx}>
+        <AboutPage />
+      </MeContext.Provider>
+    );
+  }
 
   return (
     <MeContext.Provider value={ctx}>

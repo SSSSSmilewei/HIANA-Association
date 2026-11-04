@@ -1,6 +1,7 @@
 /*
  * 协会页（/about）：照「海纳协会新生介绍书」排的长海报。
- * 只在 .hn 里生效；不跟皮肤和配色走，固定深海蓝（和开场动画一个调子）。
+ * 独立整页（App.tsx 里不套侧边栏和底栏），只在 .hn 里生效；不跟皮肤和配色走，固定深海蓝（和开场动画一个调子）。
+ * 内容居中最宽 1080px，两边留白用 --hn-gut。
  * 字体用站内的更纱黑体，不从外网加载。
  */
 .hn {
@@ -10,7 +11,9 @@
   --hn-accent: #49b2ff;
   --hn-light: #ddf0ff;
   --hn-white: #ffffff;
-  max-width: 1040px;
+  --hn-gut: max(32px, calc((100% - 1080px) / 2));
+  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   min-width: 0;
   color: var(--hn-light);
@@ -20,7 +23,7 @@
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.7;
-  overflow: hidden;
+  overflow-x: clip;
   color-scheme: dark;
 }
 .hn * { box-sizing: border-box; }
@@ -46,8 +49,19 @@
 .hn-more { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; font-weight: 700; color: var(--hn-accent) !important; text-decoration: none; }
 .hn-more:hover { text-decoration: underline; }
 
+/* 顶栏：贴在最上面，左边回首页，右边回平台和播放协会介绍 */
+.hn-bar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(10px + env(safe-area-inset-top)) var(--hn-gut) 10px; background: var(--hn-deep); border-bottom: 2px solid var(--hn-panel); }
+.hn-logo { display: flex; align-items: center; gap: 10px; min-width: 0; text-decoration: none; }
+.hn-logo .hina { font-family: var(--font-mono); font-weight: 700; font-size: 20px; color: var(--hn-accent); letter-spacing: 0.06em; white-space: nowrap; }
+.hn-logo .nm { font-weight: 700; color: var(--hn-white); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hn-bar-nav { display: flex; align-items: center; gap: 14px; flex: none; }
+.hn-bar-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 700; color: var(--hn-light) !important; text-decoration: none; white-space: nowrap; }
+.hn-bar-link:hover { color: var(--hn-white) !important; text-decoration: underline; }
+.hn-bar-link .back { transform: rotate(180deg); }
+.hn-btn.sm { min-height: 40px; padding: 0 14px; font-size: 15px; }
+
 /* 开头 */
-.hn-hero { padding: 44px 32px 36px; }
+.hn-hero { padding: 48px var(--hn-gut) 40px; }
 .hn-top { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 24px; align-items: center; }
 .hn-ep { display: flex; flex-wrap: wrap; margin-bottom: 26px; }
 .hn-ep span { padding: 6px 14px; font-weight: 700; }
@@ -74,7 +88,7 @@
 @keyframes hn-run { to { transform: translateX(-50%); } }
 
 /* 每一节 */
-.hn-s { padding: 60px 32px 8px; }
+.hn-s { padding: 64px var(--hn-gut) 8px; }
 .hn-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
 .hn-head h2 { font-size: clamp(26px, 4.4vw, 40px); }
 .hn-ico { flex: none; width: 44px; height: 44px; background: var(--hn-accent); position: relative; }
@@ -178,7 +192,7 @@
 .hn-cups .hn-mono { margin-right: 6px; }
 
 /* 加入 */
-.hn-join { margin-top: 60px; background: var(--hn-accent); color: var(--hn-deep); padding: 44px 32px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: center; }
+.hn-join { margin-top: 64px; background: var(--hn-accent); color: var(--hn-deep); padding: 48px var(--hn-gut); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: center; }
 .hn-join .hn-mono { color: var(--hn-deep); font-size: 14px; }
 .hn-join h2 { color: var(--hn-deep); font-size: clamp(30px, 5vw, 52px); }
 .hn-join-lede { font-weight: 700; font-size: 18px; margin-top: 12px; }
@@ -189,7 +203,7 @@
 .hn-join li { counter-increment: j; display: flex; gap: 14px; align-items: baseline; font-weight: 700; font-size: 17px; }
 .hn-join li::before { content: counter(j); font-family: var(--font-mono); font-weight: 700; font-size: 22px; min-width: 28px; }
 
-.hn-foot { padding: 36px 32px 44px; display: flex; flex-direction: column; gap: 10px; }
+.hn-foot { padding: 40px var(--hn-gut) calc(56px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 10px; }
 
 @media (max-width: 860px) {
   .hn-top { grid-template-columns: minmax(0, 1fr); }
@@ -210,10 +224,10 @@
   .hn-nocode .hn-tag { justify-self: start; }
 }
 @media (max-width: 560px) {
-  .hn-hero { padding: 32px 16px 28px; }
-  .hn-s { padding: 48px 16px 8px; }
-  .hn-join { padding: 36px 16px; }
-  .hn-foot { padding: 32px 16px 36px; }
+  .hn { --hn-gut: 16px; }
+  .hn-hero { padding-top: 32px; }
+  .hn-s { padding-top: 48px; }
+  .hn-bar .nm { display: none; }
   .hn-panel { padding: 18px 16px; }
   .hn-grid2, .hn-why ul, .hn-grid4, .hn-depts { grid-template-columns: minmax(0, 1fr); }
   .hn-depts .hn-dept + .hn-dept { border-left: 0; border-top: 2px solid rgba(6, 26, 51, 0.15); }
