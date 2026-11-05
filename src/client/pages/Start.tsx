@@ -10,7 +10,7 @@ import { Bar, ErrorBox, Skeleton, Spinner, useTitle, useToast } from "../ui";
 
 /**
  * 新生任务：协会每位新成员都要完成的三项任务。
- *  1. 阅读前言：CSDIY 前言 + 会长前言（Across the Deep Sea 的第一篇）
+ *  1. 阅读前言：CSDIY 前言 +《我的一些小想法》（写给同学的一段话，Across the Deep Sea 的第一篇）
  *  2. CS50x：取得哈佛大学的课程证书（提交证书链接，管理员确认后才算完成，接口见 worker/api/start.ts）
  *  3. Across the Deep Sea：协会自己编写的课程，正在筹备，没有“完成”状态
  * 首页最上方是 StartCard，/start 是完整的页面。
@@ -19,7 +19,7 @@ import { Bar, ErrorBox, Skeleton, Spinner, useTitle, useToast } from "../ui";
 const DEEP_SEA = "across-the-deep-sea";
 const PREFACES = [
   { course: "csdiy", item: "preface", title: "CSDIY 前言" },
-  { course: DEEP_SEA, item: "preface", title: "会长前言" },
+  { course: DEEP_SEA, item: "preface", title: "我的一些小想法" },
 ] as const;
 
 type CertStatus = "pending" | "approved" | "rejected";
@@ -137,7 +137,7 @@ export function StartPage() {
       ) : (
         <ol className="start-steps">
           <Step n={0} s={s}>
-            <p className="small sub pretty">阅读《CS 自学指南》（csdiy.wiki）的前言和会长前言，了解计算机科学的自学方法和协会的培养思路。</p>
+            <p className="small sub pretty">阅读《CS 自学指南》（csdiy.wiki）的前言，了解计算机科学的自学方法；再阅读写给协会同学的一段话《我的一些小想法》。</p>
             <ul className="start-reads">
               {PREFACES.map((p, i) => (
                 <li key={p.item + p.course}>

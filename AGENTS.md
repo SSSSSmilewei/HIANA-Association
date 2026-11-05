@@ -47,9 +47,9 @@
 - 热力图第一行改成“协会学习时长”（分钟），规则在 `attendanceMinutes`。
 
 ### 新生任务（2026-11-04）
-- 首页最上方是「新生任务」卡片，`/start` 列出三项任务：阅读前言（CSDIY 前言、会长前言），完成 CS50x 并取得证书，学习 Across the Deep Sea。
+- 首页最上方是「新生任务」卡片，`/start` 列出三项任务：阅读前言（CSDIY 前言、《我的一些小想法》），完成 CS50x 并取得证书，学习 Across the Deep Sea。
 - CS50x 证书：学员在 `/start` 提交证书链接，管理员在「今日签到」页的「待确认的 CS50x 证书」通过或退回（`src/worker/api/start.ts`，表 `certificates`）。
-- Across the Deep Sea 是站内课 `content/courses/across-the-deep-sea/`，会长前言在 `preface.md`（现在是占位）；「竞赛」「专题」两个模块是空的，标「筹备中」。
+- Across the Deep Sea 是站内课 `content/courses/across-the-deep-sea/`，《我的一些小想法》在 `preface.md`（写给同学的一段话，署负责人的名字，不强调身份；现在是占位）；「竞赛」「专题」两个模块是空的，标「筹备中」。
 - 界面文案用正式的书面语完整描述，不写口语，不压缩成极简短语；介绍课程时写全称并附中文翻译（负责人 2026-11-04 明确要求）。
 
 ### 规划
