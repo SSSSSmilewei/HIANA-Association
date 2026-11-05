@@ -72,6 +72,13 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
         )}
       </header>
 
+      {me.member?.kind !== "external" && !me.member?.className && (
+        <a href="#class-form" className="card row" style={{ gap: 12, padding: "14px 18px", borderColor: "var(--accent)", textDecoration: "none", color: "inherit" }}>
+          <Icon name="edit" size={18} />
+          <span className="grow small">还没填班级。签到表要按班级交给学校，点这里补上。</span>
+        </a>
+      )}
+
       <section className="card stack" aria-labelledby="hm-h" style={{ gap: 16, padding: 22, borderRadius: 26 }}>
         <div className="row wrap" style={{ justifyContent: "space-between" }}>
           <span className="stack" style={{ gap: 2 }}>
@@ -180,6 +187,7 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
         </section>
 
         <section className="card stack" id="settings" aria-labelledby="set-h" style={{ gap: 16 }}>
+          {me.member?.kind !== "external" && <ClassForm />}
           <DisplayNameForm />
           <h2 id="set-h" className="h3" style={{ paddingTop: 14, borderTop: "1px solid var(--line)" }}>
             外观
@@ -200,6 +208,60 @@ export function ProfilePage({ me, onLogout }: { me: Me; onLogout: () => void }) 
       </div>
       {binding && data && <BindDialog data={data} onClose={() => setBinding(false)} />}
     </div>
+  );
+}
+
+/** 班级：以前注册时可以不填，在这里补；签到表按班级给学校。 */
+function ClassForm() {
+  const { me, setMe } = useMe();
+  const toast = useToast();
+  const saved = me.member?.className ?? "";
+  const [value, setValue] = useState(saved);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const save = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const r = await api<{ className: string }>("/api/me/class", { method: "PUT", body: { className: value.trim() } });
+      if (me.member) setMe({ ...me, member: { ...me.member, className: r.className } });
+      setValue(r.className);
+      toast("班级已保存");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form
+      id="class-form"
+      className="stack"
+      style={{ gap: 8, paddingBottom: 14, borderBottom: "1px solid var(--line)" }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        void save();
+      }}
+    >
+      <h2 className="h3">班级</h2>
+      <label className="field">
+        <span className="sr-only">班级</span>
+        <input className="input" value={value} onChange={(e) => setValue(e.target.value)} maxLength={30} placeholder="例如 计科2501" />
+        <span className="hint xsmall">签到表按班级交给学校；填错了可以随时改</span>
+      </label>
+      {error && (
+        <span className="error-text xsmall" role="alert">
+          {error}
+        </span>
+      )}
+      <div>
+        <button type="submit" className="btn btn-soft btn-sm" disabled={busy || !value.trim() || value.trim() === saved}>
+          {busy ? <Spinner /> : "保存"}
+        </button>
+      </div>
+    </form>
   );
 }
 

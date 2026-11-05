@@ -167,12 +167,10 @@ async function registerCampus(db: D1Database, secret: string, input: RegisterInp
   if (!STUDENT_NO_RE.test(studentNo)) throw new AccountError(400, "学号是 9 位数字");
   const name = cleanShortText(input.name, 20, "姓名");
   if ("error" in name) throw new AccountError(400, name.error);
-  let className: string | null = null;
-  if (input.className?.trim()) {
-    const c = cleanShortText(input.className, 30, "班级");
-    if ("error" in c) throw new AccountError(400, c.error);
-    className = c.value;
-  }
+  // 班级必填（2026-11 起；以前选填，老账号可以在“我的”里补，管理员也能在后台改）
+  const cls = cleanShortText(input.className ?? "", 30, "班级");
+  if ("error" in cls) throw new AccountError(400, cls.error);
+  const className: string | null = cls.value;
   if (input.password !== input.confirm) throw new AccountError(400, "两次输入的密码不一样");
   const problem = passwordProblem(input.password, studentNo);
   if (problem) throw new AccountError(400, problem);
@@ -448,6 +446,95 @@ export async function listMembers(db: D1Database): Promise<Member[]> {
     hasPassword: r.has_password === 1,
     lastActiveDay: r.last_day || null,
   }));
+}
+
+export interface MemberEdit {
+  name?: string;
+  /** 校内：空字符串表示清空 */
+  className?: string;
+  /** 校内：改学号就是改登录账号 */
+  studentNo?: string;
+  /** 校外 */
+  username?: string;
+  /** 校外：空字符串表示清空 */
+  email?: string;
+  /** 校外：空字符串表示清空 */
+  org?: string;
+}
+
+/** 选填的短文本：空字符串存 NULL */
+function optionalText(v: string, max: number, label: string): string | null {
+  if (!v.trim()) return null;
+  const r = cleanShortText(v, max, label);
+  if ("error" in r) throw new AccountError(400, r.error);
+  return r.value;
+}
+
+/**
+ * 管理员修改成员信息。只改传了的字段；校内能改姓名、班级、学号，校外能改昵称、用户名、邮箱、学校 / 单位。
+ * 改学号 / 用户名 / 邮箱等于改登录账号，已登录的设备不受影响（令牌按账号 id 认）。
+ */
+export async function updateMember(db: D1Database, id: string, input: MemberEdit, now = Date.now()): Promise<void> {
+  const row = await db.prepare("SELECT kind FROM users WHERE id = ?").bind(id).first<{ kind: string }>();
+  if (!row) throw new AccountError(404, "找不到这个成员");
+  const external = row.kind === "external";
+  const sets: string[] = [];
+  const vals: (string | null)[] = [];
+  const set = (col: string, v: string | null) => {
+    sets.push(`${col} = ?`);
+    vals.push(v);
+  };
+
+  if (input.name !== undefined) {
+    const n = cleanShortText(input.name, 20, external ? "昵称" : "姓名");
+    if ("error" in n) throw new AccountError(400, n.error);
+    set("name", n.value);
+  }
+  if (external) {
+    if (input.studentNo !== undefined || input.className !== undefined) throw new AccountError(400, "校外账号没有学号和班级");
+    if (input.username !== undefined) {
+      const u = input.username.trim().toLowerCase();
+      if (!USERNAME_RE.test(u)) throw new AccountError(400, "用户名 3–20 位，小写字母开头，只能用小写字母、数字、下划线和连字符");
+      if (await db.prepare("SELECT 1 AS x FROM users WHERE username = ? AND id <> ?").bind(u, id).first()) throw new AccountError(409, "这个用户名已经有人用了");
+      set("username", u);
+    }
+    if (input.email !== undefined) {
+      const e = input.email.trim().toLowerCase() || null;
+      if (e && (e.length > 100 || !EMAIL_RE.test(e))) throw new AccountError(400, "邮箱格式不对");
+      if (e && (await db.prepare("SELECT 1 AS x FROM users WHERE email = ? AND id <> ?").bind(e, id).first())) throw new AccountError(409, "这个邮箱已经被别的账号用了");
+      set("email", e);
+    }
+    if (input.org !== undefined) set("org", optionalText(input.org, 40, "学校 / 单位"));
+  } else {
+    if (input.username !== undefined || input.email !== undefined || input.org !== undefined) throw new AccountError(400, "校内账号没有用户名、邮箱和单位");
+    if (input.studentNo !== undefined) {
+      const no = input.studentNo.trim();
+      if (!STUDENT_NO_RE.test(no)) throw new AccountError(400, "学号是 9 位数字");
+      if (await db.prepare("SELECT 1 AS x FROM users WHERE student_no = ? AND id <> ?").bind(no, id).first()) throw new AccountError(409, "这个学号已经被别的账号用了");
+      set("student_no", no);
+    }
+    if (input.className !== undefined) set("class_name", optionalText(input.className, 30, "班级"));
+  }
+  if (!sets.length) return;
+  try {
+    await db
+      .prepare(`UPDATE users SET ${sets.join(", ")}, updated_at = ? WHERE id = ?`)
+      .bind(...vals, now, id)
+      .run();
+  } catch (err) {
+    // 两个管理员几乎同时把两个人改成同一个学号 / 用户名
+    if (String(err).includes("UNIQUE")) throw new AccountError(409, "学号、用户名或邮箱和别的账号重复了");
+    throw err;
+  }
+}
+
+/** 校内成员自己补填 / 修改班级（以前注册时班级是选填的）。 */
+export async function setOwnClass(db: D1Database, id: string, className: string, now = Date.now()): Promise<string> {
+  const c = cleanShortText(className, 30, "班级");
+  if ("error" in c) throw new AccountError(400, c.error);
+  const r = await db.prepare("UPDATE users SET class_name = ?, updated_at = ? WHERE id = ? AND kind = 'campus' AND status = 'active'").bind(c.value, now, id).run();
+  if (!r.meta.changes) throw new AccountError(400, "校外账号没有班级");
+  return c.value;
 }
 
 /** 会长后台的“最近没动静”名单：在籍的校内成员里，最近 n 天站内和外部平台都没有记录的人（校外账号不管）。 */

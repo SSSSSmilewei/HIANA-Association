@@ -109,6 +109,12 @@ class SessionNotifier extends AsyncNotifier<Me> {
   }) =>
       _api.setPassword(password: password, confirm: confirm, current: current);
 
+  /// 补填 / 修改班级，保存后重新读一次账号信息。
+  Future<void> setClass(String className) async {
+    await _api.setClass(className);
+    state = AsyncData(await _api.me());
+  }
+
   Future<void> logout() async {
     await _api.logout();
     signedOut();
