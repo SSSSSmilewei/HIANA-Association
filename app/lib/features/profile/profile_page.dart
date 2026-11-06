@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_miuix/miuix.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../about/about_page.dart';
 import '../../app/hiana_page.dart';
@@ -17,7 +16,10 @@ import '../../widgets/hx_icons.dart';
 import '../../widgets/ui.dart';
 import '../../widgets/update_dialog.dart';
 import '../auth/guest.dart';
+import '../admin/admin_home.dart';
 import '../auth/set_password_page.dart';
+import '../start/start_page.dart';
+import 'appearance_page.dart';
 
 /// 我的：一年的热力图（按来源开关、点格子看当天）、来源和绑定、外观、账号。
 /// 游客只有登录入口、外观和检查更新。
@@ -33,6 +35,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String? _selected;
   ProviderInfo? _binding; // 正在编辑的平台；非空时底部面板打开
   bool _confirmLogout = false;
+  bool _editName = false; // “首页称呼”面板
   AppVersion? _update; // 非空时弹出升级窗口
   String _current = '';
   bool _editClass = false; // 补填 / 修改班级的弹窗
@@ -76,12 +79,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     }
   }
 
-  static const _modes = [
-    (MiuixColorSchemeMode.light, '浅色'),
-    (MiuixColorSchemeMode.dark, '深色'),
-    (MiuixColorSchemeMode.system, '跟随系统'),
-  ];
-
   Color _dot(Hx h, SourceSeries s) => switch (s.source) {
     'site:attendance' => h.heat[2],
     'site:reflection' => h.heat[1],
@@ -117,7 +114,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final guest = ref.watch(isGuestProvider);
     // 热力图要登录；游客不去请求
     final heat = guest ? null : ref.watch(heatmapProvider);
-    final mode = ref.watch(themeModeProvider);
 
     return HianaPage(
       title: '我的',
@@ -194,6 +190,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             showHxToast(context, msg);
             ref.invalidate(heatmapProvider);
           },
+        ),
+        DisplayNameSheet(
+          show: _editName,
+          onClose: () => setState(() => _editName = false),
         ),
         MiuixOverlayDialog(
           show: _confirmLogout,
@@ -344,6 +344,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+          child: HxCard(
+            onTap: () => context.pushPage(const StartPage()),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '新生任务',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: h.ink,
+                    ),
+                  ),
+                ),
+                HxIconView(HxIcon.arrowRight, size: 16, color: h.sub),
+              ],
+            ),
+          ),
+        ),
         if (admin) ...[
           const SectionHead('管理'),
           Padding(
@@ -352,22 +373,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Column(
                 children: [
-                  // 后台只在网页上做；用系统浏览器打开，第一次要在浏览器里登录
-                  for (final (title, path) in const [
-                    ('今日签到', '/admin'),
-                    ('成员', '/admin/members'),
-                    ('新生报名', '/admin/applications'),
-                    ('蓝色钉子', '/admin/pins'),
-                    ('发公告', '/admin/notices'),
-                    ('设置', '/admin/settings'),
-                  ])
+                  for (final p in adminPages)
                     _Row(
-                      icon: HxIcon.external,
-                      title: title,
-                      onTap: () => launchUrl(
-                        Uri.parse('$kBaseUrl$path'),
-                        mode: LaunchMode.externalApplication,
-                      ),
+                      icon: p.icon,
+                      title: p.title,
+                      onTap: () => context.pushPage(p.build()),
                     ),
                 ],
               ),
@@ -376,7 +386,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
             child: Text(
-              '管理后台在网页上，会用浏览器打开；浏览器里没登录过的话要先登录一次。',
+              '管理功能与网页后台相同；签到表的打印和表格导出会在 App 内或浏览器中打开网页。',
               style: TextStyle(fontSize: 12, color: h.sub),
             ),
           ),
@@ -384,12 +394,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         const SectionHead('外观'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: HxSeg<MiuixColorSchemeMode>(
-            options: _modes,
-            value: _modes.any((m) => m.$1 == mode)
-                ? mode
-                : MiuixColorSchemeMode.system,
-            onChanged: (m) => ref.read(themeModeProvider.notifier).set(m),
+          child: HxCard(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: _Row(
+              icon: HxIcon.sun,
+              title: '配色、字体与字号',
+              onTap: () => context.pushPage(const AppearancePage()),
+            ),
           ),
         ),
         const SectionHead('账号'),
@@ -399,6 +410,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Column(
               children: [
+                if (!guest)
+                  _Row(
+                    icon: HxIcon.pencil,
+                    title: '首页称呼',
+                    onTap: () => setState(() => _editName = true),
+                  ),
                 if (!guest)
                   _Row(
                     icon: HxIcon.key,
@@ -710,6 +727,7 @@ class _BindingSheetState extends ConsumerState<BindingSheet> {
           : Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   MiuixText(
@@ -729,7 +747,6 @@ class _BindingSheetState extends ConsumerState<BindingSheet> {
                   MiuixTextField(
                     controller: _handle,
                     label: '用户名',
-                    useLabelAsPlaceholder: true,
                     singleLine: true,
                   ),
                   if (p.needsUserSecret != null) ...[
@@ -739,7 +756,6 @@ class _BindingSheetState extends ConsumerState<BindingSheet> {
                       label: widget.binding?.hasSecret == true
                           ? '令牌（已保存，不改就留空）'
                           : p.needsUserSecret!,
-                      useLabelAsPlaceholder: true,
                       singleLine: true,
                       obscureText: true,
                     ),
@@ -788,6 +804,108 @@ class _BindingSheetState extends ConsumerState<BindingSheet> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+/// 首页欢迎语里的称呼。只影响欢迎语：签到表、名单、公告、讨论里还是真名。保存空白 = 恢复真名。
+class DisplayNameSheet extends ConsumerStatefulWidget {
+  const DisplayNameSheet({super.key, required this.show, required this.onClose});
+  final bool show;
+  final VoidCallback onClose;
+
+  @override
+  ConsumerState<DisplayNameSheet> createState() => _DisplayNameSheetState();
+}
+
+class _DisplayNameSheetState extends ConsumerState<DisplayNameSheet> {
+  final _value = TextEditingController();
+  bool _busy = false;
+  String? _error;
+
+  @override
+  void didUpdateWidget(DisplayNameSheet old) {
+    super.didUpdateWidget(old);
+    if (widget.show && !old.show) {
+      _value.text =
+          ref.read(sessionProvider).valueOrNull?.member?.displayName ?? '';
+      _error = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _value.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save(String next) async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final saved = await ref.read(apiProvider).setDisplayName(next);
+      ref.read(sessionProvider.notifier).displayNameChanged(saved);
+      if (!mounted) return;
+      showHxToast(context, saved != null ? '首页会称呼你为“$saved”' : '已恢复为真名');
+      widget.onClose();
+    } on ApiException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final h = Hx.of(context);
+    final me = ref.watch(sessionProvider).valueOrNull?.member;
+    return MiuixOverlayBottomSheet(
+      show: widget.show,
+      title: '首页称呼',
+      onDismissRequest: widget.onClose,
+      content: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              '只用于首页欢迎语；签到表、名单、公告和讨论中仍显示真实姓名。',
+              style: TextStyle(fontSize: 13, height: 1.5, color: h.sub),
+            ),
+            const SizedBox(height: 12),
+            MiuixTextField(
+              controller: _value,
+              label: '称呼（留空使用真名 ${me?.name ?? ''}）',
+              singleLine: true,
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              Text(_error!, style: TextStyle(fontSize: 13, color: h.badInk)),
+            ],
+            const SizedBox(height: 16),
+            HxButton(
+              '保存',
+              expand: true,
+              busy: _busy,
+              enabled: !_busy,
+              onTap: () => _save(_value.text.trim()),
+            ),
+            if (me?.displayName != null) ...[
+              const SizedBox(height: 8),
+              HxButton(
+                '恢复真名',
+                kind: HxButtonKind.quiet,
+                expand: true,
+                enabled: !_busy,
+                onTap: () => _save(''),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

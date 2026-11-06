@@ -15,6 +15,7 @@ import '../auth/guest.dart';
 import 'course_page.dart';
 import '../pins/pins_section.dart';
 import 'practice_card.dart';
+import '../../data/local_library.dart';
 
 /// 讲义里的链接：站内课程页、讲义页在 App 里打开，其余交给浏览器。
 void openHref(BuildContext context, String href) {
@@ -90,7 +91,8 @@ class LessonPage extends ConsumerWidget {
     );
 
     Future<void> toggle() async {
-      if (item == null || requireLogin(context, ref)) return;
+      if (item == null) return;
+      if (!isLocalSlug(slug) && requireLogin(context, ref)) return;
       HapticFeedback.lightImpact();
       try {
         await ref.read(apiProvider).setItemDone(slug, item.id, !done);
@@ -99,6 +101,13 @@ class LessonPage extends ConsumerWidget {
       } on ApiException catch (e) {
         if (context.mounted) showHxToast(context, e.message, error: true);
       }
+    }
+
+    /// 长按一段：登录后打开“钉一个问题”
+    void pinAt(PinAnchor a) {
+      if (slug.startsWith('local-') || requireLogin(context, ref)) return;
+      HapticFeedback.mediumImpact();
+      context.pushPage(NewPinPage(course: slug, page: page, anchor: a));
     }
 
     if (pkg == null) {
@@ -180,21 +189,46 @@ class LessonPage extends ConsumerWidget {
             ),
           ),
         if (body != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: body.when(
-              loading: () => const Skeleton(height: 400, radius: 12),
-              error: (e, _) => ErrorCard(
-                error: e,
-                onRetry: () =>
-                    ref.invalidate(lessonProvider('$slug/${pg!.id}')),
+          ...body.when(
+            loading: () => const [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Skeleton(height: 400, radius: 12),
               ),
-              // 第一行标题和页面标题重复
-              data: (src) => MarkdownView(
-                source: src.replaceFirst(RegExp(r'^\s*#\s+.*\n'), ''),
-                onLink: (href) => openHref(context, href),
+            ],
+            error: (e, _) => [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ErrorCard(
+                  error: e,
+                  onRetry: () =>
+                      ref.invalidate(lessonProvider('$slug/${pg!.id}')),
+                ),
               ),
-            ),
+            ],
+            // 正文一块一块放进页面列表（只构建看得到的部分）；第一行标题和页面标题重复
+            data: (src) =>
+                MarkdownView(
+                  source: src.replaceFirst(RegExp(r'^\s*#\s+.*\n'), ''),
+                  onLink: (href) => openHref(context, href),
+                  // 导入到本机的课只有自己能看到，不能钉问题
+                  pins: slug.startsWith('local-')
+                      ? null
+                      : PinLayer(
+                          pins:
+                              ref
+                                  .watch(pinsProvider('$slug/$page'))
+                                  .valueOrNull ??
+                              const [],
+                          onLongPress: (a) => pinAt(a),
+                          onOpen: (p) => context.pushPage(
+                            PinThreadPage(pinsKey: '$slug/$page', id: p.id),
+                          ),
+                        ),
+                ).blocks(
+                  context,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                ),
           ),
         if (item.videos.isNotEmpty ||
             item.links.isNotEmpty ||
@@ -215,31 +249,46 @@ class LessonPage extends ConsumerWidget {
           for (var i = 0; i < item.practice.length; i++)
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: PracticeCard(
-                no: i + 1,
-                q: item.practice[i],
-                solved:
-                    detail?.solved[item.id]?.contains(item.practice[i].id) ??
-                    false,
-                webUrl:
-                    '$kBaseUrl/courses/$slug/learn/$page#q-${item.practice[i].id}',
-                onSolved: () async {
-                  if (ref.read(isGuestProvider)) return;
-                  try {
-                    await ref
-                        .read(apiProvider)
-                        .solvePractice(slug, item.id, item.practice[i].id);
+              // 长按练手题也能钉问题（位置标记和网页一致：q:题号）
+              child: GestureDetector(
+                onLongPress: () => pinAt(
+                  PinAnchor(
+                    key: 'q:${item.practice[i].id}',
+                    label: '练手题 ${i + 1}',
+                    snippet: item.practice[i].prompt.length > 80
+                        ? item.practice[i].prompt.substring(0, 80)
+                        : item.practice[i].prompt,
+                  ),
+                ),
+                child: PracticeCard(
+                  no: i + 1,
+                  q: item.practice[i],
+                  solved:
+                      detail?.solved[item.id]?.contains(item.practice[i].id) ??
+                      false,
+                  webUrl:
+                      '$kBaseUrl/courses/$slug/learn/$page#q-${item.practice[i].id}',
+                  onWebClosed: () {
                     ref.invalidate(courseProvider(slug));
                     refreshLearning(ref);
-                  } on ApiException {
-                    // 记录失败不打扰做题
-                  }
-                },
+                  },
+                  onSolved: () async {
+                    if (!isLocalSlug(slug) && ref.read(isGuestProvider)) return;
+                    try {
+                      await ref
+                          .read(apiProvider)
+                          .solvePractice(slug, item.id, item.practice[i].id);
+                      ref.invalidate(courseProvider(slug));
+                      refreshLearning(ref);
+                    } on ApiException {
+                      // 记录失败不打扰做题
+                    }
+                  },
+                ),
               ),
             ),
         ],
-        if (!slug.startsWith('local-'))
-          PinsSection(course: slug, page: page),
+        if (!slug.startsWith('local-')) PinsSection(course: slug, page: page),
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: HxButton(

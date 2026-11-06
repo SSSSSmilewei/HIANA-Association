@@ -710,6 +710,7 @@ class Notice {
     required this.entries,
     required this.entryCount,
     required this.joined,
+    this.confirmed = false,
   });
   final String id;
   final String kind; // notice | competition
@@ -725,6 +726,7 @@ class Notice {
   final List<Entry> entries; // 报名名单；游客看不到（为空）
   final int entryCount; // 报名人数，游客也能看到
   final bool joined;
+  final bool confirmed; // 登录后点过“我已阅读”
 
   bool get isCompetition => kind == 'competition';
 
@@ -744,6 +746,7 @@ class Notice {
     entryCount:
         _int(j['entryCount']) ?? (j['entries'] as List? ?? const []).length,
     joined: j['joined'] as bool? ?? false,
+    confirmed: j['confirmed'] as bool? ?? false,
   );
 }
 
@@ -938,4 +941,44 @@ class Association {
       honors: _list(j['honors'], Honor.fromJson),
     );
   }
+}
+
+/* ---------- 新生任务 ---------- */
+
+/// 新生任务里提交的课程证书（现在只有 CS50x）。
+/// status：pending 等待管理员确认，approved 已通过，rejected 退回（[note] 是原因）
+class Certificate {
+  const Certificate({
+    required this.course,
+    required this.url,
+    required this.status,
+    this.note,
+    required this.submittedAt,
+    this.reviewedAt,
+  });
+  final String course;
+  final String url;
+  final String status;
+  final String? note;
+  final int submittedAt;
+  final int? reviewedAt;
+
+  bool get approved => status == 'approved';
+  bool get rejected => status == 'rejected';
+  bool get pending => status == 'pending';
+
+  String get statusLabel => switch (status) {
+    'approved' => '已通过确认',
+    'rejected' => '未通过确认',
+    _ => '已提交，等待管理员确认',
+  };
+
+  factory Certificate.fromJson(Map<String, dynamic> j) => Certificate(
+    course: j['course'] as String,
+    url: j['url'] as String? ?? '',
+    status: j['status'] as String? ?? 'pending',
+    note: j['note'] as String?,
+    submittedAt: _int(j['submittedAt']) ?? 0,
+    reviewedAt: _int(j['reviewedAt']),
+  );
 }

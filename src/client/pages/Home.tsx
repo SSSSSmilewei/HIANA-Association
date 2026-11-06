@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ITEM_KIND_LABEL } from "../../shared/light";
 import { BlockCards } from "./Blocks";
+import { StartCard } from "./Start";
 import { itemHref } from "../library";
 import { overview } from "../../shared/heatmap";
 import { api, clock, daysBetween, longDay, minutesText, mutate, useApi } from "../api";
@@ -43,12 +44,14 @@ function GuestHome() {
     <div className="page">
       <HomeHead today={today} week={cal.data?.week} />
 
+      <StartCard />
+
       <section className="card stack guest-intro" aria-labelledby="intro-h">
         <h2 id="intro-h" className="h2">
           海纳协会
         </h2>
         <div className="row wrap">
-          <Link to={loginHref("/", "register")} className="btn btn-primary">
+          <Link to={loginHref("/", "register")} className="btn btn-soft">
             用邀请码注册
           </Link>
           <Link to={loginHref("/")} className="btn btn-ghost">
@@ -126,6 +129,8 @@ function MemberHome({ campus }: { campus: boolean }) {
   return (
     <div className="page">
       <HomeHead today={today} week={cal.data?.week} />
+
+      <StartCard />
 
       <section className="hero" aria-label="今天">
         <Wall grid={grid} />

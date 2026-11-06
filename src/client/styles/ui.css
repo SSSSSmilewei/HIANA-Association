@@ -4552,3 +4552,137 @@ body.pin-mode .pin-board [data-anchor]:hover {
     display: none;
   }
 }
+
+/* ---------- 新生任务（首页大卡片 + /start） ---------- */
+
+.start-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  border-color: var(--line-strong);
+  background: linear-gradient(135deg, var(--tint), var(--surface) 70%);
+}
+.start-card .h2 {
+  margin: 0;
+}
+.start-done {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  color: inherit;
+  text-decoration: none;
+}
+.start-done .small {
+  flex: 1;
+  min-width: 0;
+}
+.start-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.start-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.start-step.is-now {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+.start-step.is-done .start-step-body {
+  opacity: 0.75;
+}
+.start-step-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.start-step-head .h3 {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+.start-num {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  background: var(--well);
+  color: var(--sub);
+}
+.start-step.is-now .start-num {
+  background: var(--cta);
+  color: var(--cta-ink);
+}
+.start-step.is-done .start-num {
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+}
+.start-step-body {
+  gap: 10px;
+  padding-left: 44px;
+}
+.start-step-body > .btn,
+.start-step-body > .more-link {
+  align-self: flex-start;
+}
+.start-reads {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.start-read {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--well);
+  color: inherit;
+  text-decoration: none;
+}
+.start-read > span:nth-child(2) {
+  flex: 1;
+}
+.start-check {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+}
+.start-check.is-done {
+  border-color: transparent;
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+}
+.cert-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 10px;
+}
+.cert-row {
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 899px) {
+  .start-step-body {
+    padding-left: 0;
+  }
+}

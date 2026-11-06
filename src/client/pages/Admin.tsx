@@ -109,6 +109,8 @@ export function AdminTodayPage() {
       )}
 
       <div className="stack" style={{ gap: 20 }}>
+        <CertReview />
+
         <section className="card card-flush" aria-labelledby="rec-h" style={{ padding: "8px 8px 4px" }}>
           <div className="section-head" style={{ padding: "12px 12px 8px" }}>
             <h2 id="rec-h" className="h3">
@@ -1063,6 +1065,106 @@ function OtherSettings({ s, onSaved }: { s: Record<string, string | null>; onSav
       <div>
         <button type="submit" className="btn btn-primary" disabled={busy}>
           {busy ? <Spinner /> : "保存"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+interface AdminCert {
+  course: string;
+  userId: string;
+  name: string;
+  studentNo: string | null;
+  url: string;
+  status: "pending" | "approved" | "rejected";
+  submittedAt: number;
+}
+
+/** 新生任务提交的 CS50x 证书：打开链接核对后通过或退回。没有待确认的证书时不显示。 */
+function CertReview() {
+  const toast = useToast();
+  const { data, reload } = useApi<AdminCert[]>("/api/admin/certificates");
+  const [busy, setBusy] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<AdminCert | null>(null);
+  const pending = data?.filter((c) => c.status === "pending") ?? [];
+  if (pending.length === 0) return null;
+
+  const review = async (c: AdminCert, status: "approved" | "rejected", note?: string) => {
+    setBusy(c.userId);
+    try {
+      await api(`/api/admin/certificates/${c.course}/${c.userId}`, { method: "PUT", body: { status, note } });
+      toast(status === "approved" ? `已确认${c.name}的证书` : `已退回${c.name}的证书`);
+      void reload();
+    } catch (e) {
+      toast((e as Error).message, "error");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <section className="card stack" aria-labelledby="cert-h" style={{ gap: 10 }}>
+      <div className="section-head">
+        <h2 id="cert-h" className="h3">
+          待确认的 CS50x 证书
+        </h2>
+        <span className="small sub num">{pending.length} 份</span>
+      </div>
+      <ul className="stack cert-list">
+        {pending.map((c) => (
+          <li key={c.userId} className="row wrap cert-row">
+            <span className="stack" style={{ gap: 0, flex: 1, minWidth: 0 }}>
+              <span style={{ fontWeight: 500 }}>{c.name}</span>
+              <span className="xsmall sub">
+                {c.studentNo && <span className="mono">{c.studentNo} · </span>}
+                {relativeTime(c.submittedAt)}提交
+              </span>
+            </span>
+            <a href={c.url} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">
+              <Icon name="external" size={16} />
+              打开证书
+            </a>
+            <button type="button" className="btn btn-primary btn-sm" disabled={busy === c.userId} onClick={() => void review(c, "approved")}>
+              通过
+            </button>
+            <button type="button" className="btn btn-quiet btn-sm" disabled={busy === c.userId} onClick={() => setRejecting(c)}>
+              退回
+            </button>
+          </li>
+        ))}
+      </ul>
+      {rejecting && (
+        <Dialog title={`退回${rejecting.name}的证书`} onClose={() => setRejecting(null)}>
+          <RejectBody onSubmit={(note) => void review(rejecting, "rejected", note)} />
+        </Dialog>
+      )}
+    </section>
+  );
+}
+
+function RejectBody({ onSubmit }: { onSubmit: (note: string) => void }) {
+  const close = useDialogClose();
+  const [note, setNote] = useState("证书链接无法打开，或证书信息与本人不符");
+  return (
+    <form
+      className="stack"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(note.trim());
+        close();
+      }}
+    >
+      <label className="field">
+        <span className="small">退回原因（学员可见）</span>
+        <input className="input" value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} />
+      </label>
+      <div className="dialog-actions">
+        <button type="button" className="btn btn-ghost" onClick={close}>
+          取消
+        </button>
+        <button type="submit" className="btn btn-danger">
+          退回
         </button>
       </div>
     </form>

@@ -121,19 +121,23 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                 child: PageView(
                   controller: _pager,
                   onPageChanged: (i) => setState(() => _index = i),
+                  // 四个标签页都保活：左右滑动时不销毁、不重建（重建会掉帧），
+                  // 手指还按着时页面被销毁也会让下拉刷新组件收到已释放的事件而报错
                   children: [
-                    const HomePage(),
-                    const CoursesPage(),
-                    guest
-                        ? const GuestPrompt(title: '签到', body: '需要先登录')
-                        : campus
-                        ? const CheckinPage()
-                        : const GuestPrompt(
-                            title: '签到',
-                            body: '校外账号不用签到',
-                            showLogin: false,
-                          ),
-                    const ProfilePage(),
+                    const _KeepAlive(child: HomePage()),
+                    const _KeepAlive(child: CoursesPage()),
+                    _KeepAlive(
+                      child: guest
+                          ? const GuestPrompt(title: '签到', body: '需要先登录')
+                          : campus
+                          ? const CheckinPage()
+                          : const GuestPrompt(
+                              title: '签到',
+                              body: '校外账号不用签到',
+                              showLogin: false,
+                            ),
+                    ),
+                    const _KeepAlive(child: ProfilePage()),
                   ],
                 ),
               ),
@@ -155,6 +159,26 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         ),
       ),
     );
+  }
+}
+
+class _KeepAlive extends StatefulWidget {
+  const _KeepAlive({required this.child});
+  final Widget child;
+
+  @override
+  State<_KeepAlive> createState() => _KeepAliveState();
+}
+
+class _KeepAliveState extends State<_KeepAlive>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }
 

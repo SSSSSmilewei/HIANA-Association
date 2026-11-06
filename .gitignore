@@ -9,3 +9,9 @@ app/build/
 app/.flutter-plugins*
 app/pubspec.lock
 .staging/
+# flutter create 在本地生成的平台工程（CI 里每次重新生成，不进仓库）
+app/android/
+app/ios/
+app/.metadata
+app/.idea/
+app/*.iml

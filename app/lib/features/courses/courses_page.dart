@@ -10,6 +10,8 @@ import '../../data/providers.dart';
 import '../../widgets/ui.dart';
 import 'block_page.dart';
 import 'course_page.dart';
+import 'import_page.dart';
+import '../../widgets/kit.dart';
 
 /// 课程目录：按分类浏览；有站内条目的课排最前。
 class CoursesPage extends ConsumerStatefulWidget {
@@ -162,6 +164,28 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
               ] else if (rest.isNotEmpty) ...[
                 SectionHead('${rest.length} 门'),
                 rows(rest),
+              ],
+              if (browsing) ...[
+                const SectionHead('导入到本机的课'),
+                RowGroup(
+                  children: [
+                    for (final c
+                        in ref.watch(localCoursesProvider).valueOrNull ??
+                            const <Map<String, dynamic>>[])
+                      ListRow(
+                        title: '${c['title']}',
+                        subtitle: '只在这台手机上',
+                        onTap: () => context.pushPage(
+                          CoursePage(slug: 'local-${c['slug']}'),
+                        ),
+                      ),
+                    ListRow(
+                      title: '导入课程包',
+                      subtitle: '粘贴 hiana-course@1 格式的 JSON',
+                      onTap: () => context.pushPage(const ImportCoursePage()),
+                    ),
+                  ],
+                ),
               ],
             ];
           },

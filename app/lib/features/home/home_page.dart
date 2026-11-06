@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/hiana_page.dart';
 import '../../app/home_shell.dart';
 import '../../app/page_transition.dart';
+import '../../app/palettes.dart';
 import '../../app/tokens.dart';
 import '../../core/heatmap.dart';
 import '../../data/api_client.dart';
@@ -12,13 +13,16 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/heat.dart';
 import '../../widgets/hx_icons.dart';
+import '../../widgets/markdown_view.dart';
 import '../../widgets/ui.dart';
 import '../auth/guest.dart';
 import '../checkin/attendance_phase.dart';
 import '../checkin/checkin_page.dart';
 import '../about/about_page.dart';
 import '../courses/course_page.dart';
+import '../notices/notice_gate.dart';
 import '../notices/notices_page.dart';
+import '../start/start_page.dart';
 
 /// 首页：问候和教学周、热力墙上的签到卡、每门在学课程的下一步、公告和比赛。
 /// 游客看到的是简化版：问候、登录注册入口、公告和比赛（不请求需要账号的接口）。
@@ -45,10 +49,14 @@ class HomePage extends ConsumerWidget {
     final today = cal?.today ?? att.valueOrNull?.today;
 
     return HianaPage(
-      title: '${greeting()}，${me?.name ?? ''}',
+      // 首页称呼：设过就用称呼，否则用真名（见“我的 → 首页称呼”）
+      title: '${greeting()}，${me?.displayName ?? me?.name ?? ''}',
+      overlays: const [NoticeGate()],
       onRefresh: () async {
         ref.invalidate(calendarProvider);
         ref.invalidate(noticesProvider);
+        ref.invalidate(certificatesProvider);
+        ref.invalidate(courseProvider('cs50x'));
         refreshLearning(ref);
         if (campus) {
           await ref
@@ -68,6 +76,7 @@ class HomePage extends ConsumerWidget {
               style: TextStyle(fontSize: 14, color: h.sub),
             ),
           ),
+        const StartCard(),
         // 热力墙 + 玻璃签到卡
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -200,6 +209,8 @@ class HomePage extends ConsumerWidget {
           padding: EdgeInsets.symmetric(horizontal: 12),
           child: EmptyCard(title: '海纳协会', action: LoginButtons()),
         ),
+        const SizedBox(height: 12),
+        const StartCard(),
         SectionHead(
           '协会介绍与学生成就',
           trailing: _LinkText(
@@ -286,7 +297,7 @@ class HomePage extends ConsumerWidget {
                               ),
                               if (plain[i].body.isNotEmpty)
                                 Text(
-                                  plain[i].body,
+                                  plainText(plain[i].body),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 13, color: h.sub),
@@ -603,7 +614,7 @@ class CheckCircle extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: done ? h.accent : const Color(0x00000000),
+              color: done ? h.cta : const Color(0x00000000),
               border: done
                   ? null
                   : Border.all(
@@ -618,11 +629,11 @@ class CheckCircle extends StatelessWidget {
               child: AnimatedOpacity(
                 opacity: done ? 1 : 0,
                 duration: HxMotion.fast,
-                child: const Center(
+                child: Center(
                   child: HxIconView(
                     HxIcon.check,
                     size: 20,
-                    color: Color(0xFFFFFFFF),
+                    color: h.ctaInk,
                     stroke: 2.4,
                   ),
                 ),
@@ -680,7 +691,7 @@ class _CompetitionTeaser extends StatelessWidget {
                             width: 21,
                             height: 21,
                             decoration: BoxDecoration(
-                              color: Hx.nightHeat[(j * 13 + j * j) % 5],
+                              color: h.nightHeat[(j * 13 + j * j) % 5],
                               borderRadius: BorderRadius.circular(6),
                             ),
                           ),
@@ -692,10 +703,10 @@ class _CompetitionTeaser extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const HxTag(
+                  HxTag(
                     '比赛',
-                    bg: Color(0x2EFFAA6B),
-                    fg: Color(0xFFFFC79C),
+                    bg: fade(h.nightAccent, 0.18),
+                    fg: h.nightAccent,
                     bold: true,
                   ),
                   const SizedBox(height: 10),
@@ -703,10 +714,10 @@ class _CompetitionTeaser extends StatelessWidget {
                     width: 220,
                     child: Text(
                       n.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 19,
                         fontWeight: FontWeight.w700,
-                        color: Hx.nightInk,
+                        color: h.nightInk,
                       ),
                     ),
                   ),
@@ -714,12 +725,12 @@ class _CompetitionTeaser extends StatelessWidget {
                     SizedBox(
                       width: 240,
                       child: Text(
-                        n.body,
+                        plainText(n.body),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: Hx.nightSub,
+                          color: h.nightSub,
                         ),
                       ),
                     ),
@@ -730,11 +741,11 @@ class _CompetitionTeaser extends StatelessWidget {
                       if (days != null) ...[
                         Text(
                           '$days',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 36,
                             height: 1,
                             fontWeight: FontWeight.w700,
-                            color: Hx.nightAccent,
+                            color: h.nightAccent,
                             fontFeatures: kTabular,
                           ),
                         ),
@@ -745,26 +756,26 @@ class _CompetitionTeaser extends StatelessWidget {
                               : n.entryCount > 0
                               ? ' · ${n.entryCount} 人登记'
                               : ''}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Hx.nightSub,
+                            color: h.nightSub,
                           ),
                         ),
                       ] else
                         Text(
                           n.joined ? '你已登记' : '长期有效',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Hx.nightSub,
+                            color: h.nightSub,
                           ),
                         ),
                       const Spacer(),
                       if (more > 0)
                         Text(
                           '还有 $more 场',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Hx.nightSub,
+                            color: h.nightSub,
                           ),
                         ),
                     ],

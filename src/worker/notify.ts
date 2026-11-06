@@ -12,7 +12,7 @@ import type { Env } from "./env";
  */
 const THROTTLE_MS = 2 * 60_000;
 
-export type NotifyKind = "pin" | "followup" | "submission" | "application" | "test";
+export type NotifyKind = "pin" | "followup" | "submission" | "application" | "certificate" | "test";
 
 export interface NotifyItem {
   kind: NotifyKind;

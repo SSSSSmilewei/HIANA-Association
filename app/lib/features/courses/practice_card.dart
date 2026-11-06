@@ -1,15 +1,18 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_miuix/miuix.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/page_transition.dart';
 import '../../app/tokens.dart';
+import '../../data/api_client.dart';
 import '../../data/models.dart';
 import '../../widgets/markdown_view.dart';
+import '../../widgets/hx_icons.dart';
 import '../../widgets/ui.dart';
+import '../web/web_page.dart';
 import 'lesson_page.dart';
 
-/// 一道练手题。选择、填空在 App 里判；代码题（要跑 Python / SQL）跳到网页做。
+/// 一道练手题。选择、填空在 App 里判；代码题（要跑 Python / SQL）在内嵌网页里做。
 class PracticeCard extends StatefulWidget {
   const PracticeCard({
     super.key,
@@ -18,11 +21,15 @@ class PracticeCard extends StatefulWidget {
     required this.solved,
     required this.webUrl,
     required this.onSolved,
+    this.onWebClosed,
   });
   final int no;
   final Practice q;
   final bool solved;
   final String webUrl;
+
+  /// 从内嵌网页回来时调用（网页里做对的代码题已经记上了，刷新一下进度）
+  final VoidCallback? onWebClosed;
   final VoidCallback onSolved;
 
   @override
@@ -145,18 +152,30 @@ class _PracticeCardState extends State<PracticeCard> {
             HxButton('检查', expand: true, onTap: _check),
           ] else ...[
             Text(
-              '代码题要在浏览器里运行测试。',
-              style: TextStyle(fontSize: 14, color: h.sub),
+              '代码题在内嵌的网页中运行测试（Python、SQL、JavaScript），做对后自动记录。',
+              style: TextStyle(fontSize: 14, height: 1.5, color: h.sub),
             ),
             const SizedBox(height: 10),
             HxButton(
-              '在网页里做',
+              '打开代码编辑器',
+              icon: HxIcon.code,
               kind: HxButtonKind.ghost,
               expand: true,
-              onTap: () => launchUrl(
-                Uri.parse(widget.webUrl),
-                mode: LaunchMode.externalApplication,
-              ),
+              onTap: () async {
+                await Navigator.of(context).push(
+                  MiuixPageRoute<void>(
+                    builder: (_) => WebPage(
+                      title: '练手题 ${widget.no}',
+                      path: widget.webUrl.startsWith(kBaseUrl)
+                          ? widget.webUrl.substring(kBaseUrl.length)
+                          : widget.webUrl,
+                      // 只在这一页做题；点网页里的导航就回到 App
+                      stayPrefix: Uri.parse(widget.webUrl).path,
+                    ),
+                  ),
+                );
+                widget.onWebClosed?.call();
+              },
             ),
           ],
           if (_ok != null) ...[
@@ -195,7 +214,7 @@ class _PracticeCardState extends State<PracticeCard> {
                               style: TextStyle(
                                 fontSize: 14,
                                 color: h.ink,
-                                fontFamily: 'monospace',
+                                fontFamily: h.mono,
                               ),
                             ),
                           )
@@ -261,14 +280,14 @@ class _Option extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: on ? edge : null,
-                border: Border.all(color: on ? edge : h.sub),
+                color: on ? (wrong ? edge : h.cta) : null,
+                border: Border.all(color: on ? (wrong ? edge : h.cta) : h.sub),
               ),
               child: Text(
                 mark,
                 style: TextStyle(
                   fontSize: 12,
-                  color: on ? const Color(0xFFFFFFFF) : h.sub,
+                  color: on ? (wrong ? const Color(0xFFFFFFFF) : h.ctaInk) : h.sub,
                 ),
               ),
             ),
