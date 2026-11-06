@@ -19,6 +19,7 @@ import '../auth/guest.dart';
 import '../admin/admin_home.dart';
 import '../auth/set_password_page.dart';
 import '../start/start_page.dart';
+import 'appearance_page.dart';
 
 /// 我的：一年的热力图（按来源开关、点格子看当天）、来源和绑定、外观、账号。
 /// 游客只有登录入口、外观和检查更新。
@@ -37,12 +38,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   bool _editName = false; // “首页称呼”面板
   AppVersion? _update; // 非空时弹出升级窗口
   String _current = '';
-
-  static const _modes = [
-    (MiuixColorSchemeMode.light, '浅色'),
-    (MiuixColorSchemeMode.dark, '深色'),
-    (MiuixColorSchemeMode.system, '跟随系统'),
-  ];
 
   Color _dot(Hx h, SourceSeries s) => switch (s.source) {
     'site:attendance' => h.heat[2],
@@ -79,7 +74,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final guest = ref.watch(isGuestProvider);
     // 热力图要登录；游客不去请求
     final heat = guest ? null : ref.watch(heatmapProvider);
-    final mode = ref.watch(themeModeProvider);
 
     return HianaPage(
       title: '我的',
@@ -281,12 +275,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         const SectionHead('外观'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: HxSeg<MiuixColorSchemeMode>(
-            options: _modes,
-            value: _modes.any((m) => m.$1 == mode)
-                ? mode
-                : MiuixColorSchemeMode.system,
-            onChanged: (m) => ref.read(themeModeProvider.notifier).set(m),
+          child: HxCard(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: _Row(
+              icon: HxIcon.sun,
+              title: '配色、字体与字号',
+              onTap: () => context.pushPage(const AppearancePage()),
+            ),
           ),
         ),
         const SectionHead('账号'),

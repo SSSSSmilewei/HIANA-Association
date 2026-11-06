@@ -10,25 +10,53 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/providers.dart';
 import '../features/auth/auth_gate.dart';
+import '../data/look.dart';
+import 'palettes.dart';
 import 'tokens.dart';
 
-/// miuix 自带的蓝色换成协会的橙色；背景、卡片和网页端同一套。
-final _lightColors = lightColorScheme().copy(
-  primary: Hx.light.cta,
-  onPrimary: const Color(0xFFFFFFFF),
-  background: Hx.light.bg,
-  onBackground: Hx.light.ink,
-  surface: Hx.light.surface,
-  onSurface: Hx.light.ink,
+/// miuix 组件（开关、输入框、对话框……）的颜色跟着当前配色主题走
+MiuixColors _miuixColors(Hx h, MiuixColors base) => base.copy(
+  primary: h.cta,
+  onPrimary: h.ctaInk,
+  primaryVariant: h.cta,
+  onPrimaryVariant: h.ctaInk,
+  primaryContainer: h.cta,
+  onPrimaryContainer: h.ctaInk,
+  background: h.bg,
+  onBackground: h.ink,
+  surface: h.surface,
+  onSurface: h.ink,
+  surfaceContainer: h.surface,
+  onSurfaceContainer: h.ink,
+  onSurfaceVariantSummary: h.sub,
+  secondaryContainer: h.well,
+  onSecondaryContainer: h.sub,
+  tertiaryContainer: h.tint,
+  dividerLine: h.line,
 );
-final _darkColors = darkColorScheme().copy(
-  primary: const Color(0xFFE2601F),
-  onPrimary: const Color(0xFFFFFFFF),
-  background: Hx.darkTheme.bg,
-  onBackground: Hx.darkTheme.ink,
-  surface: Hx.darkTheme.surface,
-  onSurface: Hx.darkTheme.ink,
-);
+
+/// 导入的正文字体用到 miuix 的全部文本样式上
+MiuixTextStyles _textStyles(String? family) {
+  final d = defaultTextStyles();
+  if (family == null) return d;
+  TextStyle f(TextStyle s) => s.copyWith(fontFamily: family);
+  return d.copy(
+    main: f(d.main),
+    paragraph: f(d.paragraph),
+    body1: f(d.body1),
+    body2: f(d.body2),
+    button: f(d.button),
+    footnote1: f(d.footnote1),
+    footnote2: f(d.footnote2),
+    headline1: f(d.headline1),
+    headline2: f(d.headline2),
+    subtitle: f(d.subtitle),
+    title1: f(d.title1),
+    title2: f(d.title2),
+    title3: f(d.title3),
+    title4: f(d.title4),
+  );
+}
 
 class HianaApp extends ConsumerWidget {
   const HianaApp({super.key});
@@ -36,42 +64,71 @@ class HianaApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = ref.watch(themeModeProvider);
-    return MiuixThemeController(
-      colorSchemeMode: mode,
-      lightColors: _lightColors,
-      darkColors: _darkColors,
-      child: Builder(
-        builder: (context) {
-          final theme = MiuixTheme.of(context);
-          return MaterialApp(
-            title: '海纳协会',
-            debugShowCheckedModeBanner: false,
-            // 只为了让 flutter_miuix 内部用到的文本编辑基建取到颜色；关掉水波纹，避免出现 Material 观感
-            theme: ThemeData(
-              useMaterial3: true,
-              brightness: theme.brightness,
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: theme.colors.primary,
+    final look = ref.watch(lookProvider);
+    final mono = look.mono?.family ?? 'monospace';
+    final sans = look.sans?.family;
+    final light = Hx.forPalette(look.palette, dark: false).withMono(mono);
+    final dark = Hx.forPalette(look.palette, dark: true).withMono(mono);
+    final lightColors = _miuixColors(light, lightColorScheme());
+    var darkColors = _miuixColors(dark, darkColorScheme());
+    // 海纳橙深色模式的主色比按钮色亮一些（和原来一致）
+    if (look.palette.id == kHianaPaletteId) {
+      darkColors = darkColors.copy(primary: const Color(0xFFE2601F));
+    }
+    return HxScope(
+      light: light,
+      dark: dark,
+      child: MiuixThemeController(
+        colorSchemeMode: mode,
+        lightColors: lightColors,
+        darkColors: darkColors,
+        textStyles: _textStyles(sans),
+        child: Builder(
+          builder: (context) {
+            final theme = MiuixTheme.of(context);
+            return MaterialApp(
+              title: '海纳协会',
+              debugShowCheckedModeBanner: false,
+              // 只为了让 flutter_miuix 内部用到的文本编辑基建取到颜色；关掉水波纹，避免出现 Material 观感
+              theme: ThemeData(
+                useMaterial3: true,
                 brightness: theme.brightness,
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: theme.colors.primary,
+                  brightness: theme.brightness,
+                ),
+                splashFactory: NoSplash.splashFactory,
+                fontFamily: sans,
+                scaffoldBackgroundColor: theme.colors.background,
               ),
-              splashFactory: NoSplash.splashFactory,
-              scaffoldBackgroundColor: theme.colors.background,
-            ),
-            locale: const Locale('zh', 'CN'),
-            supportedLocales: const [Locale('zh', 'CN')],
-            localizationsDelegates: GlobalMaterialLocalizations.delegates,
-            // 页面里直接用 Text 时的默认样式（没有 Material 的 Scaffold 提供它）
-            builder: (context, child) => DefaultTextStyle(
-              style: TextStyle(
-                color: Hx.of(context).ink,
-                fontSize: 15,
-                height: 1.45,
-              ),
-              child: child ?? const SizedBox.shrink(),
-            ),
-            home: const AuthGate(),
-          );
-        },
+              locale: const Locale('zh', 'CN'),
+              supportedLocales: const [Locale('zh', 'CN')],
+              localizationsDelegates: GlobalMaterialLocalizations.delegates,
+              // 页面里直接用 Text 时的默认样式（没有 Material 的 Scaffold 提供它）
+              // 字号：在系统字号的基础上再乘外观里选的倍数
+              builder: (context, child) {
+                final mq = MediaQuery.of(context);
+                return MediaQuery(
+                  data: mq.copyWith(
+                    textScaler: TextScaler.linear(
+                      mq.textScaler.scale(14) / 14 * look.textScale,
+                    ),
+                  ),
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                      color: Hx.of(context).ink,
+                      fontSize: 15,
+                      height: 1.45,
+                      fontFamily: sans,
+                    ),
+                    child: child ?? const SizedBox.shrink(),
+                  ),
+                );
+              },
+              home: const AuthGate(),
+            );
+          },
+        ),
       ),
     );
   }

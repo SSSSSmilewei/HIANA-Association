@@ -512,7 +512,7 @@ class _CodesDialog extends StatelessWidget {
                   height: 1.6,
                   fontWeight: FontWeight.w600,
                   color: h.ink,
-                  fontFamily: 'monospace',
+                  fontFamily: h.mono,
                 ),
               ),
             ),

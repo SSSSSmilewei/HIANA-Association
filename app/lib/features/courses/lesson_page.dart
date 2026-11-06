@@ -189,35 +189,46 @@ class LessonPage extends ConsumerWidget {
             ),
           ),
         if (body != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: body.when(
-              loading: () => const Skeleton(height: 400, radius: 12),
-              error: (e, _) => ErrorCard(
-                error: e,
-                onRetry: () =>
-                    ref.invalidate(lessonProvider('$slug/${pg!.id}')),
+          ...body.when(
+            loading: () => const [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Skeleton(height: 400, radius: 12),
               ),
-              // 第一行标题和页面标题重复
-              data: (src) => MarkdownView(
-                source: src.replaceFirst(RegExp(r'^\s*#\s+.*\n'), ''),
-                onLink: (href) => openHref(context, href),
-                // 导入到本机的课只有自己能看到，不能钉问题
-                pins: slug.startsWith('local-')
-                    ? null
-                    : PinLayer(
-                        pins:
-                            ref
-                                .watch(pinsProvider('$slug/$page'))
-                                .valueOrNull ??
-                            const [],
-                        onLongPress: (a) => pinAt(a),
-                        onOpen: (p) => context.pushPage(
-                          PinThreadPage(pinsKey: '$slug/$page', id: p.id),
+            ],
+            error: (e, _) => [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ErrorCard(
+                  error: e,
+                  onRetry: () =>
+                      ref.invalidate(lessonProvider('$slug/${pg!.id}')),
+                ),
+              ),
+            ],
+            // 正文一块一块放进页面列表（只构建看得到的部分）；第一行标题和页面标题重复
+            data: (src) =>
+                MarkdownView(
+                  source: src.replaceFirst(RegExp(r'^\s*#\s+.*\n'), ''),
+                  onLink: (href) => openHref(context, href),
+                  // 导入到本机的课只有自己能看到，不能钉问题
+                  pins: slug.startsWith('local-')
+                      ? null
+                      : PinLayer(
+                          pins:
+                              ref
+                                  .watch(pinsProvider('$slug/$page'))
+                                  .valueOrNull ??
+                              const [],
+                          onLongPress: (a) => pinAt(a),
+                          onOpen: (p) => context.pushPage(
+                            PinThreadPage(pinsKey: '$slug/$page', id: p.id),
+                          ),
                         ),
-                      ),
-              ),
-            ),
+                ).blocks(
+                  context,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                ),
           ),
         if (item.videos.isNotEmpty ||
             item.links.isNotEmpty ||

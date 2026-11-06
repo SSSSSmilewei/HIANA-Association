@@ -249,7 +249,14 @@ class AuthImage extends ConsumerWidget {
             }
             final bytes = snap.data;
             if (bytes == null) return const SizedBox.shrink();
-            return Image.memory(bytes, fit: fit, gaplessPlayback: true);
+            // 缩略图只按显示尺寸解码（签到照片原图很大）
+            final dpr = MediaQuery.devicePixelRatioOf(context);
+            return Image.memory(
+              bytes,
+              fit: fit,
+              gaplessPlayback: true,
+              cacheWidth: width == null ? null : (width! * dpr).round(),
+            );
           },
         ),
       ),

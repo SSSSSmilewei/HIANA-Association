@@ -158,33 +158,33 @@ class AboutPage extends ConsumerWidget {
                             : x.rank == '国二'
                             ? '二'
                             : '三'}等奖',
-                        bg: h.accent,
-                        fg: const Color(0xFFFFFFFF),
+                        bg: h.cta,
+                        fg: h.ctaInk,
                         bold: true,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         x.contest,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFFFFFFFF),
+                          color: h.nightInk,
                         ),
                       ),
                       if (x.detail != null)
                         Text(
                           x.detail!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Color(0xCCFFFFFF),
+                            color: h.nightSub,
                           ),
                         ),
                       const SizedBox(height: 8),
                       Text(
                         '${x.people.join('、')}${x.team ? '（团队成员）' : ''}${x.date != null ? ' · ${x.date}' : ''}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFFFFFFFF),
+                          color: h.nightInk,
                         ),
                       ),
                     ],

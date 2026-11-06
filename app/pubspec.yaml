@@ -26,9 +26,12 @@ dependencies:
   path_provider: ^2.1.5 # 本地升级：安装包下到缓存目录
   open_filex: ^4.7.0 # 本地升级：把下好的安装包交给系统安装器
   webview_flutter: ^4.13.0 # App 内嵌网页：代码题运行、协会介绍动画、签到表（带上 App 的登录状态）
+  file_picker: ^10.3.0 # 外观：从文件导入配色和字体
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test: # 掉帧检查：integration_test/scroll_perf_test.dart
     sdk: flutter
   flutter_lints: ^6.0.0
 

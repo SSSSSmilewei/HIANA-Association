@@ -214,7 +214,7 @@ class _PracticeCardState extends State<PracticeCard> {
                               style: TextStyle(
                                 fontSize: 14,
                                 color: h.ink,
-                                fontFamily: 'monospace',
+                                fontFamily: h.mono,
                               ),
                             ),
                           )
@@ -280,14 +280,14 @@ class _Option extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: on ? edge : null,
-                border: Border.all(color: on ? edge : h.sub),
+                color: on ? (wrong ? edge : h.cta) : null,
+                border: Border.all(color: on ? (wrong ? edge : h.cta) : h.sub),
               ),
               child: Text(
                 mark,
                 style: TextStyle(
                   fontSize: 12,
-                  color: on ? const Color(0xFFFFFFFF) : h.sub,
+                  color: on ? (wrong ? const Color(0xFFFFFFFF) : h.ctaInk) : h.sub,
                 ),
               ),
             ),

@@ -8,7 +8,11 @@ import '../data/pins.dart';
 /// 讲义里一个能钉问题的内容块（和网页 components/Pins.tsx 的 tagAnchors 用同一套规则）：
 /// 小标题用它的锚点 id，正文段落是“小标题/第几段”，列表按每一条算。
 class PinAnchor {
-  const PinAnchor({required this.key, required this.label, required this.snippet});
+  const PinAnchor({
+    required this.key,
+    required this.label,
+    required this.snippet,
+  });
   final String key;
   final String label;
 
@@ -18,7 +22,11 @@ class PinAnchor {
 
 /// 讲义上的蓝色钉子：长按一段钉问题，已有的钉子在段落右侧显示蓝点。
 class PinLayer {
-  const PinLayer({required this.pins, required this.onLongPress, required this.onOpen});
+  const PinLayer({
+    required this.pins,
+    required this.onLongPress,
+    required this.onOpen,
+  });
   final List<Pin> pins;
   final void Function(PinAnchor anchor) onLongPress;
   final void Function(Pin pin) onOpen;
@@ -80,6 +88,7 @@ class NoticeBody extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 m[2]!,
+                cacheWidth: _screenPx(),
                 fit: BoxFit.contain,
                 semanticLabel: m[1],
                 errorBuilder: (_, _, _) => Text(
@@ -100,6 +109,12 @@ class NoticeBody extends StatelessWidget {
       children: parts,
     );
   }
+}
+
+/// 图片按屏幕宽度解码：原图常有两三千像素宽，整张解码既占内存又让滑动卡顿
+int _screenPx() {
+  final views = WidgetsBinding.instance.platformDispatcher.views;
+  return views.isEmpty ? 1080 : views.first.physicalSize.width.round();
 }
 
 String _norm(String s) => s.replaceAll(RegExp(r'\s+'), ' ').trim();
@@ -142,26 +157,42 @@ class MarkdownView extends StatelessWidget {
         );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final doc = md.Document(
+  /// 解析结果按原文缓存：讲义页每次重建（钉子加载完、标记完成）都不用重新解析整篇
+  static final _parsed = <String, List<md.Node>>{};
+
+  static List<md.Node> _parse(String source) {
+    final hit = _parsed.remove(source);
+    if (hit != null) return _parsed[source] = hit; // 移到最近使用
+    final nodes = md.Document(
       extensionSet: md.ExtensionSet.gitHubFlavored,
       encodeHtml: false,
-    );
-    final nodes = doc.parseLines(_prepare(source).split('\n'));
+    ).parseLines(_prepare(source).split('\n'));
+    _parsed[source] = nodes;
+    if (_parsed.length > 12) _parsed.remove(_parsed.keys.first);
+    return nodes;
+  }
+
+  /// 一块一块的内容，给长讲义直接放进页面的列表里：列表只构建屏幕上看得到的几块，
+  /// 打开长讲义和滑动都不用一次排版整篇（整篇放进一个 Column 是讲义页掉帧的主要原因）。
+  /// [padding] 包在每一块外面。
+  List<Widget> blocks(
+    BuildContext context, {
+    EdgeInsets padding = EdgeInsets.zero,
+  }) {
+    final nodes = _parse(source);
     final r = _Renderer(Hx.of(context), onLink);
     final layer = pins;
-    if (layer == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: r.blocks(nodes),
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: _pinnable(context, r, nodes, layer),
-    );
+    final list = layer == null
+        ? r.blocks(nodes)
+        : _pinnable(context, r, nodes, layer);
+    return [for (final w in list) Padding(padding: padding, child: w)];
   }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: blocks(context),
+  );
 
   /// 按网页的规则给顶层内容块编位置，每块包一层长按和钉子标记
   List<Widget> _pinnable(
@@ -182,7 +213,9 @@ class MarkdownView extends StatelessWidget {
       return PinAnchor(
         key: '$heading/$n',
         label: '$headingText 第 $n 段',
-        snippet: _norm(text).length > 80 ? _norm(text).substring(0, 80) : _norm(text),
+        snippet: _norm(text).length > 80
+            ? _norm(text).substring(0, 80)
+            : _norm(text),
       );
     }
 
@@ -197,7 +230,9 @@ class MarkdownView extends StatelessWidget {
         if (int.parse(node.tag.substring(1)) <= 4) {
           heading = id;
           final t = _norm(text);
-          headingText = t.isEmpty ? '小标题' : (t.length > 20 ? t.substring(0, 20) : t);
+          headingText = t.isEmpty
+              ? '小标题'
+              : (t.length > 20 ? t.substring(0, 20) : t);
           n = 0;
           if (w != null) {
             blocks.add((PinAnchor(key: id, label: headingText, snippet: t), w));
@@ -241,7 +276,8 @@ class MarkdownView extends StatelessWidget {
       final h24 = head.length > 24 ? head.substring(0, 24) : head;
       if (at >= 0 && h24.isNotEmpty) {
         final t = blocks[at].$1.snippet;
-        if (!t.startsWith(h24.length > 16 ? h24.substring(0, 16) : h24)) at = -1;
+        if (!t.startsWith(h24.length > 16 ? h24.substring(0, 16) : h24))
+          at = -1;
       }
       if (at < 0 && h24.isNotEmpty) {
         at = blocks.indexWhere((b) => b.$1.snippet.contains(h24));
@@ -270,7 +306,7 @@ class _Renderer {
   final void Function(String) onLink;
 
   TextStyle get _body => TextStyle(fontSize: 15.5, height: 1.75, color: h.ink);
-  static const _mono = ['Sarasa Mono SC', 'monospace'];
+  static const _mono = ['Sarasa Mono SC', 'monospace']; // 导入的代码字体缺字时的后备
 
   List<Widget> blocks(List<md.Node> nodes, {int depth = 0}) {
     final out = <Widget>[];
@@ -348,7 +384,7 @@ class _Renderer {
                   fontSize: 13,
                   height: 1.55,
                   color: h.ink,
-                  fontFamily: 'monospace',
+                  fontFamily: h.mono,
                   fontFamilyFallback: _mono,
                 ),
               ),
@@ -428,6 +464,7 @@ class _Renderer {
       borderRadius: BorderRadius.circular(8),
       child: Image.network(
         src,
+        cacheWidth: _screenPx(),
         fit: BoxFit.contain,
         errorBuilder: (_, _, _) => Text(
           '[图片：${e.attributes['alt'] ?? ''}]',
@@ -596,7 +633,7 @@ class _Renderer {
             TextSpan(
               text: _unescape(n.textContent),
               style: style.copyWith(
-                fontFamily: 'monospace',
+                fontFamily: h.mono,
                 fontFamilyFallback: _mono,
                 fontSize: (style.fontSize ?? 15) * 0.9,
                 backgroundColor: h.well,

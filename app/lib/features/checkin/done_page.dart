@@ -82,7 +82,7 @@ class _DonePageState extends ConsumerState<DonePage> with SingleTickerProviderSt
                             shape: BoxShape.circle,
                             boxShadow: [BoxShadow(color: h.ctaShadow, blurRadius: 40, offset: const Offset(0, 18))],
                           ),
-                          child: CustomPaint(painter: _CheckPainter(check)),
+                          child: CustomPaint(painter: _CheckPainter(check, h.ctaInk)),
                         ),
                       ),
                     ),
@@ -187,8 +187,9 @@ class _BadgePainter extends CustomPainter {
 }
 
 class _CheckPainter extends CustomPainter {
-  _CheckPainter(this.t);
+  _CheckPainter(this.t, this.color);
   final double t;
+  final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -214,10 +215,10 @@ class _CheckPainter extends CustomPainter {
         ..strokeWidth = 5
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round
-        ..color = const Color(0xFFFFFFFF),
+        ..color = color,
     );
   }
 
   @override
-  bool shouldRepaint(_CheckPainter old) => old.t != t;
+  bool shouldRepaint(_CheckPainter old) => old.t != t || old.color != color;
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/hiana_page.dart';
 import '../../app/home_shell.dart';
 import '../../app/page_transition.dart';
+import '../../app/palettes.dart';
 import '../../app/tokens.dart';
 import '../../core/heatmap.dart';
 import '../../data/api_client.dart';
@@ -613,7 +614,7 @@ class CheckCircle extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: done ? h.accent : const Color(0x00000000),
+              color: done ? h.cta : const Color(0x00000000),
               border: done
                   ? null
                   : Border.all(
@@ -628,11 +629,11 @@ class CheckCircle extends StatelessWidget {
               child: AnimatedOpacity(
                 opacity: done ? 1 : 0,
                 duration: HxMotion.fast,
-                child: const Center(
+                child: Center(
                   child: HxIconView(
                     HxIcon.check,
                     size: 20,
-                    color: Color(0xFFFFFFFF),
+                    color: h.ctaInk,
                     stroke: 2.4,
                   ),
                 ),
@@ -690,7 +691,7 @@ class _CompetitionTeaser extends StatelessWidget {
                             width: 21,
                             height: 21,
                             decoration: BoxDecoration(
-                              color: Hx.nightHeat[(j * 13 + j * j) % 5],
+                              color: h.nightHeat[(j * 13 + j * j) % 5],
                               borderRadius: BorderRadius.circular(6),
                             ),
                           ),
@@ -702,10 +703,10 @@ class _CompetitionTeaser extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const HxTag(
+                  HxTag(
                     '比赛',
-                    bg: Color(0x2EFFAA6B),
-                    fg: Color(0xFFFFC79C),
+                    bg: fade(h.nightAccent, 0.18),
+                    fg: h.nightAccent,
                     bold: true,
                   ),
                   const SizedBox(height: 10),
@@ -713,10 +714,10 @@ class _CompetitionTeaser extends StatelessWidget {
                     width: 220,
                     child: Text(
                       n.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 19,
                         fontWeight: FontWeight.w700,
-                        color: Hx.nightInk,
+                        color: h.nightInk,
                       ),
                     ),
                   ),
@@ -727,9 +728,9 @@ class _CompetitionTeaser extends StatelessWidget {
                         plainText(n.body),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: Hx.nightSub,
+                          color: h.nightSub,
                         ),
                       ),
                     ),
@@ -740,11 +741,11 @@ class _CompetitionTeaser extends StatelessWidget {
                       if (days != null) ...[
                         Text(
                           '$days',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 36,
                             height: 1,
                             fontWeight: FontWeight.w700,
-                            color: Hx.nightAccent,
+                            color: h.nightAccent,
                             fontFeatures: kTabular,
                           ),
                         ),
@@ -755,26 +756,26 @@ class _CompetitionTeaser extends StatelessWidget {
                               : n.entryCount > 0
                               ? ' · ${n.entryCount} 人登记'
                               : ''}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Hx.nightSub,
+                            color: h.nightSub,
                           ),
                         ),
                       ] else
                         Text(
                           n.joined ? '你已登记' : '长期有效',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Hx.nightSub,
+                            color: h.nightSub,
                           ),
                         ),
                       const Spacer(),
                       if (more > 0)
                         Text(
                           '还有 $more 场',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Hx.nightSub,
+                            color: h.nightSub,
                           ),
                         ),
                     ],

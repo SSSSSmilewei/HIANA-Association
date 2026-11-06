@@ -175,7 +175,7 @@ class HxButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final h = Hx.of(context);
     final (Color bg, Color fg, Border? border) = switch (kind) {
-      HxButtonKind.primary => (h.cta, const Color(0xFFFFFFFF), null),
+      HxButtonKind.primary => (h.cta, h.ctaInk, null),
       HxButtonKind.soft => (h.tint, h.accentText, null),
       HxButtonKind.ghost => (h.surface, h.ink, Border.all(color: h.line)),
       HxButtonKind.quiet => (
@@ -335,10 +335,11 @@ class LiveDot extends StatefulWidget {
 }
 
 class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
+  // 只脉动三次就停：它常放在玻璃标签栏里，一直动会让下面的模糊每帧重算，耗电也掉帧
   late final _c = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 2400),
-  )..repeat();
+  )..repeat(count: 3);
 
   @override
   void dispose() {
@@ -349,26 +350,28 @@ class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final reduce = MediaQuery.disableAnimationsOf(context);
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (context, _) {
-        final t = reduce ? 0.0 : _c.value;
-        final ring = t < 0.5 ? t * 2 : 0.0;
-        return Container(
-          width: widget.size,
-          height: widget.size,
-          decoration: BoxDecoration(
-            color: widget.color,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: widget.color.withValues(alpha: 0.45 * (1 - ring)),
-                spreadRadius: 6 * ring,
-              ),
-            ],
-          ),
-        );
-      },
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) {
+          final t = reduce ? 0.0 : _c.value;
+          final ring = t < 0.5 ? t * 2 : 0.0;
+          return Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              color: widget.color,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: widget.color.withValues(alpha: 0.45 * (1 - ring)),
+                  spreadRadius: 6 * ring,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -592,17 +595,20 @@ class _SkeletonState extends State<Skeleton>
   @override
   Widget build(BuildContext context) {
     final h = Hx.of(context);
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (context, _) => Container(
-        height: widget.height,
-        width: widget.width,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(widget.radius),
-          gradient: LinearGradient(
-            begin: Alignment(-1 + 3 * _c.value - 1, 0),
-            end: Alignment(1 + 3 * _c.value - 1, 0),
-            colors: [h.well, h.line, h.well],
+    // 骨架的流光单独一层，不带着整页重绘
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) => Container(
+          height: widget.height,
+          width: widget.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(widget.radius),
+            gradient: LinearGradient(
+              begin: Alignment(-1 + 3 * _c.value - 1, 0),
+              end: Alignment(1 + 3 * _c.value - 1, 0),
+              colors: [h.well, h.line, h.well],
+            ),
           ),
         ),
       ),
