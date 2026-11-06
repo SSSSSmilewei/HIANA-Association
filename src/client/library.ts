@@ -113,6 +113,21 @@ async function fetchJson<T>(url: string): Promise<T> {
   return r.json() as Promise<T>;
 }
 
+/**
+ * 补上格式里有默认值、但源文件可以省略的数组（pages、videos、links、practice）。
+ * 仓库里的 csdiy、Across the Deep Sea 等课没写空的 practice，不补的话讲义页读 practice.length 会白屏。
+ */
+export function withDefaults(pkg: CoursePackage): CoursePackage {
+  return {
+    ...pkg,
+    links: pkg.links ?? [],
+    modules: (pkg.modules ?? []).map((m) => ({
+      ...m,
+      items: (m.items ?? []).map((it) => ({ ...it, pages: it.pages ?? [], videos: it.videos ?? [], links: it.links ?? [], practice: it.practice ?? [] })),
+    })),
+  };
+}
+
 /** 完整课程（介绍、条目、练手题）。slug 是路由里的写法（本机课程带 local- 前缀）。 */
 export function loadPackage(slug: string): Promise<CoursePackage> {
   let p = pkgCache.get(slug);
@@ -126,6 +141,7 @@ export function loadPackage(slug: string): Promise<CoursePackage> {
       // 先当仓库自带的课取静态文件，没有再找发布的课程包
       p = fetchJson<CoursePackage>(`/learn/${slug}/course.json`).catch(() => fetchJson<CoursePackage>(`/api/packages/${slug}`));
     }
+    p = p.then(withDefaults);
     p.catch(() => pkgCache.delete(slug));
     pkgCache.set(slug, p);
   }
