@@ -1,6 +1,10 @@
+import 'dart:io' show FileSystemException;
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 
 import 'blocks.dart';
+import 'local_library.dart';
 import 'models.dart';
 import 'pins.dart';
 import 'token_store.dart';
@@ -51,6 +55,19 @@ class ApiClient {
   final Dio _dio;
   final TokenStore _tokens;
 
+  /// 导入到本机的课（slug 以 local- 开头）：不走网络，读写手机上的文件
+  final LocalLibrary local = LocalLibrary();
+
+  Future<T> _local<T>(Future<T> Function() fn) async {
+    try {
+      return await fn();
+    } on StateError catch (e) {
+      throw ApiException(e.message, status: 404);
+    } on FileSystemException catch (e) {
+      throw ApiException('读取本机课程失败：${e.message}');
+    }
+  }
+
   /// 已登录状态下收到 401（令牌过期、账号被停用、密码被重置）时调用，用来回到游客状态。
   void Function()? onUnauthorized;
 
@@ -69,6 +86,38 @@ class ApiClient {
     final data = await _raw(method, path);
     if (data is List) return data;
     throw const ApiException('服务器返回的内容看不懂，稍后再试');
+  }
+
+  /// 给 data/admin.dart 这类按板块拆出去的接口用：返回对象
+  Future<Map<String, dynamic>> send(String method, String path, {Object? body}) =>
+      _send(method, path, body: body);
+
+  /// 返回数组的接口
+  Future<List<dynamic>> sendList(String method, String path) =>
+      _sendList(method, path);
+
+  /// 当前的登录令牌（App 内嵌网页时写进 Cookie，网页就是登录状态）
+  Future<String?> token() => _tokens.read();
+
+  /// 需要登录才能看的文件（签到照片、签名）：GET `/api/files/<key>`
+  Future<Uint8List> fileBytes(String key) => bytes('/api/files/$key');
+
+  /// 按原样下载（签到表 CSV、报名表 CSV 这类要登录的文件）
+  Future<Uint8List> bytes(String path) async {
+    final Response<List<int>> res;
+    try {
+      res = await _dio.get<List<int>>(
+        path,
+        options: Options(responseType: ResponseType.bytes),
+      );
+    } on DioException catch (e) {
+      throw ApiException(_networkMessage(e));
+    }
+    final status = res.statusCode ?? 0;
+    if (status >= 400) {
+      throw ApiException('下载失败（$status）', status: status);
+    }
+    return Uint8List.fromList(res.data ?? const []);
   }
 
   Future<Object?> _raw(
@@ -90,9 +139,21 @@ class ApiClient {
     final status = res.statusCode ?? 0;
     final data = res.data;
     if (status >= 400) {
-      final msg = data is Map && data['error'] is String
+      var msg = data is Map && data['error'] is String
           ? data['error'] as String
           : '服务器返回了错误（$status），稍后再试';
+      // 格式校验失败时后端在 issues 里给出“字段：原因”；原因是中文（接口里写好的提示）就直接显示
+      if (data is Map && data['issues'] is List) {
+        final reasons = [
+          for (final i in (data['issues'] as List).whereType<String>())
+            i.contains('：') ? i.substring(i.indexOf('：') + 1) : i,
+        ].where((r) => RegExp(r'[\u4e00-\u9fff]').hasMatch(r)).toSet();
+        if (reasons.isNotEmpty) msg = reasons.take(3).join('；');
+      }
+      // 课程包校验不通过时后端还会给出具体哪几处不对
+      if (data is Map && data['errors'] is List) {
+        msg = [msg, ...(data['errors'] as List).take(8).map((e) => '· $e')].join('\n');
+      }
       // 登录接口本身返回 401 只是密码不对，不算掉线
       if (status == 401 && !authCall) onUnauthorized?.call();
       throw ApiException(msg, status: status);
@@ -269,8 +330,9 @@ class ApiClient {
         .toList();
   }
 
-  Future<CourseDetail> course(String slug) async =>
-      CourseDetail.fromJson(await _send('GET', '/api/courses/$slug'));
+  Future<CourseDetail> course(String slug) async => isLocalSlug(slug)
+      ? _local(() => local.detail(slug))
+      : CourseDetail.fromJson(await _send('GET', '/api/courses/$slug'));
 
   Future<List<NextItem>> learningNext() async {
     final d = await _send('GET', '/api/learning/next');
@@ -281,6 +343,10 @@ class ApiClient {
 
   /// 标记条目完成或取消；返回下一个要学的条目（全部学完返回 null）。
   Future<CourseItem?> setItemDone(String slug, String itemId, bool done) async {
+    if (isLocalSlug(slug)) {
+      await _local(() => local.setDone(slug, itemId, done));
+      return null;
+    }
     final d = await _send(
       'PUT',
       '/api/courses/$slug/items/$itemId',
@@ -293,7 +359,9 @@ class ApiClient {
 
   /// 练手题做对了（记一条学习记录）
   Future<void> solvePractice(String slug, String itemId, String questionId) =>
-      _send(
+      isLocalSlug(slug)
+      ? _local(() => local.solve(slug, itemId, questionId))
+      : _send(
         'PUT',
         '/api/courses/$slug/practice/$itemId/$questionId',
         body: const {},
@@ -301,6 +369,7 @@ class ApiClient {
 
   /// 完整课程包：仓库自带的课是静态文件，发布的课程包走接口
   Future<CoursePackage> coursePackage(String slug) async {
+    if (isLocalSlug(slug)) return _local(() => local.package(slug));
     try {
       final res = await _dio.get<Object>(
         '/learn/$slug/course.json',
@@ -316,15 +385,71 @@ class ApiClient {
     return CoursePackage.fromJson(await _send('GET', '/api/packages/$slug'));
   }
 
+  /// 课程包原文（导出用）：本机的课读文件；仓库自带的课是 `/packages/<slug>.json`，发布的课走接口
+  Future<String> packageJson(String slug) async {
+    if (isLocalSlug(slug)) return _local(() => local.exportJson(slug));
+    for (final path in ['/packages/$slug.json', '/api/packages/$slug']) {
+      try {
+        final res = await _dio.get<String>(
+          path,
+          options: Options(responseType: ResponseType.plain),
+        );
+        final type = res.headers.value('content-type') ?? '';
+        if ((res.statusCode ?? 0) < 400 && !type.contains('html')) {
+          return res.data ?? '';
+        }
+      } on DioException catch (e) {
+        throw ApiException(_networkMessage(e));
+      }
+    }
+    throw const ApiException('没有这个课程包', status: 404);
+  }
+
   /* ---------- 蓝色钉子 ---------- */
 
   Future<List<Pin>> pins(String course, String page) async {
+    if (isLocalSlug(course)) return const []; // 本机的课不能钉问题
     final d = await _sendList(
       'GET',
       '/api/pins?course=${Uri.encodeQueryComponent(course)}&page=${Uri.encodeQueryComponent(page)}',
     );
     return d.map((e) => Pin.fromJson(e as Map<String, dynamic>)).toList();
   }
+
+  /// 在讲义的某一段（或某道练手题）上钉一个问题。
+  /// [anchorKey] 和网页的位置标记一致（见 widgets/markdown_view.dart 的 anchorsOf）
+  Future<Pin> createPin({
+    required String course,
+    required String page,
+    required String anchorKey,
+    String? anchorLabel,
+    String? snippet,
+    required String body,
+  }) async => Pin.fromJson(
+    await _send(
+      'POST',
+      '/api/pins',
+      body: {
+        'course': course,
+        'page': page,
+        'anchorKey': anchorKey,
+        'anchorLabel': anchorLabel,
+        // 手机上没有点击坐标：图钉放在这一段的右侧中间
+        'xPct': 0.96,
+        'yPct': 0.5,
+        'snippet': snippet,
+        'body': body,
+      },
+    ),
+  );
+
+  /// 撤回整颗钉子：提问的人在别人回复之前；管理员随时
+  Future<void> deletePin(String id) => _send('DELETE', '/api/pins/$id');
+
+  /// 删除一条回复：自己的，或管理员
+  Future<Pin> deletePinMessage(String id, int messageId) async => Pin.fromJson(
+    await _send('DELETE', '/api/pins/$id/messages/$messageId'),
+  );
 
   Future<Pin> replyPin(String id, String body) async => Pin.fromJson(
     await _send('POST', '/api/pins/$id/messages', body: {'body': body}),
@@ -375,8 +500,9 @@ class ApiClient {
   }
 
   /// 选课 / 暂停 / 退课 / 标记学完：status 是 active、paused、dropped 或 done（done 只用于没有条目的课）。
-  Future<void> setEnrollment(String slug, String status) =>
-      _send('PUT', '/api/courses/$slug/enrollment', body: {'status': status});
+  Future<void> setEnrollment(String slug, String status) => isLocalSlug(slug)
+      ? _local(() => local.setStatus(slug, status))
+      : _send('PUT', '/api/courses/$slug/enrollment', body: {'status': status});
 
   /// 讲义原文（Markdown）：构建时发布在 `/learn/<slug>/<page>.md`。不存在时静态资源会回退成网页首页。
   Future<String> lesson(String slug, String page) async {
@@ -418,6 +544,43 @@ class ApiClient {
 
   Future<void> leaveCompetition(String id) =>
       _send('DELETE', '/api/notices/$id/entry');
+
+  /// 确认已阅读公告（重复确认无影响）
+  Future<void> confirmNotice(String id) =>
+      _send('POST', '/api/notices/$id/confirm', body: const {});
+
+  /* ---------- 账号资料 ---------- */
+
+  /// 首页欢迎语里的称呼；传空字符串恢复为真名。返回保存后的称呼（null 表示用真名）
+  Future<String?> setDisplayName(String value) async {
+    final d = await _send(
+      'PUT',
+      '/api/me/display-name',
+      body: {'displayName': value},
+    );
+    return d['displayName'] as String?;
+  }
+
+  /* ---------- 新生任务 ---------- */
+
+  /// 我交过的证书
+  Future<List<Certificate>> myCertificates() async {
+    final d = await _send('GET', '/api/start');
+    return (d['certificates'] as List? ?? const [])
+        .map((e) => Certificate.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// 提交（或退回后重新提交）课程证书链接
+  Future<Certificate?> submitCertificate(String course, String url) async {
+    final d = await _send(
+      'PUT',
+      '/api/start/certificates/$course',
+      body: {'url': url},
+    );
+    final c = d['certificate'];
+    return c == null ? null : Certificate.fromJson(c as Map<String, dynamic>);
+  }
 
   /* ---------- 热力图 ---------- */
 

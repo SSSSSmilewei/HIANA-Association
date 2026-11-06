@@ -1,5 +1,5 @@
 /// 蓝色钉子：钉在讲义某一段上的问题（格式见网站 src/worker/api/pins.ts）。
-/// App 里能看、回复、点“我也想问”、标已解决；在正文上精确钉位置在网页上做。
+/// App 里能看、回复、点“我也想问”、标已解决；长按讲义的一段钉新问题。
 library;
 
 class PinMessage {
@@ -32,6 +32,8 @@ class Pin {
   const Pin({
     required this.id,
     required this.anchorLabel,
+    this.anchorKey = '',
+    this.snippet,
     required this.status,
     required this.createdAt,
     required this.author,
@@ -43,6 +45,8 @@ class Pin {
   });
   final String id;
   final String? anchorLabel;
+  final String anchorKey;
+  final String? snippet;
   final String status; // open | resolved
   final int createdAt;
   final String author;
@@ -57,6 +61,8 @@ class Pin {
   factory Pin.fromJson(Map<String, dynamic> j) => Pin(
     id: j['id'] as String,
     anchorLabel: j['anchorLabel'] as String?,
+    anchorKey: j['anchorKey'] as String? ?? '',
+    snippet: j['snippet'] as String?,
     status: j['status'] as String? ?? 'open',
     createdAt: (j['createdAt'] as num? ?? 0).toInt(),
     author: j['author'] as String? ?? '',

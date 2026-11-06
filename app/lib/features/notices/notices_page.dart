@@ -9,6 +9,7 @@ import '../../data/api_client.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/hx_icons.dart';
+import '../../widgets/markdown_view.dart';
 import '../../widgets/ui.dart';
 import '../auth/guest.dart';
 
@@ -276,10 +277,7 @@ class _NoticeCard extends StatelessWidget {
           ),
           if (n.body.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(
-              n.body,
-              style: TextStyle(fontSize: 14, height: 1.6, color: h.ink),
-            ),
+            NoticeBody(n.body),
           ],
           if (n.docUrl != null) ...[
             const SizedBox(height: 10),
@@ -371,7 +369,7 @@ class _CompetitionCard extends StatelessWidget {
             ),
             if (n.body.isNotEmpty) ...[
               const SizedBox(height: 4),
-              Text(
+              NoticeBody(
                 n.body,
                 style: TextStyle(fontSize: 13, height: 1.6, color: h.sub),
               ),

@@ -114,6 +114,30 @@ class SessionNotifier extends AsyncNotifier<Me> {
     signedOut();
   }
 
+  /// 改了首页称呼以后更新本地的账号信息（null 表示恢复真名）
+  void displayNameChanged(String? value) {
+    final me = state.valueOrNull;
+    final m = me?.member;
+    if (me == null || m == null) return;
+    state = AsyncData(
+      Me(
+        role: me.role,
+        isAdmin: me.isAdmin,
+        member: Member(
+          id: m.id,
+          kind: m.kind,
+          studentNo: m.studentNo,
+          username: m.username,
+          email: m.email,
+          org: m.org,
+          name: m.name,
+          displayName: value,
+          className: m.className,
+        ),
+      ),
+    );
+  }
+
   void signedOut() {
     ref.read(tokenStoreProvider).clear();
     state = const AsyncData(Me.guest());

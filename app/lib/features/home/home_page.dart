@@ -12,13 +12,16 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/heat.dart';
 import '../../widgets/hx_icons.dart';
+import '../../widgets/markdown_view.dart';
 import '../../widgets/ui.dart';
 import '../auth/guest.dart';
 import '../checkin/attendance_phase.dart';
 import '../checkin/checkin_page.dart';
 import '../about/about_page.dart';
 import '../courses/course_page.dart';
+import '../notices/notice_gate.dart';
 import '../notices/notices_page.dart';
+import '../start/start_page.dart';
 
 /// 首页：问候和教学周、热力墙上的签到卡、每门在学课程的下一步、公告和比赛。
 /// 游客看到的是简化版：问候、登录注册入口、公告和比赛（不请求需要账号的接口）。
@@ -45,10 +48,14 @@ class HomePage extends ConsumerWidget {
     final today = cal?.today ?? att.valueOrNull?.today;
 
     return HianaPage(
-      title: '${greeting()}，${me?.name ?? ''}',
+      // 首页称呼：设过就用称呼，否则用真名（见“我的 → 首页称呼”）
+      title: '${greeting()}，${me?.displayName ?? me?.name ?? ''}',
+      overlays: const [NoticeGate()],
       onRefresh: () async {
         ref.invalidate(calendarProvider);
         ref.invalidate(noticesProvider);
+        ref.invalidate(certificatesProvider);
+        ref.invalidate(courseProvider('cs50x'));
         refreshLearning(ref);
         if (campus) {
           await ref
@@ -68,6 +75,7 @@ class HomePage extends ConsumerWidget {
               style: TextStyle(fontSize: 14, color: h.sub),
             ),
           ),
+        const StartCard(),
         // 热力墙 + 玻璃签到卡
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -200,6 +208,8 @@ class HomePage extends ConsumerWidget {
           padding: EdgeInsets.symmetric(horizontal: 12),
           child: EmptyCard(title: '海纳协会', action: LoginButtons()),
         ),
+        const SizedBox(height: 12),
+        const StartCard(),
         SectionHead(
           '协会介绍与学生成就',
           trailing: _LinkText(
@@ -286,7 +296,7 @@ class HomePage extends ConsumerWidget {
                               ),
                               if (plain[i].body.isNotEmpty)
                                 Text(
-                                  plain[i].body,
+                                  plainText(plain[i].body),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 13, color: h.sub),
@@ -714,7 +724,7 @@ class _CompetitionTeaser extends StatelessWidget {
                     SizedBox(
                       width: 240,
                       child: Text(
-                        n.body,
+                        plainText(n.body),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(

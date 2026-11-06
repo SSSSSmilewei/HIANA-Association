@@ -15,6 +15,10 @@ import '../../app/page_transition.dart';
 import '../../widgets/markdown_view.dart';
 import '../home/home_page.dart' show CheckCircle;
 import 'lesson_page.dart';
+import 'import_page.dart';
+import '../../data/local_library.dart';
+import '../../widgets/kit.dart';
+import '../admin/admin_home.dart';
 
 /// 课程详情：基本信息、进度，下面分“介绍”（中文介绍、官方介绍、资源）和“内容”（模块 → 条目）。
 class CoursePage extends ConsumerStatefulWidget {
@@ -29,9 +33,28 @@ class _CoursePageState extends ConsumerState<CoursePage> {
   CourseDetail? _local; // 乐观更新：先在本地打勾，接口回来再以服务器为准
   int _pace = 6;
   int? _tab; // 0 介绍，1 内容；null = 按状态自动选
+  bool _removing = false; // 删除本机的课 / 撤下发布的课程包
+
+  Future<void> _remove(CourseDetail c) async {
+    setState(() => _removing = false);
+    try {
+      if (isLocalSlug(c.slug)) {
+        await ref.read(apiProvider).local.remove(c.slug);
+        ref.invalidate(localCoursesProvider);
+      } else {
+        await ref.read(adminApiProvider).deletePackage(c.slug);
+        ref.invalidate(coursesProvider);
+      }
+      if (!mounted) return;
+      showHxToast(context, isLocalSlug(c.slug) ? '已从这台手机删除' : '已撤下');
+      Navigator.of(context).maybePop();
+    } on ApiException catch (e) {
+      if (mounted) showHxToast(context, e.message, error: true);
+    }
+  }
 
   Future<void> _toggle(CourseDetail c, CourseItem u) async {
-    if (requireLogin(context, ref)) return;
+    if (!isLocalSlug(c.slug) && requireLogin(context, ref)) return;
     final done = !c.done.contains(u.id);
     HapticFeedback.lightImpact();
     setState(
@@ -54,7 +77,7 @@ class _CoursePageState extends ConsumerState<CoursePage> {
   }
 
   Future<void> _enroll(CourseDetail c, String status) async {
-    if (requireLogin(context, ref)) return;
+    if (!isLocalSlug(c.slug) && requireLogin(context, ref)) return;
     try {
       await ref.read(apiProvider).setEnrollment(c.slug, status);
       if (mounted) {
@@ -126,12 +149,27 @@ class _CoursePageState extends ConsumerState<CoursePage> {
       if (c.provider.isNotEmpty) c.provider,
     ].join(' / ');
 
+    final admin = ref.watch(
+      sessionProvider.select((s) => s.valueOrNull?.isAdmin ?? false),
+    );
     return HianaPage(
       title: c.title,
       showBack: true,
       onRefresh: () => ref
           .refresh(courseProvider(widget.slug).future)
           .then((_) {}, onError: (_) {}),
+      overlays: [
+        ConfirmDialog(
+          show: _removing,
+          title: isLocalSlug(c.slug) ? '从这台手机删除这门课？' : '撤下这个课程包？',
+          summary: isLocalSlug(c.slug)
+              ? '进度也会一起删除。'
+              : '所有人都看不到这门课了，学员的进度记录保留。',
+          okText: isLocalSlug(c.slug) ? '删除' : '撤下',
+          onCancel: () => setState(() => _removing = false),
+          onOk: () => _remove(c),
+        ),
+      ],
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
@@ -351,6 +389,38 @@ class _CoursePageState extends ConsumerState<CoursePage> {
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
           child: Text(c.license, style: TextStyle(fontSize: 13, color: h.sub)),
+        ),
+        const SectionHead('课程包'),
+        RowGroup(
+          children: [
+            ListRow(
+              title: '复制课程包',
+              subtitle: '复制 hiana-course@1 格式的 JSON，可以导入到别的设备或交给 AI 修改',
+              onTap: () async {
+                try {
+                  final text = await ref.read(apiProvider).packageJson(c.slug);
+                  await Clipboard.setData(ClipboardData(text: text));
+                  if (context.mounted) showHxToast(context, '课程包已复制');
+                } on ApiException catch (e) {
+                  if (context.mounted) showHxToast(context, e.message, error: true);
+                }
+              },
+            ),
+            if (isLocalSlug(c.slug))
+              ListRow(
+                title: '从这台手机删除',
+                subtitle: '进度也会一起删除',
+                danger: true,
+                onTap: () => setState(() => _removing = true),
+              )
+            else if (admin)
+              ListRow(
+                title: '撤下课程包',
+                subtitle: '只适用于管理员发布的课程包；学员的进度记录保留',
+                danger: true,
+                onTap: () => setState(() => _removing = true),
+              ),
+          ],
         ),
       ],
     );
