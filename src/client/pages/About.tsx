@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ASSOCIATION, DEPARTMENTS, DIRECTIONS, HONORS, type Honor, JOIN_STEPS, honorStats } from "../../shared/association";
+import { ASSOCIATION, DEPARTMENTS, DIRECTIONS, HONORS, type Honor, JOIN_STEPS, SCHOOL_AWARDS, honorStats, schoolAwardsText } from "../../shared/association";
 import type { CourseSummary } from "../types";
 import { useApi } from "../api";
 import { Icon } from "../icons";
@@ -25,7 +25,6 @@ export function AboutPage() {
   useTitle("协会");
   const { me } = useMe();
   const courses = useApi<CourseSummary[]>("/api/courses");
-  const stats = honorStats();
   useEffect(() => {
     const id = decodeURIComponent(location.hash.slice(1));
     if (id) document.getElementById(id)?.scrollIntoView();
@@ -91,10 +90,10 @@ export function AboutPage() {
           </div>
           <Streams />
         </div>
-        <p className="hn-statnote">成立不到一年 · 截至 2026.10</p>
+        <p className="hn-statnote">学校学生竞赛统计 · 2020.10—2026.6</p>
         <div className="hn-stats">
-          <Stat k="NATIONAL" v={stats.national} unit="项" d="国家级奖项" />
-          <Stat k="PROVINCIAL" v={stats.provincial} unit="项" d="省级 / 赛区奖项" />
+          <Stat k="NATIONAL" v={SCHOOL_AWARDS.national} unit="项" d="国家级奖项" />
+          <Stat k="PROVINCIAL" v={SCHOOL_AWARDS.provincial} unit="项" d="省级奖项" />
           <Stat k="COURSES" v={courses.data?.length ?? 118} unit="门" d="开源公开课" />
           <Stat k="EXERCISES" v={EXERCISES} unit="道" d="在线练手题" />
         </div>
@@ -510,7 +509,7 @@ function HonorsSection() {
         </div>
       </div>
       <p className="hn-sub">
-        协会成立以来，在册成员已有 {stats.national} 项国家级、{stats.provincial} 项省级或赛区奖项，{stats.people} 位成员上榜。「实验室安全监测」项目先后拿下睿抗 AI 视觉应用省三等奖和湖南省大学生程序设计大赛省二等奖。
+        {schoolAwardsText()}。下面列出协会在册成员的获奖（国家级 {stats.national} 项、省级 {stats.provincial} 项，{stats.people} 位成员上榜）。「实验室安全监测」项目先后拿下睿抗 AI 视觉应用省三等奖和湖南省大学生程序设计大赛省二等奖。
       </p>
       <div className="hn-grid2">
         {national.map((h, i) => (

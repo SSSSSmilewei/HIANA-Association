@@ -1,4 +1,4 @@
-import { ASSOCIATION, DEPARTMENTS, DIRECTIONS, HONORS, JOIN_STEPS, YEAR, honorStats } from "../../shared/association";
+import { ASSOCIATION, DEPARTMENTS, DIRECTIONS, HONORS, JOIN_STEPS, YEAR, honorStats, SCHOOL_AWARDS, schoolAwardsText } from "../../shared/association";
 import { z } from "zod";
 import { cnDate } from "../../shared/heatmap";
 import { getSetting, setSetting } from "../db";
@@ -79,7 +79,7 @@ export function memberRoutes(api: Router) {
   /** 教学周和日期。游客也能看。 */
   /** 协会介绍和学生成就（App 用；网页直接打包了同一份数据） */
   api.get("/api/association", () =>
-    json({ association: ASSOCIATION, directions: DIRECTIONS, departments: DEPARTMENTS, year: YEAR, joinSteps: JOIN_STEPS, honors: HONORS, stats: honorStats() }),
+    json({ association: ASSOCIATION, directions: DIRECTIONS, departments: DEPARTMENTS, year: YEAR, joinSteps: JOIN_STEPS, honors: HONORS, stats: honorStats(), schoolAwards: { ...SCHOOL_AWARDS, text: schoolAwardsText() } }),
   );
 
   api.get("/api/calendar", async (c) => {

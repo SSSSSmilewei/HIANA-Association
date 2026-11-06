@@ -905,6 +905,7 @@ class Association {
     required this.year,
     required this.joinSteps,
     required this.honors,
+    this.schoolAwards,
   });
   final String name;
   final String motto;
@@ -917,6 +918,9 @@ class Association {
   final List<(String, String)> year;
   final List<String> joinSteps;
   final List<Honor> honors;
+
+  /// 学校整理的学生竞赛统计那句话（旧版服务器没有这个字段时为 null）
+  final String? schoolAwards;
 
   static List<(String, String)> _pairs(Object? v, String a, String b) =>
       (v as List? ?? const [])
@@ -939,6 +943,8 @@ class Association {
       year: _pairs(j['year'], 'title', 'body'),
       joinSteps: (j['joinSteps'] as List? ?? const []).cast<String>(),
       honors: _list(j['honors'], Honor.fromJson),
+      schoolAwards:
+          (j['schoolAwards'] as Map<String, dynamic>?)?['text'] as String?,
     );
   }
 }
