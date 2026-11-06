@@ -88,7 +88,16 @@ export const HONORS: Honor[] = [
   { rank: "省三", level: "provincial", contest: "第十六届蓝桥杯全国软件和信息技术专业人才大赛", detail: "Java 软件开发大学 B 组 · 湖南赛区", people: ["刘伊萱"], date: "2025.05" },
 ];
 
-/** 页头上的几个数：国家级几项、省级几项、多少位成员上榜 */
+/**
+ * 学校整理的学生竞赛统计（全体学生，不只是协会成员）。协会页和开场动画的获奖数字以它为准；
+ * 下面的 HONORS 只是协会在册成员的部分获奖，用来列具体奖项。
+ */
+export const SCHOOL_AWARDS = { period: "2020 年 10 月至 2026 年 6 月", national: 12, provincial: 82, total: 94 } as const;
+
+export const schoolAwardsText = () =>
+  `根据学校整理的学生竞赛统计（${SCHOOL_AWARDS.period}），学生共获得 ${SCHOOL_AWARDS.total} 项省级及以上奖项，其中国家级 ${SCHOOL_AWARDS.national} 项、省级 ${SCHOOL_AWARDS.provincial} 项`;
+
+/** 协会在册成员的获奖：国家级几项、省级几项、多少位成员上榜 */
 export function honorStats(list: Honor[] = HONORS) {
   return {
     national: list.filter((h) => h.level === "national").length,

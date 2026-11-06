@@ -125,9 +125,15 @@ class AboutPage extends ConsumerWidget {
             _List(items: a.departments),
             const SectionHead('一年怎么过'),
             _List(items: a.year, numbered: true),
-            SectionHead(
-              '学生成就 · 国家级 ${national.length} · 省级 ${provincial.length} · $people 人',
-            ),
+            const SectionHead('学生成就'),
+            if (a.schoolAwards != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                child: Text(
+                  '${a.schoolAwards}。下面列出协会在册成员的获奖（国家级 ${national.length} 项、省级 ${provincial.length} 项，$people 位成员上榜）。',
+                  style: TextStyle(fontSize: 14, height: 1.6, color: h.sub),
+                ),
+              ),
             for (final x in national)
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
