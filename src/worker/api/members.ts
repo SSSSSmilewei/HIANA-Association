@@ -6,12 +6,22 @@ import { PROVIDERS, ProviderError } from "../heatmap/providers";
 import { bindSource, listBindings, loadSeries, syncUser, unbindSource } from "../heatmap/store";
 import { HttpError, type Router, json } from "../http";
 import { createInvites, listInvites, MAX_INVITES_PER_BATCH, revokeInvite } from "../invites";
-import { createResetCode, idleMembers, listMembers, setMemberRole, setMemberStatus } from "../members";
+import { AccountError, createResetCode, idleMembers, listMembers, setMemberRole, setMemberStatus, updateMember } from "../members";
 import { requireSecret } from "../session";
 import { DAY_RE, memberId, requireAdmin } from "./common";
 
 /** 给 1.x 旧版 App 看的“最新版本”：比任何 1.x 都大，旧版就会提示下载新的 0.x 安装包。 */
 const LEGACY_LATEST = "1.99.0";
+
+const VERSION_RE = /^\d+\.\d+\.\d+$/;
+
+/** /api/app/apk 能转发的安装包：通用包和三个按芯片分的包（名字是 flutter build apk 产出的文件名） */
+const APK_FILES: Record<string, string> = {
+  universal: "app-release.apk",
+  "arm64-v8a": "app-arm64-v8a-release.apk",
+  "armeabi-v7a": "app-armeabi-v7a-release.apk",
+  x86_64: "app-x86_64-release.apk",
+};
 
 const publicProviders = () =>
   PROVIDERS.map((p) => ({
@@ -91,11 +101,50 @@ export function memberRoutes(api: Router) {
       getSetting(c.env.DB, "app_min_version"),
       getSetting(c.env.DB, "app_apk_url"),
     ]);
-    const v = { latest: latest ?? "0.0.0", min: min ?? "0.0.0", apkUrl: apk ?? null };
+    // 没单独填下载地址时，用本站转发的通用安装包（国内打不开 GitHub 也能下）
+    const apkUrl = apk || (latest ? `${c.url.origin}/api/app/apk?v=${latest}` : null);
+    const v = { latest: latest ?? "0.0.0", min: min ?? "0.0.0", apkUrl };
     if (latest && c.url.searchParams.get("scheme") !== "0" && latest.startsWith("0.")) {
       return json({ ...v, latest: LEGACY_LATEST, min: v.min.startsWith("0.") ? "1.0.0" : v.min });
     }
     return json(v);
+  });
+
+  /**
+   * 下载 App 安装包：从 GitHub Releases 取，经 Cloudflare 转发给用户。
+   * GitHub 在国内经常下不动，本站域名能打开，所以安装包从这里走。同一版本的包会缓存在 Cloudflare 上。
+   *  ?v=0.4.0  版本（默认后台填的最新版本）
+   *  ?abi=universal | arm64-v8a | armeabi-v7a | x86_64（默认 universal，所有手机都能装）
+   * 只转发白名单里的文件名，不能拿来下别的东西。
+   */
+  api.get("/api/app/apk", async (c) => {
+    const v = c.url.searchParams.get("v") || (await getSetting(c.env.DB, "app_latest_version"));
+    if (!v || !VERSION_RE.test(v)) throw new HttpError(404, "还没有发布安装包");
+    const abi = c.url.searchParams.get("abi") || "universal";
+    let file = APK_FILES[abi];
+    if (!file) throw new HttpError(400, "没有这种安装包");
+    const repo = c.env.APP_RELEASE_REPO || "SSSSSmilewei/HIANA-Association";
+    const get = (name: string) =>
+      fetch(`https://github.com/${repo}/releases/download/app-v${v}/${name}`, {
+        cf: { cacheEverything: true, cacheTtl: 30 * 86_400 },
+      } as RequestInit);
+    let upstream = await get(file);
+    // 0.4.0 及更早的版本没有通用包，退回 arm64-v8a（大多数手机能装）
+    if (upstream.status === 404 && abi === "universal") {
+      file = APK_FILES["arm64-v8a"];
+      upstream = await get(file);
+    }
+    if (!upstream.ok || !upstream.body) {
+      throw new HttpError(upstream.status === 404 ? 404 : 502, upstream.status === 404 ? `${v} 版还没有这个安装包` : "取安装包失败，稍后再试");
+    }
+    const headers = new Headers({
+      "content-type": "application/vnd.android.package-archive",
+      "content-disposition": `attachment; filename="hiana-${v}${file === APK_FILES.universal ? "" : "-" + file.replace(/^app-|-release\.apk$/g, "")}.apk"`,
+      "cache-control": "public, max-age=86400",
+    });
+    const len = upstream.headers.get("content-length");
+    if (len) headers.set("content-length", len);
+    return new Response(upstream.body, { headers });
   });
 
   /* ---------- 管理员：成员 ---------- */
@@ -106,6 +155,29 @@ export function memberRoutes(api: Router) {
   });
 
   /** 忘记密码：生成一次性重置码，旧密码和已登录的设备马上失效。重置码只返回这一次。 */
+  /** 修改成员信息：校内（姓名、班级、学号）、校外（昵称、用户名、邮箱、学校 / 单位）。只改传了的字段。 */
+  api.put("/api/admin/members/:id", async (c) => {
+    requireAdmin(c);
+    const input = z
+      .object({
+        name: z.string().max(60).optional(),
+        className: z.string().max(60).optional(),
+        studentNo: z.string().max(20).optional(),
+        username: z.string().max(40).optional(),
+        email: z.string().max(200).optional(),
+        org: z.string().max(100).optional(),
+      })
+      .parse(await c.body());
+    try {
+      await updateMember(c.env.DB, c.params.id, input);
+    } catch (err) {
+      if (err instanceof AccountError) throw new HttpError(err.status, err.message);
+      throw err;
+    }
+    const m = (await listMembers(c.env.DB)).find((x) => x.id === c.params.id);
+    return json(m);
+  });
+
   api.post("/api/admin/members/:id/reset", async (c) => {
     requireAdmin(c);
     const code = await createResetCode(c.env.DB, requireSecret(c.env), c.params.id);
@@ -177,7 +249,8 @@ export function memberRoutes(api: Router) {
         semester_start: z.string().regex(DAY_RE, "开学日期格式是 2026-09-07").optional(),
         app_latest_version: z.string().regex(/^\d+\.\d+\.\d+$/).optional(),
         app_min_version: z.string().regex(/^\d+\.\d+\.\d+$/).optional(),
-        app_apk_url: z.string().url().max(400).optional(),
+        // 空字符串：不单独指定，用本站转发的安装包（/api/app/apk）
+        app_apk_url: z.union([z.string().url().max(400), z.literal("")]).optional(),
         // "1" 开放注册（仍然需要邀请码），"0" 关闭注册
         registration_open: z.enum(["0", "1"]).optional(),
       })

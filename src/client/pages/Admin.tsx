@@ -272,6 +272,7 @@ export function AdminMembersPage({ selfId }: { selfId: string | null }) {
   const [show, setShow] = useState<"active" | "archived">("active");
   const [inviting, setInviting] = useState(false);
   const [code, setCode] = useState<{ name: string; account: string; code: string } | null>(null);
+  const [editing, setEditing] = useState<AdminMember | null>(null);
 
   const list = useMemo(
     () => (data ?? []).filter((m) => m.status === show && (!q.trim() || `${m.name}${m.studentNo}${m.username ?? ""}${m.email ?? ""}${m.org ?? ""}${m.className ?? ""}`.toLowerCase().includes(q.trim().toLowerCase()))),
@@ -385,6 +386,9 @@ export function AdminMembersPage({ selfId }: { selfId: string | null }) {
                       <span className="row" style={{ gap: 6, justifyContent: "flex-end" }}>
                         {m.status === "active" ? (
                           <>
+                            <button type="button" className="btn btn-quiet btn-sm" onClick={() => setEditing(m)}>
+                              编辑
+                            </button>
                             <button type="button" className="btn btn-quiet btn-sm" onClick={() => act(m, "reset")}>
                               重置密码
                             </button>
@@ -414,12 +418,90 @@ export function AdminMembersPage({ selfId }: { selfId: string | null }) {
         )}
       </section>
       {inviting && <InviteDialog onClose={() => setInviting(false)} />}
+      {editing && (
+        <Dialog title={`修改 ${editing.name} 的信息`} sub={editing.kind === "external" ? "校外账号：改用户名或邮箱后，要用新的登录" : "校内账号：改学号后，要用新学号登录"} onClose={() => setEditing(null)}>
+          <EditMemberForm m={editing} onSaved={() => void reload()} />
+        </Dialog>
+      )}
       {code && (
         <Dialog title={`${code.name} 的重置码`} sub={`只显示这一次。发给 TA，在登录页“忘记密码”里填账号 ${code.account} 和这个重置码，设一个新密码。`} onClose={() => setCode(null)}>
           <PasscodeBox code={code.code} />
         </Dialog>
       )}
     </div>
+  );
+}
+
+/** 修改一个成员的信息。只把改过的字段发给服务器。 */
+function EditMemberForm({ m, onSaved }: { m: AdminMember; onSaved: () => void }) {
+  const close = useDialogClose();
+  const toast = useToast();
+  const external = m.kind === "external";
+  const initial: Record<string, string> = external
+    ? { name: m.name, username: m.username ?? "", email: m.email ?? "", org: m.org ?? "" }
+    : { name: m.name, studentNo: m.studentNo, className: m.className ?? "" };
+  const [v, setV] = useState<Record<string, string>>(initial);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const changed = Object.fromEntries(Object.entries(v).filter(([k, x]) => x.trim() !== initial[k]).map(([k, x]) => [k, x.trim()]));
+  const field = (key: string, label: string, opts: { hint?: string; mono?: boolean; max: number; inputMode?: "numeric" | "email" } = { max: 30 }) => (
+    <label className="field" key={key}>
+      {label}
+      <input
+        className={opts.mono ? "input mono" : "input"}
+        value={v[key] ?? ""}
+        onChange={(e) => setV({ ...v, [key]: e.target.value })}
+        maxLength={opts.max}
+        inputMode={opts.inputMode}
+        autoComplete="off"
+        spellCheck={false}
+      />
+      {opts.hint && <span className="hint xsmall">{opts.hint}</span>}
+    </label>
+  );
+
+  return (
+    <form
+      className="form"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setBusy(true);
+        setError(null);
+        try {
+          await api(`/api/admin/members/${m.id}`, { method: "PUT", body: changed });
+          toast("已保存");
+          onSaved();
+          close();
+        } catch (err) {
+          setError((err as Error).message);
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      {external ? (
+        <>
+          {field("name", "昵称", { max: 20 })}
+          {field("username", "用户名", { mono: true, max: 20, hint: "3–20 位，小写字母开头" })}
+          {field("email", "邮箱（选填）", { mono: true, max: 100, inputMode: "email" })}
+          {field("org", "学校 / 单位（选填）", { max: 40 })}
+        </>
+      ) : (
+        <>
+          {field("name", "姓名", { max: 20 })}
+          {field("studentNo", "学号", { mono: true, max: 9, inputMode: "numeric", hint: "9 位数字，也是登录账号" })}
+          {field("className", "班级", { max: 30, hint: "例如 计科2501" })}
+        </>
+      )}
+      {error && (
+        <span className="error-text" role="alert">
+          {error}
+        </span>
+      )}
+      <button type="submit" className="btn btn-primary btn-block" disabled={busy || Object.keys(changed).length === 0 || !v.name?.trim()}>
+        {busy ? <Spinner /> : "保存"}
+      </button>
+    </form>
   );
 }
 
@@ -936,7 +1018,8 @@ function OtherSettings({ s, onSaved }: { s: Record<string, string | null>; onSav
         if (semester) body.semester_start = semester;
         if (latest) body.app_latest_version = latest;
         if (min) body.app_min_version = min;
-        if (apk) body.app_apk_url = apk;
+        // 清空也要发：空字符串表示改用本站转发
+        body.app_apk_url = apk.trim();
         try {
           await api("/api/admin/settings", { method: "PUT", body });
           onSaved();
@@ -975,8 +1058,8 @@ function OtherSettings({ s, onSaved }: { s: Record<string, string | null>; onSav
         </label>
       </div>
       <label className="field">
-        APK 下载地址
-        <input className="input" type="url" value={apk} onChange={(e) => setApk(e.target.value)} placeholder="https://" />
+        APK 下载地址<span className="hint">留空就用本站转发的通用安装包（从 GitHub 发行版取，国内也能下）</span>
+        <input className="input" type="url" value={apk} onChange={(e) => setApk(e.target.value)} placeholder="留空即可" />
       </label>
       {error && <span className="error-text">{error}</span>}
       <div>

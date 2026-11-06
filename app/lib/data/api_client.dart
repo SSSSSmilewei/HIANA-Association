@@ -181,6 +181,11 @@ class ApiClient {
   Future<Me> me() async =>
       Me.fromJson(await _send('GET', '/api/auth/me', authCall: true));
 
+  /// 校内成员自己补填 / 修改班级，返回保存后的班级。
+  Future<String> setClass(String className) async =>
+      (await _send('PUT', '/api/me/class', body: {'className': className}))['className']
+          as String;
+
   /// 现在开不开放注册（管理员可以在网页后台关掉）。
   Future<bool> registrationOpen() async =>
       (await _send(

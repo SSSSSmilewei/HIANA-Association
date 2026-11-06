@@ -259,7 +259,7 @@ describe("成员管理", () => {
     const db = await freshDb();
     const t0 = at("2026-10-01T00:00:00+08:00");
     const { codes } = await createInvites(db, SECRET, { count: 1, days: 1, note: null, by: "u1" }, t0);
-    const input = (no: string) => ({ studentNo: no, name: "新同学", password: "pass-2026-x", confirm: "pass-2026-x", invite: codes[0] });
+    const input = (no: string) => ({ studentNo: no, name: "新同学", className: "计科2501", password: "pass-2026-x", confirm: "pass-2026-x", invite: codes[0] });
     const results = await Promise.allSettled([register(db, SECRET, input("250101011"), { open: true }, t0), register(db, SECRET, input("250101012"), { open: true }, t0)]);
     expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
     expect((await db.prepare("SELECT COUNT(*) AS n FROM users WHERE student_no LIKE '25010101_'").first<{ n: number }>())?.n).toBe(1);
@@ -292,7 +292,7 @@ describe("成员管理", () => {
     // 没有密码的旧账号（学号已经是 9 位）可以用邀请码认领，原来的 id 和记录保留
     await db.prepare("INSERT INTO users (id, student_no, name, created_at, updated_at) VALUES ('u3', '250101003', '王同学', 0, 0)").run();
     const { codes } = await createInvites(db, SECRET, { count: 1, days: null, note: null, by: "u2" });
-    const claimed = await register(db, SECRET, { studentNo: "250101003", name: "王同学", invite: codes[0], ...pw }, { open: true });
+    const claimed = await register(db, SECRET, { studentNo: "250101003", name: "王同学", className: "计科2501", invite: codes[0], ...pw }, { open: true });
     expect(claimed.id).toBe("u3");
   });
 
@@ -302,11 +302,11 @@ describe("成员管理", () => {
     const pw = { password: "boss-pass-1", confirm: "boss-pass-1" };
     const opts = { open: false, firstAdminCode: "first-admin-secret" };
     // 注册关闭时也能注册首个管理员
-    const boss = await register(db, SECRET, { studentNo: "254030411", name: "会长", invite: "first-admin-secret", ...pw }, opts);
+    const boss = await register(db, SECRET, { studentNo: "254030411", name: "会长", className: "计科2501", invite: "first-admin-secret", ...pw }, opts);
     expect(boss.role).toBe("admin");
     // 没配置密钥时，这条路不存在
     const db2 = await freshDb();
-    await expect(register(db2, SECRET, { studentNo: "254030411", name: "会长", invite: "", ...pw }, { open: true })).rejects.toThrow("邀请码");
+    await expect(register(db2, SECRET, { studentNo: "254030411", name: "会长", className: "计科2501", invite: "", ...pw }, { open: true })).rejects.toThrow("邀请码");
   });
 
   test("最近没动静名单：站内和外部平台都算活动", async () => {

@@ -31,7 +31,7 @@ function setup() {
   async function admin(method: string, path: string, body?: unknown) {
     if (!adminCookie) {
       const r = await call("POST", "/api/auth/register", {
-        body: { studentNo: "254030411", name: "会长", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" },
+        body: { studentNo: "254030411", name: "会长", className: "计科2501", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" },
       });
       adminCookie = (r.setCookie ?? "").split(";")[0];
     }
@@ -40,7 +40,7 @@ function setup() {
   /** 管理员发一个邀请码，用它注册一个成员。 */
   async function register(studentNo: string, name: string, headers: Record<string, string> = {}) {
     const inv = await admin("POST", "/api/admin/invites", { count: 1 });
-    return call("POST", "/api/auth/register", { body: { studentNo, name, password: "pass-2026-x", confirm: "pass-2026-x", invite: inv.data.codes[0] }, headers });
+    return call("POST", "/api/auth/register", { body: { studentNo, name, className: "计科2501", password: "pass-2026-x", confirm: "pass-2026-x", invite: inv.data.codes[0] }, headers });
   }
   return { call, admin, register };
 }

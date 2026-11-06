@@ -40,7 +40,7 @@ function setup() {
   /** 用邀请码注册一个成员，返回成员 id。第一次调用时先注册管理员 boot。 */
   async function member(who: string, no: string, name: string) {
     if (!jars.has("boot"))
-      await call("boot", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
+      await call("boot", "POST", "/api/auth/register", { studentNo: "254030411", name: "会长", className: "计科2501", password: "boss-pass-1", confirm: "boss-pass-1", invite: "first-admin-secret" });
     const inv = await call("boot", "POST", "/api/admin/invites", { count: 1 });
     await call(who, "POST", "/api/auth/register", { studentNo: no, name, className: "计科2501", password: `${no}-pass`, confirm: `${no}-pass`, invite: inv.data.codes[0] });
     const list = await call("boot", "GET", "/api/admin/members");
@@ -390,7 +390,7 @@ describe("校内 / 校外账号", () => {
     const wrong = await call("alice", "POST", "/api/auth/register", { ...ext, invite: campusInv });
     expect(wrong.status).toBe(400);
     expect(wrong.data.error).toContain("校内");
-    expect((await call("x", "POST", "/api/auth/register", { kind: "campus", studentNo: "250101009", name: "某", password: "pass-2026-y", confirm: "pass-2026-y", invite: extInv })).data.error).toContain("校外");
+    expect((await call("x", "POST", "/api/auth/register", { kind: "campus", studentNo: "250101009", name: "某", className: "计科2501", password: "pass-2026-y", confirm: "pass-2026-y", invite: extInv })).data.error).toContain("校外");
     // 用户名格式
     expect((await call("alice", "POST", "/api/auth/register", { ...ext, username: "12345", invite: extInv })).status).toBe(400);
 

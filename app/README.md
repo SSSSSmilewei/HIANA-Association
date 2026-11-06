@@ -64,13 +64,13 @@ lib/
 
 ## 发布
 
-`.github/workflows/app.yml` 在打 `app-v*` 标签时构建 APK。发布后在数据库 `settings` 表里改三项，App 会提示更新：
+`.github/workflows/app.yml` 在 `main` 上（或打 `app-v*` 标签时）构建 APK：通用包 `app-release.apk` 加三个按芯片分的包，发布到 Releases。发布后在数据库 `settings` 表里改三项，App 会提示更新：
 
 | key | 含义 |
 | --- | --- |
 | `app_latest_version` | 最新版本号，例如 `0.4.1`（内测期间都用 0.x.x） |
 | `app_min_version` | 低于它的版本会被要求强制更新 |
-| `app_apk_url` | APK 下载地址（放 Workers 静态资源或 Gitee 发行版，国内能直接下载；填 arm64-v8a 那个） |
+| `app_apk_url` | APK 下载地址。**留空就行**：默认用本站的 `/api/app/apk`，从 GitHub Releases 取通用包经 Cloudflare 转发，国内也能下 |
 
 App 有本地升级：「我的 → 检查更新」或启动时发现低于最低版本，会在 App 里下载安装包、显示进度，下完直接打开系统安装器（第一次要允许“安装未知应用”）。下载失败可以改用浏览器。
 
