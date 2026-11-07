@@ -123,6 +123,13 @@ Worker 的密钥（Cloudflare → Workers → 设置 → 变量和机密）：
 
 `SESSION_SECRET` 不用填，第一次访问时自动生成。
 
+### 课程内容过滤与 HTTPS
+
+- 导入课程包时校验 JSON 格式、字段和链接，文件与粘贴内容均限制为 8MB。课程 Markdown 在显示前统一经过 DOMPurify 过滤，正文、介绍、练手题和行内选项均适用；脚本、事件属性、样式、嵌入页面及危险协议链接会被移除，正常排版、代码示例和课程链接保留。此规则也覆盖已导入的本机课程和管理员发布的课程。
+- 公网 HTTP 请求由 Worker 以 `308` 跳转至同一地址的 HTTPS，保留路径、查询参数和请求方法；HTTPS 响应附带一年有效的 HSTS。`localhost`、`.localhost` 和回环地址保留 HTTP 供本地开发。
+- `assets.run_worker_first` 必须保持 `true`，确保首页、课程页、介绍页、静态资源和 API 都经过跳转检查。所有资源请求都会执行 Worker，部署方应留意 Worker 的请求用量。
+- 合并并部署后，可用 `curl -I http://study.shanmoew-denied.win/courses` 检查 `308` 和 `Location: https://...`，再检查 HTTPS 响应中的 `Strict-Transport-Security`。HTTPS 与 HTTP 使用不同的浏览器存储；此前只保存在 HTTP 下的本机课程应先导出，再在 HTTPS 下重新导入；本机进度和偏好不会自动迁移，需另行备份处理，登录也需重新进行。
+
 ## 许可
 
 代码使用 MIT 许可。课程内容：

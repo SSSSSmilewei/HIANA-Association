@@ -87,8 +87,17 @@ async function handleApi(req: Request, env: Env): Promise<Response> {
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
-    if (url.pathname.startsWith("/api/")) return handleApi(req, env);
-    return env.ASSETS.fetch(req);
+    // 本地开发保留 HTTP；线上在读取数据库、处理登录或返回静态资源前先跳转。
+    const local = url.hostname === "localhost" || url.hostname.endsWith(".localhost") || /^127\.\d+\.\d+\.\d+$/.test(url.hostname) || url.hostname === "[::1]";
+    if (url.protocol === "http:" && !local) {
+      url.protocol = "https:";
+      return Response.redirect(url.href, 308);
+    }
+    const res = await (url.pathname.startsWith("/api/") ? handleApi(req, env) : env.ASSETS.fetch(req));
+    if (url.protocol !== "https:" || local) return res;
+    const headers = new Headers(res.headers);
+    headers.set("strict-transport-security", "max-age=31536000");
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
   },
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
     if (controller.cron === "30 15 * * *") {
