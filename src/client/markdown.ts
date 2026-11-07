@@ -1,9 +1,10 @@
 import hljs from "highlight.js/lib/common";
 import { Marked } from "marked";
+import DOMPurify from "dompurify";
 
 /**
  * Markdown → HTML（讲义、介绍、练手题）。这个模块按需加载（import("./markdown")），不进首屏。
- * 内容来自仓库、管理员发布的课程包或自己导入的课程包；原始 HTML 一律转义，不执行。
+ * 内容来自仓库、管理员发布的课程包或自己导入的课程包；最终 HTML 统一经过 DOMPurify。
  */
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -21,30 +22,48 @@ export function headingId(text: string): string {
   );
 }
 
-/** Markdown 里夹的 HTML：只留排版用的标签和少数属性，其余标签当文字显示 */
-const TAGS = new Set("strong b em i u s del code kbd sub sup br hr p div span ul ol li table thead tbody tr td th details summary blockquote img a center small".split(" "));
-const ATTRS = new Set(["href", "src", "alt", "title", "open", "colspan", "rowspan", "width", "height", "align"]);
-
-function cleanHtml(html: string): string {
-  return html.replace(/<!--[\s\S]*?-->/g, "").replace(/<(\/?)([a-zA-Z][\w-]*)([^>]*)>|[<>]/g, (m, close: string, tag: string, rest: string) => {
-    if (!tag) return esc(m);
-    const t = tag.toLowerCase();
-    if (!TAGS.has(t)) return esc(m);
-    if (close) return `</${t}>`;
-    const attrs: string[] = [];
-    for (const a of rest.matchAll(/([a-zA-Z-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+)))?/g)) {
-      const name = a[1].toLowerCase();
-      if (!ATTRS.has(name)) continue;
-      const v = a[2] ?? a[3] ?? a[4] ?? "";
-      attrs.push(`${name}="${esc(name === "href" || name === "src" ? safeUrl(v) : v)}"`);
-    }
-    if (t === "a" && attrs.some((x) => x.startsWith('href="http'))) attrs.push('target="_blank" rel="noreferrer"');
-    if (t === "img") attrs.push('loading="lazy"');
-    return `<${t}${attrs.length ? ` ${attrs.join(" ")}` : ""}${/\/\s*$/.test(rest) ? " /" : ""}>`;
-  });
+/** URL 先按浏览器规则解析，避免 java\tscript: 等混淆写法绕过协议检查。 */
+function safeUrl(href: string, image = false): string {
+  if (/[\u0000-\u0020\u007f\\]/.test(href) || href.startsWith("//")) return "#";
+  try {
+    const { protocol } = new URL(href, "https://course.invalid/");
+    return protocol === "https:" || protocol === "http:" || (!image && protocol === "mailto:") ? href : "#";
+  } catch {
+    return "#";
+  }
 }
 
-const safeUrl =(href: string) => (/^(https?:|mailto:|\/|#|\.)/i.test(href) || !/^[a-z][a-z0-9+.-]*:/i.test(href) ? href : "#");
+// 在完整渲染结果上过滤，覆盖原始 HTML、Markdown 链接、图片以及行内选项。
+// 不允许脚本、样式、表单、iframe、SVG/MathML 和事件属性。
+DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+  for (const attr of ["href", "src"]) {
+    const value = node.getAttribute(attr);
+    if (value !== null && safeUrl(value, attr === "src") === "#" && value !== "#") node.removeAttribute(attr);
+  }
+  if (node.tagName === "A") {
+    node.removeAttribute("target");
+    node.removeAttribute("rel");
+    if (/^https?:/i.test(node.getAttribute("href") ?? "")) {
+      node.setAttribute("target", "_blank");
+      node.setAttribute("rel", "noopener noreferrer");
+    }
+  }
+  if (node.tagName === "IMG") node.setAttribute("loading", "lazy");
+  // GFM 任务列表只需要不可交互的复选框。
+  if (node.tagName === "INPUT") {
+    node.setAttribute("type", "checkbox");
+    node.setAttribute("disabled", "");
+  }
+});
+
+function cleanHtml(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: "h1 h2 h3 h4 h5 h6 pre strong b em i u s del code kbd sub sup br hr p div span ul ol li table thead tbody tfoot tr td th details summary blockquote img a center small input".split(" "),
+    ALLOWED_ATTR: ["href", "src", "alt", "title", "open", "colspan", "rowspan", "width", "height", "align", "class", "id", "start", "aria-hidden", "data-lang", "type", "checked", "disabled"],
+    ALLOW_DATA_ATTR: false,
+    ALLOW_ARIA_ATTR: false,
+  });
+}
 
 /**
  * 中文里的 **加粗**：CommonMark 规定 ** 两边是标点、外侧紧挨汉字时不算强调（“**“引号”**的”这种），
@@ -91,10 +110,10 @@ function makeMarked() {
         return `<a href="${esc(safeUrl(href))}"${title ? ` title="${esc(title)}"` : ""}${ext ? ' target="_blank" rel="noreferrer"' : ""}>${text}</a>`;
       },
       image({ href, title, text }) {
-        return `<img src="${esc(safeUrl(href))}" alt="${esc(text)}"${title ? ` title="${esc(title)}"` : ""} loading="lazy">`;
+        return `<img src="${esc(safeUrl(href, true))}" alt="${esc(text)}"${title ? ` title="${esc(title)}"` : ""} loading="lazy">`;
       },
       html({ text }) {
-        return cleanHtml(text);
+        return text;
       },
     },
   });
@@ -109,10 +128,10 @@ function videos(md: string): string {
 }
 
 export function renderMarkdown(md: string): string {
-  return marked.parse(videos(md), { async: false }) as string;
+  return cleanHtml(marked.parse(videos(md), { async: false }) as string);
 }
 
 /** 行内（选项、短提示），不包 <p> */
 export function renderInline(md: string): string {
-  return marked.parseInline(cjkStrong(md), { async: false }) as string;
+  return cleanHtml(marked.parseInline(cjkStrong(md), { async: false }) as string);
 }

@@ -13,6 +13,7 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "dompurify": "3.4.17",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "3.25.76"
@@ -22,6 +23,7 @@
     "@types/react-dom": "19.2.3",
     "esbuild": "0.28.2",
     "highlight.js": "^11.12.0",
+    "jsdom": "31.0.0",
     "marked": "^16.4.2",
     "typescript": "6.0.3",
     "wrangler": "^4.154.0"

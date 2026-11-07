@@ -16,14 +16,19 @@ export function ImportCourse({ onClose }: { onClose: () => void }) {
   const { me } = useMe();
   const toast = useToast();
   const file = useRef<HTMLInputElement>(null);
+  const revision = useRef(0);
   const [text, setText] = useState("");
   const [errors, setErrors] = useState<string[] | null>(null);
   const [pkg, setPkg] = useState<CoursePackage | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const check = async (raw: string) => {
+  const check = async (raw: string, version = ++revision.current) => {
     setPkg(null);
     setErrors(null);
+    if (new TextEncoder().encode(raw).byteLength > 8_000_000) {
+      setErrors(["课程包太大（超过 8MB）"]);
+      return;
+    }
     let data: unknown;
     try {
       data = JSON.parse(raw);
@@ -34,19 +39,29 @@ export function ImportCourse({ onClose }: { onClose: () => void }) {
     // 校验器（zod）只在这里用到，按需加载
     const { parsePackage } = await import("../../shared/package");
     const r = parsePackage(data);
+    if (version !== revision.current) return;
     if (r.ok) setPkg(r.pkg);
     else setErrors(r.errors);
   };
 
   const onFile = async (f: File | undefined) => {
     if (!f) return;
+    const version = ++revision.current;
+    setPkg(null);
+    setErrors(null);
+    setText("");
     if (f.size > 8_000_000) {
       setErrors(["文件太大（超过 8MB）"]);
       return;
     }
-    const t = await f.text();
-    setText(t);
-    void check(t);
+    try {
+      const t = await f.text();
+      if (version !== revision.current) return;
+      setText(t);
+      void check(t, version);
+    } catch {
+      if (version === revision.current) setErrors(["无法读取课程包文件，请重新选择。"]);
+    }
   };
 
   const keep = async () => {
@@ -102,6 +117,7 @@ export function ImportCourse({ onClose }: { onClose: () => void }) {
           value={text}
           placeholder='{"format": "hiana-course@1", "slug": "...", ...}'
           onChange={(e) => {
+            revision.current++;
             setText(e.target.value);
             setPkg(null);
             setErrors(null);
@@ -109,6 +125,7 @@ export function ImportCourse({ onClose }: { onClose: () => void }) {
           spellCheck={false}
           aria-label="课程包 JSON"
         />
+        <p className="small sub">课程正文、介绍和练手题选项会经过安全过滤，脚本、事件属性和危险链接不会执行。</p>
         {!pkg && (
           <button type="button" className="btn btn-primary" style={{ alignSelf: "flex-start" }} disabled={!text.trim()} onClick={() => check(text)}>
             检查格式

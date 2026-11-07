@@ -9,12 +9,12 @@
     "traces": { "enabled": true }
   },
   "upload_source_maps": true,
-  // 前端由 scripts/build.mjs 打包到 dist/client；/api/* 先交给 Worker 处理
+  // 所有请求先经过 Worker，确保页面、静态资源和 API 都执行 HTTPS 跳转。
   "assets": {
     "directory": "./dist/client",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": true
   },
   // 自定义域名：部署时自动绑定（域名需要已经在这个 Cloudflare 账号下）
   "routes": [{ "pattern": "study.shanmoew-denied.win", "custom_domain": true }],

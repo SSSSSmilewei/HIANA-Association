@@ -26,7 +26,8 @@ export { FORMAT, ITEM_KINDS, ITEM_KIND_LABEL, LINK_KINDS, LINK_KIND_LABEL } from
 
 const slug = z.string().regex(/^[a-z0-9][a-z0-9-]{1,47}$/, "只能用小写字母、数字和连字符，2–48 个字符");
 const id = z.string().regex(/^[a-z0-9][a-z0-9-]{0,47}$/, "只能用小写字母、数字和连字符");
-const url = z.string().regex(/^(https?:\/\/|\/)\S+$/, "要是 https:// 开头的网址或站内路径");
+// 站内路径不能以 // 或 /\ 开头；禁用反斜杠和控制字符，避免浏览器把它当成外部地址。
+const url = z.string().regex(/^(https?:\/\/[^\s\\\u0000-\u001f\u007f]+|\/(?![\/\\])[^\s\\\u0000-\u001f\u007f]*)$/, "请填写 http://、https:// 开头的网址或以单个 / 开头的站内路径");
 const md = z.string().max(400_000);
 
 export const Link = z.object({
